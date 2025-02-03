@@ -9,7 +9,7 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "start-alter": "node server.js alter",
-    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json tutorial-backend.service .env deploy",
+    "bundle": "mkdir deploy && cp -r app server.js package.json package-lock.json flight-plan-t1-backend.service .env deploy",
     "lint": "eslint --ext .js app",
     "format": "prettier . --write"
   },
