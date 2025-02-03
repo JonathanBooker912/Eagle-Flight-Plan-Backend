@@ -1,223 +1,90 @@
-import db from "../models/index.js";
-
-const User = db.user;
-const Op = db.Sequelize.Op;
+import UserUtils from "../sequelizeUtils/user.js";
 
 const exports = {};
 
 // Create and Save a new User
-exports.create = (req, res) => {
-  // Validate request
+exports.create = async (req, res) => {
   if (!req.body.email) {
-    res.status(400).send({
-      message: "Email can not be empty!",
-    });
-    return;
+    return res.status(400).send({ message: "Email cannot be empty!" });
   }
 
-  // Create a User
-  const user = {
-    id: req.body.id,
-    fName: req.body.fName,
-    lName: req.body.lName,
-    phoneNumber: req.body.phoneNumber,
-    email: req.body.email,
-    city: req.body.city,
-    state: req.body.state,
-    country: req.body.country,
-    shirtSize: req.body.shirtSize,
-    pantSize: req.body.pantSize,
-    outsidePC: req.body.outsidePC,
-    fullVacc: req.body.fullVacc,
-    classification: req.body.classification,
-    expectedGradDate: req.body.expectedGradDate,
-    activePlayer: req.body.activePlayer,
-    dateSignedAgreement: req.body.dateSignedAgreement,
-    // refresh_token: req.body.refresh_token,
-    // expiration_date: req.body.expiration_date
-  };
-
-  // Save User in the database
-  User.create(user)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
+  await UserUtils.create(req.body)
+    .then((data) => res.send(data))
+    .catch((err) =>
       res.status(500).send({
-        message: err.message || "Some error occurred while creating the User.",
-      });
-    });
+        message: err.message || "Some error occurred while creating the user.",
+      }),
+    );
 };
 
-// Retrieve all People from the database.
-exports.findAll = (req, res) => {
-  const id = req.query.id;
-  const email = req.query.email;
-  const filter = req.query.filter;
-  const offset = req.query.pageSize * (req.query.page - 1) || 0;
-  const limit = Number(req.query.pageSize) || 10000000;
-
-  if (filter == undefined || filter == "" || filter == null) {
-    var condition = id
-      ? { id: { [Op.like]: `%${id}%` } }
-      : email
-        ? { email: { [Op.like]: `%${email}%` } }
-        : null;
-    User.findAndCountAll({
-      where: condition,
-      offset: offset,
-      limit: limit,
-    })
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while retrieving users.",
-        });
-      });
-  } else {
-    var filterCondition = {
-      [Op.or]: [
-        { id: { [Op.like]: "%" + filter + "%" } },
-        { fName: { [Op.like]: "%" + filter + "%" } },
-        { lName: { [Op.like]: "%" + filter + "%" } },
-        { email: { [Op.like]: "%" + filter + "%" } },
-      ],
-    };
-    User.findAndCountAll({
-      where: filterCondition,
-      offset: offset,
-      limit: limit,
-    })
-      .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while retrieving users.",
-        });
-      });
-  }
-};
-
-// Find a single User with an id
-exports.findOne = (req, res) => {
-  const id = req.params.id;
-
-  User.findByPk(id)
-    .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `Cannot find User with id=${id}.`,
-        });
-      }
-    })
-    .catch(() => {
+exports.findAll = async (req, res) => {
+  await UserUtils.findAll(req.query)
+    .then((data) => res.send(data))
+    .catch((err) =>
       res.status(500).send({
-        message: "Error retrieving User with id=" + id,
-      });
-    });
+        message: err.message || "Some error occurred while retrieving users.",
+      }),
+    );
 };
 
-// Find a single User with an email
-exports.findByEmail = (req, res) => {
-  const email = req.params.email;
-
-  User.findOne({
-    where: {
-      email: email,
-    },
-  })
+exports.findOne = async (req, res) => {
+  await UserUtils.findById(req.params.id)
     .then((data) => {
-      if (data) {
-        res.send(data);
-      } else {
-        res.send({ email: "not found" });
-        /*res.status(404).send({
-          message: `Cannot find User with email=${email}.`
-        });*/
-      }
+      if (data) res.send(data);
+      else
+        res
+          .status(404)
+          .send({ message: `User with id=${req.params.id} not found.` });
     })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error retrieving User with email=" + email,
-      });
-    });
+    .catch(() =>
+      res
+        .status(500)
+        .send({ message: `Error retrieving User with id=${req.params.id}` }),
+    );
 };
 
-// Update a User by the id in the request
-exports.update = (req, res) => {
-  const id = req.params.id;
+exports.findByEmail = async (req, res) => {
+  await UserUtils.findByEmail(req.params.email)
+    .then((data) => res.send(data || { email: "not found" }))
+    .catch(() =>
+      res.status(500).send({
+        message: `Error retrieving User with email=${req.params.email}`,
+      }),
+    );
+};
 
-  User.update(req.body, {
-    where: { id: id },
-  })
+exports.update = async (req, res) => {
+  await UserUtils.update(req.params.id, req.body)
     .then((num) => {
       if (num == 1) {
-        res.send({
-          message: "User was updated successfully.",
-        });
+        res.send({ message: "User updated successfully." });
       } else {
         res.send({
-          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`,
+          message: `User with id=${req.params.id} not found or no updates provided.`,
         });
       }
     })
-    .catch(() => {
-      res.status(500).send({
-        message: "Error updating User with id=" + id,
-      });
-    });
+    .catch(() =>
+      res
+        .status(500)
+        .send({ message: `Error updating User with id=${req.params.id}` }),
+    );
 };
 
-// Delete a User with the specified id in the request
-exports.delete = (req, res) => {
-  const id = req.params.id;
-
-  User.destroy({
-    where: { id: id },
-  })
+exports.delete = async (req, res) => {
+  await UserUtils.delete(req.params.id)
     .then((num) => {
       if (num == 1) {
-        res.send({
-          message: "User was deleted successfully!",
-        });
+        res.send({ message: "User deleted successfully!" });
       } else {
-        res.send({
-          message: `Cannot delete User with id=${id}. Maybe User was not found!`,
-        });
+        res.send({ message: `User with id=${req.params.id} not found.` });
       }
     })
-    .catch(() => {
-      res.status(500).send({
-        message: "Could not delete User with id=" + id,
-      });
-    });
-};
-
-// Delete all People from the database.
-exports.deleteAll = (req, res) => {
-  User.destroy({
-    where: {},
-    truncate: false,
-  })
-    .then((nums) => {
-      res.send({ message: `${nums} People were deleted successfully!` });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all people.",
-      });
-    });
-};
-
-// Delete all People from the database.
-exports.getClassifications = (req, res) => {
-  res.send(User.getAttributes().classification.values);
+    .catch(() =>
+      res
+        .status(500)
+        .send({ message: `Error deleting User with id=${req.params.id}` }),
+    );
 };
 
 export default exports;
