@@ -56,7 +56,7 @@ jobs:
           command: |
             cd nodeapps/2025/flight-plan/t1
             npm install
-            sudo systemctl stop resume-t1-backend
-            sudo cp resume-t1-backend.service /lib/systemd/system/resume-t1-backend.service
+            sudo systemctl stop flight-plan-t1-backend.service
+            sudo cp flight-plan-t1-backend.service /lib/systemd/system/flight-plan-t1-backend.service
             sudo systemctl daemon-reload
-            sudo systemctl start resume-t1-backend
+            sudo systemctl start flight-plan-t1-backend
