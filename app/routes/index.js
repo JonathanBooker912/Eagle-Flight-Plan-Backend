@@ -11,4 +11,9 @@ router.use("/user", UserRoutes);
 router.use("/role", RoleRoutes);
 router.use("/userrole", UserRoleRoutes);
 
+// eslint-disable-next-line
+router.get("/", (req, res) => {
+  res.json({ message: "Welcome to Team 1's Eagle Flight Plan API." });
+});
+
 export default router;
