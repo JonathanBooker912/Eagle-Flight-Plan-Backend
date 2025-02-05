@@ -53,29 +53,40 @@ db.user.hasMany(
 // Joint Tables
 
 // USERROLE
-User.belongsToMany(Role, { throught: "UserRole" });
-Role.belongsToMany(User, { throught: "UserRole" });
+User.belongsToMany(Role, { through: "UserRole" });
+Role.belongsToMany(User, { through: "UserRole" });
+
+// STUDENTBADGE
+Student.belongsToMany(Badge, { through: "StudentBadge" });
+Badge.belongsToMany(Student, { through: "StudentBadge" });
+
+// BADEXPTASK
+Badge.belongsToMany(Task, { through: "badexptask" });
+Task.belongsToMany(Badge, { through: "badexptask" });
+
+// BADGEFULFILL
+Badge.belongsToMany(Student, { through: "BadgeFulfill" });
+Student.belongsToMany(Badge, { through: "BadgeFulfill" });
 
 // STUDENTMAJOR
-
-Student.belongsToMany(Majors, { throught: "studentMajor" });
-Major.belongsToMany(Student, { throught: "studentMajors" });
+Student.belongsToMany(Majors, { through: "studentMajor" });
+Major.belongsToMany(Student, { through: "studentMajors" });
 
 // TASKMAJOR
-Task.belongsToMany(Major, { throught: "TaskMajor" });
-Major.belongsToMany(Task, { throught: "TaskMajor" });
+Task.belongsToMany(Major, { through: "TaskMajor" });
+Major.belongsToMany(Task, { through: "TaskMajor" });
 
 // EXPERIENCEMAJORS
-Experience.belongsToMany(Major, { throught: "ExperienceMajor" });
-Major.belongsToMany(Experience, { throught: "ExperienceMajor" });
+Experience.belongsToMany(Major, { through: "ExperienceMajor" });
+Major.belongsToMany(Experience, { through: "ExperienceMajor" });
 
 // EXPOPTIONS
-Experience.belongsToMany(Event, { throught: "ExpOption" });
-Event.belongsToMany(Experience, { throught: "ExpOption" });
+Experience.belongsToMany(Event, { through: "ExpOption" });
+Event.belongsToMany(Experience, { through: "ExpOption" });
 
 // EVENTSTRENGTH
-Event.belongsToMany(Strength, { throught: "EventStrength" });
-Strength.belongsToMany(Event, { throught: "EventStrength" });
+Event.belongsToMany(Strength, { through: "EventStrength" });
+Strength.belongsToMany(Event, { through: "EventStrength" });
 
 // Foreign Key for studentMajor
 // StudentMajor to Majors

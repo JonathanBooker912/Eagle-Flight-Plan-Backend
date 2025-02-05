@@ -12,9 +12,6 @@ const StudentBadge = SequelizeInstance.define("studentbadge", {
   }
 });
 
-// STUDENTBADGE
-Student.belongsToMany(Badge, { throught: 'StudentBadge'});
-Badge.belongsToMany(Student, { throught: 'StudentBadge'});
 
 
 export default StudentBadge;
