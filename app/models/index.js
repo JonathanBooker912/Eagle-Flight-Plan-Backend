@@ -88,31 +88,6 @@ Event.belongsToMany(Experience, { through: "ExpOption" });
 Event.belongsToMany(Strength, { through: "EventStrength" });
 Strength.belongsToMany(Event, { through: "EventStrength" });
 
-// Foreign Key for studentMajor
-// StudentMajor to Majors
-db.studentMajor.belongsTo(db.major, {
-  as: "major",
-  foreignKey: { name: "majorId", allowNull: false },
-});
-
-// Majors to StudentMajor
-db.majors.hasMany(db.studentMajor, {
-  as: "studentMajors", // Alias for reverse association
-  foreignKey: "majorId",
-});
-
-// Student to Student Major
-db.student.hasMany(db.studentMajor, {
-  as: "studentMajors",
-  foreignKey: { name: "studentId", allowNull: false }, // Foreign key in studentMajor table
-});
-
-// Student Major to Student
-db.studentMajor.belongsTo(db.Student, {
-  as: "student", // Alias for this relationship
-  foreignKey: { name: "studentId", allowNull: false }, // Foreign key in studentMajor table
-});
-
 // USERROLE
 // User Role to User
 db.userRole.belongsTo(db.user, {
