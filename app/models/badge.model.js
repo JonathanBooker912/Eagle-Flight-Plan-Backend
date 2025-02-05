@@ -13,7 +13,7 @@ const Badge = SequelizeInstance.define("badge", {
   description: {
     type: Sequelize.STRING,
   },
-  type: {
+  badgeType: {
     type: Sequelize.STRING,
     // ENUM NEED TO BE DEFINED
   },

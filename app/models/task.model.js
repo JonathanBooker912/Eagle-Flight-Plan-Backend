@@ -10,7 +10,7 @@ const Task = SequelizeInstance.define("task", {
   category: {
     type: Sequelize.ENUM('Academic', 'Leadership', 'Networking', 'Strengths', 'Career Prep', 'Mentoring', 'Volunteer'),  
   },
-  type: {
+  taskType: {
     type: Sequelize.ENUM('Automatic', 'Manual'),
 },
   reflectionRequired: {

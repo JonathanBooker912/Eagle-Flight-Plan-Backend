@@ -10,7 +10,7 @@ const Experience = SequelizeInstance.define("experience", {
   category: {
     type: Sequelize.ENUM('Academic', 'Leadership', 'Networking', 'Strengths', 'Career Prep', 'Mentoring', 'Volunteer')  
   },
-  type: {
+  experienceType: {
     type: Sequelize.ENUM('Automatic', 'Manual'),
   },
   reflectionRequired: {

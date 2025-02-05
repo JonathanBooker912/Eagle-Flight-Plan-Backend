@@ -7,7 +7,7 @@ const EventType = SequelizeInstance.define("eventtype", {
     autoIncrement: true,
     primaryKey: true,
   },
-  type: {
+  eventType: {
     type: Sequelize.STRING,
   }
 });

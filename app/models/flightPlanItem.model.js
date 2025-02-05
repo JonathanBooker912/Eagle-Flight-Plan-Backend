@@ -7,7 +7,7 @@ const FlightPlanItem = SequelizeInstance.define("flightplanitem", {
     autoIncrement: true,
     primaryKey: true,
   },
-  type: {
+  flightPlanType: {
     type: Sequelize.ENUM('Task', 'Experience'),
   },
   status: {
