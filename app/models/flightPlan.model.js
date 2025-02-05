@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const FlightPlan = SequelizeInstance.define("flightplan", {
+const FlightPlan = SequelizeInstance.define("flightPlan", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -9,7 +9,7 @@ const FlightPlan = SequelizeInstance.define("flightplan", {
   },
   semestersFromGrad: {
     type: Sequelize.INTEGER,
-  }
+  },
 });
 
 export default FlightPlan;

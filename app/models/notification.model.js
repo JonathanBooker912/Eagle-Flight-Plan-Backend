@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Notifications = SequelizeInstance.define("notifications", {
+const Notification = SequelizeInstance.define("notification", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -13,9 +13,9 @@ const Notifications = SequelizeInstance.define("notifications", {
   description: {
     type: Sequelize.STRING,
   },
-   actionLink: {
+  actionLink: {
     type: Sequelize.STRING,
   },
 });
 
-export default Notifications;
+export default Notification;

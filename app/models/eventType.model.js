@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const EventType = SequelizeInstance.define("eventtype", {
+const EventType = SequelizeInstance.define("eventType", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -9,7 +9,7 @@ const EventType = SequelizeInstance.define("eventtype", {
   },
   eventType: {
     type: Sequelize.STRING,
-  }
+  },
 });
 
 export default EventType;

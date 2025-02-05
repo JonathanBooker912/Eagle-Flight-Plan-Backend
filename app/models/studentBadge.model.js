@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const StudentBadge = SequelizeInstance.define("studentbadge", {
+const StudentBadge = SequelizeInstance.define("studentBadge", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -9,9 +9,7 @@ const StudentBadge = SequelizeInstance.define("studentbadge", {
   },
   dateAwarded: {
     type: Sequelize.DATE,
-  }
+  },
 });
-
-
 
 export default StudentBadge;

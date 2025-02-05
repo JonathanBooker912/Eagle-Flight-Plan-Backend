@@ -9,7 +9,7 @@ import Experience from "./experience.model.js";
 import FlightPlan from "./flightPlan.model.js";
 import FlightPlanItem from "./flightPlanItem.model.js";
 import Major from "./major.model.js";
-import Notifications from "./notifications.model.js";
+import Notification from "./notification.model.js";
 import Reward from "./reward.model.js";
 import Role from "./role.model.js";
 import Semester from "./semester.model.js";
@@ -29,7 +29,7 @@ db.experience = Experience;
 db.flightPlan = FlightPlan;
 db.flightPlanItem = FlightPlanItem;
 db.major = Major;
-db.notifications = Notifications;
+db.notification = Notification;
 db.reward = Reward;
 db.role = Role;
 db.semester = Semester;
@@ -61,12 +61,12 @@ Student.belongsToMany(Badge, { through: "studentBadge" });
 Badge.belongsToMany(Student, { through: "studentBadge" });
 
 // BADEXPTASK
-Badge.belongsToMany(Task, { through: "badExpTask" });
-Task.belongsToMany(Badge, { through: "badExpTask" });
+Badge.belongsToMany(Task, { through: db.badExpTask });
+Task.belongsToMany(Badge, { through: db.badExpTask });
 
 // BADGEFULFILL
-Badge.belongsToMany(Student, { through: "badgeFulfill" });
-Student.belongsToMany(Badge, { through: "badgeFulfill" });
+Badge.belongsToMany(Student, { through: db.badgeFulfill });
+Student.belongsToMany(Badge, { through: db.badgeFulfill });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });

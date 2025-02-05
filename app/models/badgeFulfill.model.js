@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const BadgeFulfill = SequelizeInstance.define("badgefulfill", {
+const BadgeFulfill = SequelizeInstance.define("badgeFulfill", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -9,8 +9,7 @@ const BadgeFulfill = SequelizeInstance.define("badgefulfill", {
   },
   date: {
     type: Sequelize.DATE,
-  }
+  },
 });
-
 
 export default BadgeFulfill;
