@@ -24,7 +24,8 @@ const Event = SequelizeInstance.define("event", {
     type: Sequelize.DATE,
   },
   attendanceType: {
-    //ENUM UNDEFINED
+    type: Sequelize.ENUM('In Person', 'Virtual'),
+    // ENUM NEED TO BE DEFINED
   },
   registration: {
     type: Sequelize.ENUM('In App', 'Handshake'),

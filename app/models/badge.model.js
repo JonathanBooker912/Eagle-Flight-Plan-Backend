@@ -14,7 +14,8 @@ const Badge = SequelizeInstance.define("badge", {
     type: Sequelize.STRING,
   },
   type: {
-    //We don't have the enum defined
+    type: Sequelize.STRING,
+    // ENUM NEED TO BE DEFINED
   },
   points: {
     type: Sequelize.INTEGER,

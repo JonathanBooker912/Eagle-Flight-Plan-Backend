@@ -17,7 +17,8 @@ const Reward = SequelizeInstance.define("reward", {
     type: Sequelize.INTEGER,
   },
   redemptionType: {
-    //ENUM NOT DEFINED
+    type: Sequelize.STRING,
+    // ENUM NEED TO BE DEFINED
   },
   redemptionInfo: {
     type: Sequelize.STRING(255),
