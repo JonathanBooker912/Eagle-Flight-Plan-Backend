@@ -105,8 +105,6 @@ db.flightPlanItem.hasOne(db.experience, {
   as: "experience",
   foreignKey: { name: "experienceId", allowNull: false },
 });
-  foreignKey: { name: "experienceId", allowNull: false },
-});
 
 // Flight Plan to Task
 db.flightPlanItem.hasOne(db.task, {
