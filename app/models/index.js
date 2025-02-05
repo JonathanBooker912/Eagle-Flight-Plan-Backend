@@ -53,40 +53,42 @@ db.user.hasMany(
 // Joint Tables
 
 // USERROLE
-User.belongsToMany(Role, { through: "UserRole" });
-Role.belongsToMany(User, { through: "UserRole" });
+User.belongsToMany(Role, { through: "userRole" });
+Role.belongsToMany(User, { through: "userRole" });
 
 // STUDENTBADGE
-Student.belongsToMany(Badge, { through: "StudentBadge" });
-Badge.belongsToMany(Student, { through: "StudentBadge" });
+Student.belongsToMany(Badge, { through: "studentBadge" });
+Badge.belongsToMany(Student, { through: "studentBadge" });
 
 // BADEXPTASK
-Badge.belongsToMany(Task, { through: "badexptask" });
-Task.belongsToMany(Badge, { through: "badexptask" });
+Badge.belongsToMany(Task, { through: "badExpTask" });
+Task.belongsToMany(Badge, { through: "badExpTask" });
 
 // BADGEFULFILL
-Badge.belongsToMany(Student, { through: "BadgeFulfill" });
-Student.belongsToMany(Badge, { through: "BadgeFulfill" });
+Badge.belongsToMany(Student, { through: "badgeFulfill" });
+Student.belongsToMany(Badge, { through: "badgeFulfill" });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajors" });
+Student.belongsToMany(Major, { through: "studentMajor" });
+Major.belongsToMany(Student, { through: "studentMajors" });
 
 // TASKMAJOR
-Task.belongsToMany(Major, { through: "TaskMajor" });
-Major.belongsToMany(Task, { through: "TaskMajor" });
+Task.belongsToMany(Major, { through: "taskMajor" });
+Major.belongsToMany(Task, { through: "taskMajor" });
 
 // EXPERIENCEMAJORS
-Experience.belongsToMany(Major, { through: "ExperienceMajor" });
-Major.belongsToMany(Experience, { through: "ExperienceMajor" });
+Experience.belongsToMany(Major, { through: "experienceMajor" });
+Major.belongsToMany(Experience, { through: "experienceMajor" });
 
 // EXPOPTIONS
-Experience.belongsToMany(Event, { through: "ExpOption" });
-Event.belongsToMany(Experience, { through: "ExpOption" });
+Experience.belongsToMany(Event, { through: "expOption" });
+Event.belongsToMany(Experience, { through: "expOption" });
 
 // EVENTSTRENGTH
-Event.belongsToMany(Strength, { through: "EventStrength" });
-Strength.belongsToMany(Event, { through: "EventStrength" });
+Event.belongsToMany(Strength, { through: "eventStrength" });
+Strength.belongsToMany(Event, { through: "eventStrength" });
 
 // Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {
@@ -103,10 +105,13 @@ db.flightPlanItem.hasOne(db.experience, {
   as: "experience",
   foreignKey: { name: "experienceId", allowNull: false },
 });
+  foreignKey: { name: "experienceId", allowNull: false },
+});
 
 // Flight Plan to Task
 db.flightPlanItem.hasOne(db.task, {
   as: "task",
+  foreignKey: { name: "taskId", allowNull: false },
   foreignKey: { name: "taskId", allowNull: false },
 });
 
@@ -115,6 +120,7 @@ db.flightPlanItem.hasOne(db.task, {
 // Event to Event Type
 db.event.hasOne(db.eventType, {
   as: "eventType",
+  foreignKey: { name: "type", allowNull: false },
   foreignKey: { name: "type", allowNull: false },
 });
 
