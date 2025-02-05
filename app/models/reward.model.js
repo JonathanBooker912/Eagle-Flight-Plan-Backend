@@ -1,24 +1,30 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const User = SequelizeInstance.define("user", {
+const Reward = SequelizeInstance.define("reward", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  fName: {
+  name: {
     type: Sequelize.STRING(255),
-    allowNull: false,
   },
-  lName: {
+  description: {
     type: Sequelize.STRING(255),
-    allowNull: false,
   },
-  email: {
+  points: {
+    type: Sequelize.INTEGER,
+  },
+  redemptionType: {
+    //ENUM NOT DEFINED
+  },
+  redemptionInfo: {
     type: Sequelize.STRING(255),
-    allowNull: false,
   },
+  image: {
+    type: Sequelize.BLOB,
+  }
 });
 
-export default User;
+export default Reward;

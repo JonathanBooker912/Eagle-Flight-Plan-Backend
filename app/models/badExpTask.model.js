@@ -1,16 +1,15 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Role = SequelizeInstance.define("role", {
+const BadExpTask = SequelizeInstance.define("badexptask", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
-    type: Sequelize.STRING(255),
-    allowNull: false
+  quantity: {
+    type: Sequelize.INTEGER
   }
 });
 
-export default Role;
+export default BadExpTask;

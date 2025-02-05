@@ -1,16 +1,15 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Role = SequelizeInstance.define("role", {
+const BadgeFulfill = SequelizeInstance.define("badgefulfill", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
-    type: Sequelize.STRING(255),
-    allowNull: false
+  date: {
+    type: Sequelize.DATE,
   }
 });
 
-export default Role;
+export default BadgeFulfill;

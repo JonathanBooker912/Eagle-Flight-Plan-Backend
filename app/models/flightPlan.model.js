@@ -1,16 +1,15 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Role = SequelizeInstance.define("role", {
+const FlightPlan = SequelizeInstance.define("flightplan", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  name: {
-    type: Sequelize.STRING(255),
-    allowNull: false
+  semestersFromGrad: {
+    type: Sequelize.INTEGER,
   }
 });
 
-export default Role;
+export default FlightPlan;
