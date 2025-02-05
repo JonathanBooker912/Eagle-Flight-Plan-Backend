@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Role = SequelizeInstance.define("role", {
+const Major = SequelizeInstance.define("major", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -10,7 +10,7 @@ const Role = SequelizeInstance.define("role", {
   name: {
     type: Sequelize.STRING(255),
     allowNull: false
-  }
+  },
 });
 
-export default Role;
+export default Major;
