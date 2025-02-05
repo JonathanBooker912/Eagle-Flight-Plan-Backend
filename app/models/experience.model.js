@@ -8,16 +8,24 @@ const Experience = SequelizeInstance.define("experience", {
     primaryKey: true,
   },
   category: {
-    type: Sequelize.ENUM('Academic', 'Leadership', 'Networking', 'Strengths', 'Career Prep', 'Mentoring', 'Volunteer')  
+    type: Sequelize.ENUM(
+      "Academic",
+      "Leadership",
+      "Networking",
+      "Strengths",
+      "Career Prep",
+      "Mentoring",
+      "Volunteer",
+    ),
   },
   experienceType: {
-    type: Sequelize.ENUM('Automatic', 'Manual'),
+    type: Sequelize.ENUM("Automatic", "Manual"),
   },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
   },
   schedulingType: {
-    type : Sequelize.ENUM('one-time', 'every semester', 'special event'),
+    type: Sequelize.ENUM("one-time", "every semester", "special event"),
   },
   description: {
     type: Sequelize.STRING(255),
@@ -29,8 +37,8 @@ const Experience = SequelizeInstance.define("experience", {
     type: Sequelize.STRING(255),
   },
   points: {
-    type: Sequelize.INTEGER
-  }
+    type: Sequelize.INTEGER,
+  },
 });
 
 export default Experience;

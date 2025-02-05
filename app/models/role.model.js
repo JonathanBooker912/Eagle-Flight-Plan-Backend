@@ -9,8 +9,8 @@ const Role = SequelizeInstance.define("role", {
   },
   name: {
     type: Sequelize.STRING(255),
-    allowNull: false
-  }
+    allowNull: false,
+  },
 });
 
 export default Role;

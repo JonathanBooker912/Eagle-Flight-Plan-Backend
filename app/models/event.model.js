@@ -11,11 +11,11 @@ const Event = SequelizeInstance.define("event", {
     type: Sequelize.STRING(100),
   },
   description: {
-    type: Sequelize.STRING(255)
+    type: Sequelize.STRING(255),
   },
   date: {
     type: Sequelize.DATE,
-    defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') // Default as now  
+    defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"), // Default as now
   },
   startTime: {
     type: Sequelize.DATE,
@@ -24,15 +24,15 @@ const Event = SequelizeInstance.define("event", {
     type: Sequelize.DATE,
   },
   attendanceType: {
-    type: Sequelize.ENUM('In Person', 'Virtual'),
+    type: Sequelize.ENUM("In Person", "Virtual"),
     // ENUM NEED TO BE DEFINED
   },
   registration: {
-    type: Sequelize.ENUM('In App', 'Handshake'),
+    type: Sequelize.ENUM("In App", "Handshake"),
   },
   completionType: {
-    type: Sequelize.ENUM('automatic', 'self-reported', 'confirmed'),
- },
+    type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
+  },
 });
 
 export default Event;

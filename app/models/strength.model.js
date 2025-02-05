@@ -8,14 +8,54 @@ const Strength = SequelizeInstance.define("strength", {
     primaryKey: true,
   },
   name: {
-    type: Sequelize.ENUM('Achiever', 'Discipline', 'Arranger', 'Focus', 'Belief', 'Responsibility', 'Consistency', 'Restorative', 'Deliberative', 'Activator', 'Maximizer', 'Command', 'Self-Assurance', 'Communication', 'Significance', 'Competition', 'Woo', 'Adaptability', 'Includer', 'Connectedness', 'Individualization', 'Developer', 'Positivity', 'Empathy', 'Relator', 'Harmony', 'Analytical', 'Input', 'Context', 'Intellection', 'Futuristic', 'Learner', 'Ideation', 'Strategic'),
+    type: Sequelize.ENUM(
+      "Achiever",
+      "Discipline",
+      "Arranger",
+      "Focus",
+      "Belief",
+      "Responsibility",
+      "Consistency",
+      "Restorative",
+      "Deliberative",
+      "Activator",
+      "Maximizer",
+      "Command",
+      "Self-Assurance",
+      "Communication",
+      "Significance",
+      "Competition",
+      "Woo",
+      "Adaptability",
+      "Includer",
+      "Connectedness",
+      "Individualization",
+      "Developer",
+      "Positivity",
+      "Empathy",
+      "Relator",
+      "Harmony",
+      "Analytical",
+      "Input",
+      "Context",
+      "Intellection",
+      "Futuristic",
+      "Learner",
+      "Ideation",
+      "Strategic",
+    ),
   },
   domain: {
-    type: Sequelize.ENUM('Executing', 'Influencing', 'Relationship Building', 'Strategic Planning'),
+    type: Sequelize.ENUM(
+      "Executing",
+      "Influencing",
+      "Relationship Building",
+      "Strategic Planning",
+    ),
   },
   number: {
-    type: Sequelize.INTEGER
-  }
+    type: Sequelize.INTEGER,
+  },
 });
 
 export default Strength;

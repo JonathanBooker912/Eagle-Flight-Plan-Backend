@@ -8,19 +8,27 @@ const Task = SequelizeInstance.define("task", {
     primaryKey: true,
   },
   category: {
-    type: Sequelize.ENUM('Academic', 'Leadership', 'Networking', 'Strengths', 'Career Prep', 'Mentoring', 'Volunteer'),  
+    type: Sequelize.ENUM(
+      "Academic",
+      "Leadership",
+      "Networking",
+      "Strengths",
+      "Career Prep",
+      "Mentoring",
+      "Volunteer",
+    ),
   },
   taskType: {
-    type: Sequelize.ENUM('Automatic', 'Manual'),
-},
+    type: Sequelize.ENUM("Automatic", "Manual"),
+  },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
   },
   schedulingType: {
-    type: Sequelize.ENUM('one-time', 'every semester', 'special event'),
+    type: Sequelize.ENUM("one-time", "every semester", "special event"),
   },
   name: {
-    type: Sequelize.STRING
+    type: Sequelize.STRING,
   },
   description: {
     type: Sequelize.STRING,
@@ -32,11 +40,11 @@ const Task = SequelizeInstance.define("task", {
     type: Sequelize.INTEGER,
   },
   completionType: {
-    type: Sequelize.ENUM('automatic', 'self-reported', 'confirmed'),
-},
+    type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
+  },
   pointsEarned: {
-    type: Sequelize.INTEGER
-  }
+    type: Sequelize.INTEGER,
+  },
 });
 
 export default Task;
