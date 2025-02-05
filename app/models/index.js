@@ -69,7 +69,7 @@ Badge.belongsToMany(Student, { through: "BadgeFulfill" });
 Student.belongsToMany(Badge, { through: "BadgeFulfill" });
 
 // STUDENTMAJOR
-Student.belongsToMany(Majors, { through: "studentMajor" });
+Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajors" });
 
 // TASKMAJOR
