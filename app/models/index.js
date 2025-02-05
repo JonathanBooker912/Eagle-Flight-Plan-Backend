@@ -88,26 +88,12 @@ Event.belongsToMany(Experience, { through: "ExpOption" });
 Event.belongsToMany(Strength, { through: "EventStrength" });
 Strength.belongsToMany(Event, { through: "EventStrength" });
 
-// USERROLE
-// User Role to User
-db.userRole.belongsTo(db.user, {
-  as: "user",
-  foreignKey: { name: "userId", allowNull: false },
-});
-
-// User Role to Role
-db.userRole.belongsTo(db.role, {
-  as: "role",
-  foreignKey: { name: "roleId", allowNull: false },
-});
-
 // Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {
   as: "semester",
   foreignKey: { name: "semesterId", allowNull: false },
 });
 
-// Flight Plan Item
 // Flight Plan Item to ???? (Approved By)
 
 // Flight Plan to Event ??? (No relation)
@@ -124,68 +110,12 @@ db.flightPlanItem.hasOne(db.task, {
   foreignKey: { name: "taskId", allowNull: false },
 });
 
-//EXPOPTIONS
-
-// Exp Option to Event
-db.experienceOptions.hasOne(db.event, {
-  as: "event",
-  foreignKey: { name: "eventId", allowNull: false },
-});
-
-// Exp Option to Experience
-db.experienceOptions.hasOne(db.experience, {
-  as: "experience",
-  foreignKey: { name: "experienceId", allowNull: false },
-});
-
 // EVENT
 
 // Event to Event Type
 db.event.hasOne(db.eventType, {
   as: "eventType",
   foreignKey: { name: "type", allowNull: false },
-});
-
-// TASK MAJORS
-
-// TaskMajors to Task
-db.taskMajor.hasOne(db.task, {
-  as: "task",
-  foreignKey: { name: "taskId", allowNull: false },
-});
-
-// TaskMajors to Major
-db.taskMajors.hasOne(db.major, {
-  as: "majors",
-  foreignKey: { name: "majorId", allowNull: false },
-});
-
-// BADEXPTASK
-
-// BadExpTask to Task
-db.badExpTask.hasOne(db.task, {
-  as: "task",
-  foreignKey: { name: "taskId", allowNull: false },
-});
-
-// BadExpTask to Major
-db.experienceMajors.hasOne(db.experience, {
-  as: "experience",
-  foreignKey: { name: "experienceId", allowNull: false },
-});
-
-// BADGE FULFILL
-
-// BadgeFulfill to Badge
-db.badgeFulfill.hasOne(db.badge, {
-  as: "badge",
-  foreignKey: { name: "badgeId", allowNull: false },
-});
-
-// BadgeFulfill to Student
-db.badgeFulfill.hasOne(db.student, {
-  as: "student",
-  foreignKey: { name: "studentId", allowNull: false },
 });
 
 export default db;

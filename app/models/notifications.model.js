@@ -18,4 +18,4 @@ const Notifications = SequelizeInstance.define("notifications", {
   },
 });
 
-export default notifications;
+export default Notifications;

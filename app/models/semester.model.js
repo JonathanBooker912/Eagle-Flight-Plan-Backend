@@ -8,7 +8,7 @@ const Semester = SequelizeInstance.define("semester", {
     primaryKey: true,
   },
   term: {
-    type: DataTypes.ENUM('fall', 'winter', 'spring', 'summer'),
+    type: Sequelize.ENUM('fall', 'winter', 'spring', 'summer'),
     allowNull: false,
     defaultValue: 'spring'
   },
