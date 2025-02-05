@@ -17,6 +17,7 @@ import Strength from "./strength.model.js";
 import Student from "./student.model.js";
 import Task from "./task.model.js";
 import User from "./user.model.js";
+import Session from "./session.model.js";
 
 const db = {};
 
@@ -37,18 +38,21 @@ db.strength = Strength;
 db.student = Student;
 db.task = Task;
 db.user = User;
+db.session = Session;
 
 db.Sequelize = Sequelize;
 
-/* foreign key for session
+// foreign key for session
 db.user.hasMany(
   db.session,
   { as: "session" },
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
-);*/
-
-//User.belongsToMany(Profile, { through: 'User_Profiles' });
-//Profile.belongsToMany(User, { through: 'User_Profiles' });
+);
+db.session.belongsTo(
+  db.user,
+  { as: "user" },
+  { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
+);
 
 // Joint Tables
 
@@ -69,8 +73,6 @@ Badge.belongsToMany(Student, { through: db.badgeFulfill });
 Student.belongsToMany(Badge, { through: db.badgeFulfill });
 
 // STUDENTMAJOR
-Student.belongsToMany(Major, { through: "studentMajor" });
-Major.belongsToMany(Student, { through: "studentMajors" });
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajors" });
 
