@@ -25,7 +25,7 @@ const Reward = SequelizeInstance.define("reward", {
   },
   image: {
     type: Sequelize.BLOB,
-  }
+  },
 });
 
 export default Reward;

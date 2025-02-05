@@ -112,7 +112,6 @@ db.flightPlanItem.hasOne(db.experience, {
 db.flightPlanItem.hasOne(db.task, {
   as: "task",
   foreignKey: { name: "taskId", allowNull: false },
-  foreignKey: { name: "taskId", allowNull: false },
 });
 
 // EVENT
@@ -120,7 +119,6 @@ db.flightPlanItem.hasOne(db.task, {
 // Event to Event Type
 db.event.hasOne(db.eventType, {
   as: "eventType",
-  foreignKey: { name: "type", allowNull: false },
   foreignKey: { name: "type", allowNull: false },
 });
 

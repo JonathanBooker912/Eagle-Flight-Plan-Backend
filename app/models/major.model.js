@@ -9,7 +9,7 @@ const Major = SequelizeInstance.define("major", {
   },
   name: {
     type: Sequelize.STRING(255),
-    allowNull: false
+    allowNull: false,
   },
 });
 

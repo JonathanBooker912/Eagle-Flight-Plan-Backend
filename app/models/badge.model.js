@@ -21,8 +21,8 @@ const Badge = SequelizeInstance.define("badge", {
     type: Sequelize.INTEGER,
   },
   image: {
-    type: Sequelize.BLOB
-}
+    type: Sequelize.BLOB,
+  },
 });
 
 export default Badge;
