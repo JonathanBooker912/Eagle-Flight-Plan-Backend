@@ -5,27 +5,18 @@ import BadgeFulfill from "./badgeFulfill.model.js";
 import Badge from "./badge.model.js";
 import Event from "./event.model.js";
 import EventType from "./eventType.model.js";
-import EventStrength from "./eventStrength.model.js";
 import Experience from "./experience.model.js";
-import ExperienceMajors from "./experienceMajors.model.js";
-import ExperienceOptions from "./experienceOptions.model.js";
 import FlightPlan from "./flightPlan.model.js";
 import FlightPlanItem from "./flightPlanItem.model.js";
-import Majors from "./majors.model.js";
+import Major from "./major.model.js";
 import Notifications from "./notifications.model.js";
 import Reward from "./reward.model.js";
 import Role from "./role.model.js";
 import Semester from "./semester.model.js";
 import Strength from "./strength.model.js";
-import Students from "./students.model.js";
-import StudentBadge from "./studentBadge.model.js";
-import StudentMajor from "./studentMajor.model.js";
-import StudentReward from "./studentReward.model.js";
-import StudentStrength from "./studentStrength.model.js";
+import Student from "./student.model.js";
 import Task from "./task.model.js";
-import TaskMajors from "./taskMajors.model.js";
 import User from "./user.model.js";
-import UserRole from "./userrole.model.js";
 
 const db = {};
 
@@ -34,27 +25,18 @@ db.badgeFulfill = BadgeFulfill;
 db.badge = Badge;
 db.event = Event;
 db.eventType = EventType;
-db.eventStrength = EventStrength;
 db.experience = Experience;
-db.experienceMajors = ExperienceMajors;
-db.experienceOptions = ExperienceOptions;
 db.flightPlan = FlightPlan;
 db.flightPlanItem = FlightPlanItem;
-db.majors = Majors;
+db.major = Major;
 db.notifications = Notifications;
 db.reward = Reward;
 db.role = Role;
 db.semester = Semester;
 db.strength = Strength;
-db.students = Students;
-db.studentBadge = StudentBadge;
-db.studentMajor = StudentMajor;
-db.studentReward = StudentReward;
-db.studentStrength = StudentStrength;
+db.student = Student;
 db.task = Task;
-db.taskMajors = TaskMajors;
 db.user = User;
-db.userRole = UserRole;
 
 db.Sequelize = Sequelize;
 
@@ -65,9 +47,39 @@ db.user.hasMany(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
 );*/
 
+//User.belongsToMany(Profile, { through: 'User_Profiles' });
+//Profile.belongsToMany(User, { through: 'User_Profiles' });
+
+// Joint Tables
+
+// USERROLE
+User.belongsToMany(Role, { throught: "UserRole" });
+Role.belongsToMany(User, { throught: "UserRole" });
+
+// STUDENTMAJOR
+
+Student.belongsToMany(Majors, { throught: "studentMajor" });
+Major.belongsToMany(Student, { throught: "studentMajors" });
+
+// TASKMAJOR
+Task.belongsToMany(Major, { throught: "TaskMajor" });
+Major.belongsToMany(Task, { throught: "TaskMajor" });
+
+// EXPERIENCEMAJORS
+Experience.belongsToMany(Major, { throught: "ExperienceMajor" });
+Major.belongsToMany(Experience, { throught: "ExperienceMajor" });
+
+// EXPOPTIONS
+Experience.belongsToMany(Event, { throught: "ExpOption" });
+Event.belongsToMany(Experience, { throught: "ExpOption" });
+
+// EVENTSTRENGTH
+Event.belongsToMany(Strength, { throught: "EventStrength" });
+Strength.belongsToMany(Event, { throught: "EventStrength" });
+
 // Foreign Key for studentMajor
 // StudentMajor to Majors
-db.studentMajor.belongsTo(db.majors, {
+db.studentMajor.belongsTo(db.major, {
   as: "major",
   foreignKey: { name: "majorId", allowNull: false },
 });
@@ -79,13 +91,13 @@ db.majors.hasMany(db.studentMajor, {
 });
 
 // Student to Student Major
-db.students.hasMany(db.studentMajor, {
+db.student.hasMany(db.studentMajor, {
   as: "studentMajors",
   foreignKey: { name: "studentId", allowNull: false }, // Foreign key in studentMajor table
 });
 
 // Student Major to Student
-db.studentMajor.belongsTo(db.Students, {
+db.studentMajor.belongsTo(db.Student, {
   as: "student", // Alias for this relationship
   foreignKey: { name: "studentId", allowNull: false }, // Foreign key in studentMajor table
 });
@@ -101,21 +113,6 @@ db.userRole.belongsTo(db.user, {
 db.userRole.belongsTo(db.role, {
   as: "role",
   foreignKey: { name: "roleId", allowNull: false },
-});
-
-// STUDENTSTRENGTH
-
-// Student Strength to Student
-db.studentStrength.belongsTo(db.students, {
-  as: "students",
-  foreignKey: { name: "studentID", allowNull: false },
-});
-
-// Flight Plan
-// Flight Plan to Students
-db.flightPlan.hasOne(db.students, {
-  as: "students",
-  foreignKey: { name: "studentId", allowNull: false },
 });
 
 // Flight Plan to Semester
@@ -166,27 +163,13 @@ db.event.hasOne(db.eventType, {
 // TASK MAJORS
 
 // TaskMajors to Task
-db.taskMajors.hasOne(db.task, {
+db.taskMajor.hasOne(db.task, {
   as: "task",
   foreignKey: { name: "taskId", allowNull: false },
 });
 
 // TaskMajors to Major
-db.taskMajors.hasOne(db.majors, {
-  as: "majors",
-  foreignKey: { name: "majorId", allowNull: false },
-});
-
-// EXPERIENCE MAJORS
-
-// ExperienceMajors to Experience
-db.experienceMajors.hasOne(db.experience, {
-  as: "experience",
-  foreignKey: { name: "experienceId", allowNull: false },
-});
-
-// ExperienceMajor to Major
-db.experienceMajors.hasOne(db.majors, {
+db.taskMajors.hasOne(db.major, {
   as: "majors",
   foreignKey: { name: "majorId", allowNull: false },
 });
@@ -214,22 +197,8 @@ db.badgeFulfill.hasOne(db.badge, {
 });
 
 // BadgeFulfill to Student
-db.badgeFulfill.hasOne(db.students, {
-  as: "students",
-  foreignKey: { name: "studentId", allowNull: false },
-});
-
-// STUDENT BADGE
-
-// stu to Badge
-db.studentBadge.hasOne(db.badge, {
-  as: "badge",
-  foreignKey: { name: "badgeId", allowNull: false },
-});
-
-// BadgeFulfill to Student
-db.studentBadge.hasOne(db.students, {
-  as: "students",
+db.badgeFulfill.hasOne(db.student, {
+  as: "student",
   foreignKey: { name: "studentId", allowNull: false },
 });
 

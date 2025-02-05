@@ -12,4 +12,9 @@ const BadgeFulfill = SequelizeInstance.define("badgefulfill", {
   }
 });
 
+
+// BADGEFULFILL
+Badge.belongsToMany(Student, { throught: 'BadgeFulfill'});
+Student.belongsToMany(Badge, { throught: 'BadgeFulfill'});
+
 export default BadgeFulfill;

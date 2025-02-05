@@ -12,4 +12,10 @@ const BadExpTask = SequelizeInstance.define("badexptask", {
   }
 });
 
+
+// BADGEFULFILL
+Badge.belongsToMany(Task, { throught: 'badexptask'});
+Task.belongsToMany(Badge, { throught: 'badexptask'});
+
+
 export default BadExpTask;

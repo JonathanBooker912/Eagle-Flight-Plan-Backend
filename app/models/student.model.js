@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Students = SequelizeInstance.define("students", {
+const Student = SequelizeInstance.define("student", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -18,4 +18,4 @@ const Students = SequelizeInstance.define("students", {
   }
 });
 
-export default Students;
+export default Student;
