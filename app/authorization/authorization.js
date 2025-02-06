@@ -1,7 +1,9 @@
+import { ideahub } from "googleapis/build/src/apis/ideahub/index.js";
 import db from "../models/index.js";
 const Session = db.session;
 const UserRole = db.userRole;
 const Role = db.role;
+const User = db.user;
 
 export const authenticate = (req, res, next) => {
   let token = null;
@@ -10,7 +12,6 @@ export const authenticate = (req, res, next) => {
   if (authHeader != null) {
     if (authHeader.startsWith("Bearer ")) {
       token = authHeader.slice(7);
-
       Session.findAll({ where: { token: token } })
         .then((data) => {
           let session = data[0];
@@ -51,22 +52,14 @@ export const isAdmin = async (req, res, next) => {
     .then(async (data) => {
       let session = data[0];
       if (session.userId != null) {
-        await UserRole.findAll({
-          where: { userId: session.userId },
-          as: "userrole",
-          include: [
-            {
-              model: Role,
-              as: "role",
-              required: true,
-            },
-          ],
+        await User.findOne({
+          where: { id: session.userId },
+          include: { model: Role },
         })
           .then((data) => {
-            roles = data;
-            console.log(data);
+            roles = data.roles;
             for (let i = 0; i < roles.length; i++) {
-              if (roles[i].role.type == "Admin") {
+              if (roles[i].name == "Admin") {
                 next();
                 return;
               }
