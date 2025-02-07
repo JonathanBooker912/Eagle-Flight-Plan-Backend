@@ -4,8 +4,15 @@ const Student = db.student;
 
 const exports = {};
 
-exports.findAllTasks = async () => {
-  return await Task.findAll();
+exports.findAllTasks = async (page = 1, pageSize = 10) => {
+  page = parseInt(page, 10);
+  pageSize = parseInt(pageSize, 10);
+  const offset = (page - 1) * pageSize;
+  const limit = pageSize;
+  return await Event.findAll({
+    limit,
+    offset,
+  });
 };
 
 exports.findAllTasksForStudent = async (studentId) => {
