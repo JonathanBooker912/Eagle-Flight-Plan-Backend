@@ -16,6 +16,10 @@ const Notification = SequelizeInstance.define("notification", {
   actionLink: {
     type: Sequelize.STRING,
   },
+  read: {
+    type: Sequelize.BOOLEAN,
+    default: false,
+  },
 });
 
 export default Notification;
