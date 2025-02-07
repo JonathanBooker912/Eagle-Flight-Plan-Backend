@@ -18,6 +18,7 @@ import Student from "./student.model.js";
 import Task from "./task.model.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
+import StudentReward from "./studentReward.model.js";
 
 const db = {};
 
@@ -39,6 +40,7 @@ db.student = Student;
 db.task = Task;
 db.user = User;
 db.session = Session;
+db.studentReward = StudentReward;
 
 db.Sequelize = Sequelize;
 
@@ -76,6 +78,9 @@ Student.belongsToMany(Badge, { through: db.badgeFulfill });
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajors" });
 
+Student.belongsToMany(Reward, { through: db.studentReward });
+Reward.belongsToMany(Student, { through: db.studentReward });
+
 // TASKMAJOR
 Task.belongsToMany(Major, { through: "taskMajor" });
 Major.belongsToMany(Task, { through: "taskMajor" });
@@ -101,11 +106,9 @@ db.flightPlan.hasOne(db.semester, {
 // Flight Plan Item to ???? (Approved By)
 
 // Flight Plan to Event ??? (No relation)
-
-// Flight Plan to Experience
-db.flightPlanItem.hasOne(db.experience, {
-  as: "experience",
-  foreignKey: { name: "experienceId", allowNull: false },
+db.experience.hasMany(db.flightPlanItem, {
+  as: "flightPlanItem",
+  foreignKey: { name: "flightPlanItemId", allowNull: false },
 });
 
 // Flight Plan to Task
@@ -113,8 +116,6 @@ db.flightPlanItem.hasOne(db.task, {
   as: "task",
   foreignKey: { name: "taskId", allowNull: false },
 });
-
-// EVENT
 
 // Event to Event Type
 db.event.hasOne(db.eventType, {
