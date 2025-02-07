@@ -18,6 +18,7 @@ import Student from "./student.model.js";
 import Task from "./task.model.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
+import StudentReward from "./studentReward.model.js";
 
 const db = {};
 
@@ -39,6 +40,7 @@ db.student = Student;
 db.task = Task;
 db.user = User;
 db.session = Session;
+db.studentReward = StudentReward;
 
 db.Sequelize = Sequelize;
 
@@ -75,6 +77,9 @@ Student.belongsToMany(Badge, { through: db.badgeFulfill });
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajors" });
+
+Student.belongsToMany(Reward, { through: db.studentReward });
+Reward.belongsToMany(Student, { through: db.studentReward });
 
 // TASKMAJOR
 Task.belongsToMany(Major, { through: "taskMajor" });
