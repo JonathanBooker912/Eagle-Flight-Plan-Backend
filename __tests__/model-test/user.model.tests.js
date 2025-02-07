@@ -8,7 +8,9 @@ const dbMock = new SequelizeMock();
 dbMock.sync = () => Promise.resolve();
 dbMock.close = () => Promise.resolve();
 
-jest.mock('../../app/sequelizeUtils/sequelizeInstance.js', () => dbMock);
+jest.unstable_mockModule('../../app/sequelizeUtils/sequelizeInstance.js', () => ({
+  default: dbMock
+}));
 
 describe('User Model Tests', () => {
   beforeAll(async () => {
@@ -20,7 +22,7 @@ describe('User Model Tests', () => {
   });
 
   it('should create a user successfully', async () => {
-    // data you want to enter
+    // dumby data (Thats valid of course)
     const userData = {
       fName: 'John',
       lName: 'Doe',
@@ -29,12 +31,10 @@ describe('User Model Tests', () => {
 
     const user = await User.create(userData);
 
-    // assertions expect(x).toBe(y) is the basic one. 
     expect(user.id).toBeDefined();
     expect(user.fName).toBe(userData.fName);
     expect(user.lName).toBe(userData.lName);
     expect(user.email).toBe(userData.email);
-    
   });
 
   it('should not create a user without an email', async () => {
@@ -62,7 +62,7 @@ describe('User Model Tests', () => {
       await User.create({
         fName: 'Bob',
         lName: 'Johnson',
-        email: 'alice.smith@example.com', // SAme email from above
+        email: 'alice.smith@example.com', //SAme email to test duplicates
       });
     } catch (error) {
       expect(error).toBeDefined();
