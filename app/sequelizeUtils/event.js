@@ -3,8 +3,14 @@ const Event = db.event;
 
 const exports = {};
 
-exports.findAllEvents = async () => {
-  return await Event.findAll();
+exports.findAllEvents = async (page = 1, pageSize = 10) => {
+  const offset = (page - 1) * pageSize;
+  const limit = pageSize;
+
+  return await Event.findAll({
+    limit,
+    offset,
+  });
 };
 
 exports.findOneEvent = async (eventId) => {
