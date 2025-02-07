@@ -5,6 +5,8 @@ import RoleRoutes from "./role.routes.js";
 import UserRoleRoutes from "./userrole.routes.js";
 import RewardRoutes from "./reward.routes.js";
 import ExperienceRoutes from "./experience.routes.js";
+import EventRoutes from "./event.routes.js";
+
 
 const router = Router();
 
@@ -14,6 +16,7 @@ router.use("/role", RoleRoutes);
 router.use("/userrole", UserRoleRoutes);
 router.use("/reward", RewardRoutes);
 router.use("/experience", ExperienceRoutes);
+router.use("/event", EventRoutes);
 
 // eslint-disable-next-line
 router.get("/", (req, res) => {

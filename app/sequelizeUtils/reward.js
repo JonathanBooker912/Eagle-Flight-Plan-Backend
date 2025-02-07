@@ -4,8 +4,16 @@ const Student = db.student;
 
 const exports = {};
 
-exports.findAllRewards = async () => {
-  return await Reward.findAll();
+exports.findAllRewards = async (page = 1, pageSize = 10) => {
+  page = parseInt(page, 1);
+  pageSize = parseInt(pageSize, 10);
+  const offset = (page - 1) * pageSize;
+  const limit = pageSize;
+
+  return await Reward.findAll({
+    offset,
+    limit,
+  });
 };
 
 exports.findAllRewardsForStudent = async (studentId) => {
