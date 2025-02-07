@@ -113,11 +113,9 @@ db.flightPlan.hasOne(db.semester, {
 // Flight Plan Item to ???? (Approved By)
 
 // Flight Plan to Event ??? (No relation)
-
-// Flight Plan to Experience
-db.flightPlanItem.hasOne(db.experience, {
-  as: "experience",
-  foreignKey: { name: "experienceId", allowNull: false },
+db.experience.hasMany(db.flightPlanItem, {
+  as: "flightPlanItem",
+  foreignKey: { name: "flightPlanItemId", allowNull: false },
 });
 
 // Flight Plan to Task
@@ -125,8 +123,6 @@ db.flightPlanItem.hasOne(db.task, {
   as: "task",
   foreignKey: { name: "taskId", allowNull: false },
 });
-
-// EVENT
 
 // Event to Event Type
 db.event.hasOne(db.eventType, {
