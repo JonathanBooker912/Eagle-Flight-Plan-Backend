@@ -3,6 +3,7 @@ import { Router } from "express";
 import UserRoutes from "./user.routes.js";
 import RoleRoutes from "./role.routes.js";
 import UserRoleRoutes from "./userrole.routes.js";
+import RewardRoutes from "./reward.routes.js";
 
 const router = Router();
 
@@ -10,6 +11,7 @@ router.use("/user", UserRoutes);
 
 router.use("/role", RoleRoutes);
 router.use("/userrole", UserRoleRoutes);
+router.use("/reward", RewardRoutes);
 
 // eslint-disable-next-line
 router.get("/", (req, res) => {
