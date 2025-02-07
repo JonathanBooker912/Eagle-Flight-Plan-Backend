@@ -34,7 +34,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Event.findAllEvents()
+  await Event.findAllEvents(req.query.page, req.query.pageSize)
     .then((data) => {
       res.send(data);
     })
