@@ -7,8 +7,6 @@ import RewardRoutes from "./reward.routes.js";
 import BadgeRoutes from "./badge.routes.js";
 import ExperienceRoutes from "./experience.routes.js";
 import EventRoutes from "./event.routes.js";
-
-
 import TaskRoutes from "./task.routes.js";
 
 const router = Router();
@@ -21,7 +19,6 @@ router.use("/reward", RewardRoutes);
 router.use("/badge", BadgeRoutes);
 router.use("/experience", ExperienceRoutes);
 router.use("/event", EventRoutes);
-
 router.use("/task", TaskRoutes);
 
 

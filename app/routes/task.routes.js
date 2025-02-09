@@ -7,14 +7,11 @@ const router = Router();
 // Create a new Role
 router.post("/", [authenticate, isAdmin], task.create);
 
-// Retrieve all Role
-router.get("/", [authenticate], task.findAll);
-
 // Retrieve a single Role with id
 router.get("/:id", [authenticate], task.findOne);
 
-// Retrieve all tasks earned by a student
-router.get("/student/:id", [authenticate], task.findAlltasksForStudent);
+// Retrieve all Role
+router.get("/", [authenticate], task.findAll);
 
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], task.update);

@@ -1,9 +1,9 @@
-import task from "../sequelizeUtils/task.js";
+import Task from "../sequelizeUtils/task.js";
 
 const exports = {};
 
 exports.create = async (req, res) => {
-  await task.createtask(req.body)
+  await Task.createTask(req.body)
     .then((data) => {
       res.send(data);
     })
@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
-  await task.findOnetask(req.params.id)
+  await Task.findOneTask(req.params.id)
     .then((data) => {
       if (data) {
         res.send(data);
@@ -35,35 +35,24 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await task.findAlltasks()
+  await Task.findAllTasks(req.query.page, req.query.pageSize)
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving tasks.",
-      });
-    });
-};
-
-exports.findAlltasksForStudent = async (req, res) => {
-  await task.findAlltasksForStudent()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving tasks.",
+        message:
+          err.message || "Some error occurred while retrieving tasks.",
       });
     });
 };
 
 exports.update = async (req, res) => {
-  await task.updatetask(req.body, req.params.id)
+  await Task.updateTask(req.body, req.params.id)
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "task was updated successfully.",
+          message: "Task was updated successfully.",
         });
       } else {
         res.send({
@@ -80,11 +69,11 @@ exports.update = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-  await task.deletetask(req.params.id)
+  await Task.deleteTask(req.params.id)
     .then((num) => {
       if (num == 1) {
         res.send({
-          message: "task was deleted successfully!",
+          message: "Task was deleted successfully!",
         });
       } else {
         res.send({
