@@ -27,16 +27,22 @@ const Task = SequelizeInstance.define("task", {
   schedulingType: {
     type: Sequelize.ENUM("one-time", "every semester", "special event"),
   },
-  description: {
-    type: Sequelize.STRING(255),
-  },
   name: {
-    type: Sequelize.STRING(255),
+    type: Sequelize.STRING,
+  },
+  description: {
+    type: Sequelize.STRING,
   },
   rationale: {
-    type: Sequelize.STRING(255),
+    type: Sequelize.STRING,
   },
-  points: {
+  semestersFromGraduation: {
+    type: Sequelize.INTEGER,
+  },
+  completionType: {
+    type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
+  },
+  pointsEarned: {
     type: Sequelize.INTEGER,
   },
 });
