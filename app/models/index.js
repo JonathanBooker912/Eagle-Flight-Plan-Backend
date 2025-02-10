@@ -104,26 +104,35 @@ Event.belongsToMany(Experience, { through: "expOption" });
 Event.belongsToMany(Strength, { through: "eventStrength" });
 Strength.belongsToMany(Event, { through: "eventStrength" });
 
-// Flight Plan to Semester
+/// Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {
   as: "semester",
   foreignKey: { name: "semesterId", allowNull: false },
 });
 
-// Flight Plan Item to ???? (Approved By)
-
-// Flight Plan to Event ??? (No relation)
-db.experience.hasMany(db.flightPlanItem, {
-  as: "flightPlanItem",
-  foreignKey: { name: "flightPlanItemId", allowNull: false },
+// Flight Plan to Flight Plan Items
+db.flightPlan.hasMany(db.flightPlanItem, {
+  as: "flightPlanItems",
+  foreignKey: { name: "flightPlanId", allowNull: false },
 });
 
-// Flight Plan to Task
-db.flightPlanItem.hasOne(db.task, {
+// Flight Plan Item to Task
+db.flightPlanItem.belongsTo(db.task, {
+  foreignKey: { name: "taskId", allowNull: true }, 
   as: "task",
-  foreignKey: { name: "taskId", allowNull: false },
 });
 
+// Flight Plan Item to Event
+db.flightPlanItem.belongsTo(db.event, {
+  foreignKey: { name: "eventId", allowNull: true }, 
+  as: "event",
+});
+
+// Flight Plan Item to Experience
+db.flightPlanItem.belongsTo(db.experience, {
+  foreignKey: { name: "experienceId", allowNull: true }, 
+  as: "experience",
+});
 // Event to Event Type
 db.event.hasOne(db.eventType, {
   as: "eventType",
