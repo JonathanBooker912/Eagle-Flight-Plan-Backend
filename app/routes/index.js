@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import AuthRoutes from "./auth.routes.js";
 import UserRoutes from "./user.routes.js";
 import RoleRoutes from "./role.routes.js";
 import UserRoleRoutes from "./userrole.routes.js";
@@ -11,6 +12,7 @@ import TaskRoutes from "./task.routes.js";
 
 const router = Router();
 
+router.use("/", AuthRoutes);
 router.use("/user", UserRoutes);
 
 router.use("/role", RoleRoutes);
