@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
 const User = db.user;
+const Role = db.role;
 const Session = db.session;
 const Op = db.Sequelize.Op;
 
@@ -57,7 +58,10 @@ exports.login = async (req, res) => {
     }
     console.log(`User login attempt: ${email}`);
 
-    let user = await User.findOne({ where: { email } });
+    let user = await User.findOne({
+      where: { email },
+      include: { model: Role },
+    });
 
     if (!user) {
       user = await User.create({ fName: firstName, lName: lastName, email });

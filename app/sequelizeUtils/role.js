@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 const Role = db.role;
+const User = db.user;
 
 const exports = {};
 
@@ -22,6 +23,12 @@ exports.createRole = async (roleData) => {
 
 exports.findAllRoles = async () => {
   return await Role.findAll();
+};
+
+exports.findAllRolesForEmail = async (email) => {
+  return await Role.findAll({
+    include: { model: User, required: true, where: { email } },
+  });
 };
 
 exports.findOneRole = async (id) => {
