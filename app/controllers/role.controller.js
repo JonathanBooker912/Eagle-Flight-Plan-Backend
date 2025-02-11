@@ -45,6 +45,18 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.findAllRolesForEmail = async (req, res) => {
+  await Role.findAllRolesForEmail(req.params.email)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving roles.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   await Role.updateRole(req.body, req.params.id)
     .then((num) => {

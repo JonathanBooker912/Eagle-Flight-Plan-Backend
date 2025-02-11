@@ -19,4 +19,6 @@ router.put("/:id", [authenticate, isAdmin], role.update);
 // Delete a Role with id
 router.delete("/:id", [authenticate, isAdmin], role.delete);
 
+router.get("/email/:email", [authenticate], role.findAllRolesForEmail);
+
 export default router;
