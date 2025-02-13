@@ -8,6 +8,8 @@ import BadgeRoutes from "./badge.routes.js";
 import ExperienceRoutes from "./experience.routes.js";
 import EventRoutes from "./event.routes.js";
 import TaskRoutes from "./task.routes.js";
+import FlightPlanRoutes from "./flightPlan.routes.js";
+import FlightPlanItemRoutes from "./flightPlanItem.routes.js";
 
 const router = Router();
 
@@ -20,6 +22,8 @@ router.use("/badge", BadgeRoutes);
 router.use("/experience", ExperienceRoutes);
 router.use("/event", EventRoutes);
 router.use("/task", TaskRoutes);
+router.use("/flightPlan", FlightPlanRoutes);
+router.use("/flightPlanItem", FlightPlanItemRoutes);
 
 
 // eslint-disable-next-line

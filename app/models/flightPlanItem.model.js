@@ -16,38 +16,6 @@ const FlightPlanItem = SequelizeInstance.define("flightPlanItem", {
   dueDate: {
     type: Sequelize.DATE,
   },
-  eventId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: 'events',
-      key: 'id',
-    },
-    allowNull: true, 
-  },
-  experienceId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: 'experiences', 
-      key: 'id',
-    },
-    allowNull: true, 
-  },
-  taskId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: 'tasks', 
-      key: 'id',
-    },
-    allowNull: true, 
-  },
-  flightPlanId: {
-    type: Sequelize.INTEGER,
-    references: {
-      model: 'flightPlans', 
-      key: 'id',
-    },
-    allowNull: false, 
-  },
 }, {
   timestamps: true,
 });
