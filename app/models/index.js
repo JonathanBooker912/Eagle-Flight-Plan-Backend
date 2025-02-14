@@ -56,6 +56,20 @@ db.session.belongsTo(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
 );
 
+User.hasMany(Notification);
+Notification.belongsTo(
+  User,
+  { as: "user" },
+  { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
+);
+
+User.hasMany(Notification);
+Notification.belongsTo(
+  User,
+  { as: "user" },
+  { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
+);
+
 
 // foreign key for student/users
 db.user.hasOne(db.student, { as: "student", foreignKey: "userId" });
