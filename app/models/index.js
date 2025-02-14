@@ -132,4 +132,16 @@ db.event.hasOne(db.eventType, {
   foreignKey: { name: "type", allowNull: false },
 });
 
+// Student belongs to User 
+db.student.belongsTo(db.user, {
+  as: "user",
+  foreignKey: { name: "userId", allowNull: false } // userId is required
+});
+
+// User has one Student
+db.user.hasOne(db.student, {
+  as: "student",
+  foreignKey: { name: "userId", allowNull: true } // studentId in user table is optional
+});
+
 export default db;
