@@ -148,6 +148,12 @@ const validateFlightPlanItem = (flightPlanItem) => {
   const hasTask = flightPlanItem.taskId !== undefined && flightPlanItem.taskId !== null;
   const hasEvent = flightPlanItem.eventId !== undefined && flightPlanItem.eventId !== null;
   const hasExperience = flightPlanItem.experienceId !== undefined && flightPlanItem.experienceId !== null;
+  const hasFlightPlan = flightPlanItem.flightPlanId !== undefined && flightPlanItem.flightPlanId !== null;
+
+
+  if (!hasFlightPlan){
+    throw new Error("A FlightPlanItem must have a flight plan");
+  }
 
   if (!hasTask && !hasExperience && !hasEvent) {
     return; // No validation
