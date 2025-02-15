@@ -149,35 +149,4 @@ db.flightPlanItem.hasOne(db.experience, {
 });
 db.experience.hasMany(db.flightPlanItem);
 
-// Validation function
-const validateFlightPlanItem = (flightPlanItem) => {
-  const hasTask = flightPlanItem.taskId !== undefined && flightPlanItem.taskId !== null;
-  const hasEvent = flightPlanItem.eventId !== undefined && flightPlanItem.eventId !== null;
-  const hasExperience = flightPlanItem.experienceId !== undefined && flightPlanItem.experienceId !== null;
-  const hasFlightPlan = flightPlanItem.flightPlanId !== undefined && flightPlanItem.flightPlanId !== null;
-
-
-  if (!hasFlightPlan){
-    throw new Error("A FlightPlanItem must have a flight plan");
-  }
-
-  if (!hasTask && !hasExperience && !hasEvent) {
-    return; // No validation
-  }
-
-  // Validation logic
-  if (!hasTask && !hasExperience) {
-    throw new Error('A FlightPlanItem must have either a taskId or an experienceId.');
-  }
-
-  if (hasTask && hasEvent) {
-    throw new Error('A FlightPlanItem with a taskId cannot have an eventId.');
-  }
-};
-
-// Add validation hooks
-FlightPlanItem.addHook('beforeValidate', (flightPlanItem) => {
-  validateFlightPlanItem(flightPlanItem);
-});
-
 export default db;
