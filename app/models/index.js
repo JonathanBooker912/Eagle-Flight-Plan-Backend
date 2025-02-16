@@ -63,6 +63,9 @@ Notification.belongsTo(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" },
 );
 
+// foreign key for student/users
+db.user.hasOne(db.student, { as: "student", foreignKey: "userId" });
+db.student.belongsTo(db.user, { as: "user", foreignKey: "userId" });
 // Joint Tables
 
 // USERROLE
@@ -107,36 +110,43 @@ Strength.belongsToMany(Event, { through: "eventStrength" });
 /// Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {
   as: "semester",
-  foreignKey: { name: "semesterId", allowNull: false },
+  foreignKey: { name: "id", allowNull: false },
 });
+db.semester.hasMany(db.flightPlan);
 
-// Flight Plan to Flight Plan Items
-db.flightPlan.hasMany(db.flightPlanItem, {
-  as: "flightPlanItems",
-  foreignKey: { name: "flightPlanId", allowNull: false },
+// Flight plan to student
+db.flightPlan.hasOne(db.student, {
+  as: "student",
+  foreignKey: { name: "id", allowNull: false },
 });
+db.student.hasMany(db.flightPlan);
 
-// Flight Plan Item to Task
-db.flightPlanItem.belongsTo(db.task, {
-  foreignKey: { name: "taskId", allowNull: true }, 
+// Flight plan to Flight plan Item
+db.flightPlanItem.hasOne(db.flightPlan, {
+  as: "flightPlan",
+  foreignKey: { name: "id", allowNull: false },
+});
+db.flightPlan.hasMany(db.flightPlanItem);
+
+// Flight plan to Task
+db.flightPlanItem.hasOne(db.task, {
   as: "task",
+  foreignKey: { name: "id", allowNull: true },
 });
+db.task.hasMany(db.flightPlanItem);
 
-// Flight Plan Item to Event
-db.flightPlanItem.belongsTo(db.event, {
-  foreignKey: { name: "eventId", allowNull: true }, 
+// Flight plan to Event
+db.flightPlanItem.hasOne(db.event, {
   as: "event",
+  foreignKey: { name: "id", allowNull: true },
 });
+db.event.hasMany(db.flightPlanItem);
 
-// Flight Plan Item to Experience
-db.flightPlanItem.belongsTo(db.experience, {
-  foreignKey: { name: "experienceId", allowNull: true }, 
+// Flight plan to Experience
+db.flightPlanItem.hasOne(db.experience, {
   as: "experience",
+  foreignKey: { name: "id", allowNull: true },
 });
-// Event to Event Type
-db.event.hasOne(db.eventType, {
-  as: "eventType",
-  foreignKey: { name: "type", allowNull: false },
-});
+db.experience.hasMany(db.flightPlanItem);
 
 export default db;
