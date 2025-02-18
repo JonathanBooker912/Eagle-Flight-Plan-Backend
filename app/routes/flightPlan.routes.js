@@ -1,4 +1,4 @@
-import flightPlan from '../controllers/flightplan.controller.js';
+import flightPlan from "../controllers/flightplan.controller.js";
 import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 

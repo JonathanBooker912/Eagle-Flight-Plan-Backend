@@ -29,7 +29,6 @@ router.use("/task", TaskRoutes);
 router.use("/flightPlan", FlightPlanRoutes);
 router.use("/flightPlanItem", FlightPlanItemRoutes);
 
-
 // eslint-disable-next-line
 router.get("/", (req, res) => {
   res.json({ message: "Welcome to Team 1's Eagle Flight Plan API." });

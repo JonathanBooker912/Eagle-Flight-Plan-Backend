@@ -23,7 +23,9 @@ exports.createFlightPlan = async (flightPlanData) => {
 };
 
 exports.updateFlightPlan = async (flightPlanData, flightPlanId) => {
-  return await FlightPlan.update(flightPlanData, { where: { id: flightPlanId } });
+  return await FlightPlan.update(flightPlanData, {
+    where: { id: flightPlanId },
+  });
 };
 
 exports.deleteFlightPlan = async (flightPlanId) => {

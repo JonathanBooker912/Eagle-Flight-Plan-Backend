@@ -9,7 +9,8 @@ exports.create = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while creating the flightPlan.",
+        message:
+          err.message || "Some error occurred while creating the flightPlan.",
       });
     });
 };
@@ -40,7 +41,8 @@ exports.findAll = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || "Some error occurred while retrieving flightPlans.",
+        message:
+          err.message || "Some error occurred while retrieving flightPlans.",
       });
     });
 };

@@ -14,12 +14,16 @@ exports.findAllFlightPlanItems = async (page = 1, pageSize = 10) => {
   });
 };
 
-exports.findAllFlightPlanItemsByFlightPlanId = async (flightPlanId, page = 1, pageSize = 10) => {
+exports.findAllFlightPlanItemsByFlightPlanId = async (
+  flightPlanId,
+  page = 1,
+  pageSize = 10,
+) => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
-  
+
   return await FlightPlanItem.findAll({
     where: { flightPlanId },
     limit,
@@ -36,7 +40,9 @@ exports.createFlightPlanItem = async (flightPlanItemData) => {
 };
 
 exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {
-  return await FlightPlanItem.update(flightPlanItemData, { where: { id: flightPlanItemId } });
+  return await FlightPlanItem.update(flightPlanItemData, {
+    where: { id: flightPlanItemId },
+  });
 };
 
 exports.deleteFlightPlanItem = async (flightPlanItemId) => {

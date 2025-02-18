@@ -1,4 +1,4 @@
-import flightPlanItem from '../controllers/flightPlanItem.controller.js';
+import flightPlanItem from "../controllers/flightPlanItem.controller.js";
 import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
@@ -14,7 +14,11 @@ router.get("/", [authenticate], flightPlanItem.findAll);
 router.get("/:id", [authenticate], flightPlanItem.findOne);
 
 // Retrieve FlightPlanItems by FlightPlan ID
-router.get("/flightplan/:flightPlanId", [authenticate], flightPlanItem.findAllFlightPlanItemsByFlightPlanId);
+router.get(
+  "/flightplan/:flightPlanId",
+  [authenticate],
+  flightPlanItem.findAllFlightPlanItemsByFlightPlanId,
+);
 
 // Update a FlightPlanItem with id
 router.put("/:id", [authenticate, isAdmin], flightPlanItem.update);
