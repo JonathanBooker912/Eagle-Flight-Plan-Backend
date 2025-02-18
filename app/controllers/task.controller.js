@@ -9,8 +9,7 @@ exports.create = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the task.",
+        message: err.message || "Some error occurred while creating the task.",
       });
     });
 };
@@ -35,14 +34,17 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Task.findAllTasks(req.query.page, req.query.pageSize)
+  await Task.findAllTasks(
+    req.query.page,
+    req.query.pageSize,
+    req.query.searchQuery,
+  )
     .then((data) => {
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving tasks.",
+        message: err.message || "Some error occurred while retrieving tasks.",
       });
     });
 };
