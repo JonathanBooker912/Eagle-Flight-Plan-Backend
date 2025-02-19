@@ -51,4 +51,20 @@ exports.deleteTask = async (taskId) => {
   return await Task.destroy({ where: { id: taskId } });
 };
 
+exports.getCategories = () => {
+  return Task.getAttributes().category.values;
+};
+
+exports.getSchedulingTypes = () => {
+  return Task.getAttributes().schedulingType.values;
+};
+
+exports.getTaskTypes = () => {
+  return Task.getAttributes().taskType.values;
+};
+
+exports.getCompletionTypes = () => {
+  return Task.getAttributes().completionType.values;
+};
+
 export default exports;
