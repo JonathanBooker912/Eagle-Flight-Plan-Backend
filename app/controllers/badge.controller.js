@@ -34,7 +34,11 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Badge.findAllBadges(req.query.page, req.query.pageSize)
+  await Badge.findAllBadges(
+    req.query.page, 
+    req.query.pageSize,
+    req.query.searchQuery,
+  )
     .then((data) => {
       res.send(data);
     })
