@@ -3,15 +3,33 @@ const Event = db.event;
 
 const exports = {};
 
-exports.findAllEvents = async (page = 1, pageSize = 10) => {
+exports.findAllEvents = async (page = 1, pageSize = 10, searchQuery = "") => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
-  return await Event.findAll({
-    limit,
+  const whereCondition = searchQuery
+    ? {
+        // Assuming you want to search by title or description (modify as needed
+        name: {
+          [Op.like]: `%${searchQuery}%`, // Search in the title
+        },
+      }
+    : {};
+
+  const events = await Event.findAll({
     offset,
+    limit,
+    where: whereCondition, // Apply the search condition
   });
+
+  const count = await Event.count({
+    where: whereCondition, // Apply the search condition to the count as well
+  });
+
+  const totalPages = Math.ceil(count / pageSize);
+
+  return { events, count: totalPages };
 };
 
 exports.findOneEvent = async (eventId) => {
