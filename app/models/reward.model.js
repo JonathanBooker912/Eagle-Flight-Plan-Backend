@@ -24,7 +24,7 @@ const Reward = SequelizeInstance.define("reward", {
     type: Sequelize.STRING(255),
   },
   image: {
-    type: Sequelize.BLOB,
+    type: Sequelize.BLOB("long"),
   },
 });
 

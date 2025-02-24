@@ -35,7 +35,11 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Reward.findAllRewards(req.query.page, req.query.pageSize)
+  await Reward.findAllRewards(
+    req.query.page,
+    req.query.pageSize,
+    req.query.searchQuery,
+  )
     .then((data) => {
       res.send(data);
     })
