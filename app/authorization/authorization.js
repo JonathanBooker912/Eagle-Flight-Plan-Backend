@@ -57,7 +57,7 @@ export const isAdmin = async (req, res, next) => {
           .then((data) => {
             roles = data.roles;
             for (let i = 0; i < roles.length; i++) {
-              if (roles[i].name == "Admin") {
+              if (roles[i].name.toLowerCase() == "admin") {
                 next();
                 return;
               }
