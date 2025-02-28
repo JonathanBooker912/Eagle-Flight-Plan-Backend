@@ -39,14 +39,15 @@ exports.findAll = async (req, res) => {
     req.query.page,
     req.query.pageSize,
     req.query.searchQuery,
-  ).then((data) => {
-    res.send(data);
-  })
-  .catch((err) => {
-    res.status(500).send({
-      message: err.message || "Some error occurred while retrieving tasks.",
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving tasks.",
+      });
     });
-  });
 };
 
 exports.update = async (req, res) => {
@@ -106,7 +107,5 @@ exports.getSchedulingTypes = (req, res) => {
 exports.getExperienceTypes = (req, res) => {
   res.send(Experience.getExperienceTypes());
 };
-
-
 
 export default exports;
