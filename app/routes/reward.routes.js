@@ -3,7 +3,6 @@ import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
 const router = Router();
-
 // Create a new Role
 router.post("/", [authenticate, isAdmin], reward.create);
 

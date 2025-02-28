@@ -1,8 +1,26 @@
 import Reward from "../sequelizeUtils/reward.js";
+import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
 
 exports.create = async (req, res) => {
+  // Attempt to upload file
+  try {
+    await FileHelpers.upload(req, res);
+
+    if (req.file == undefined) {
+      return res.status(400).send({ message: "Please upload a file" });
+    }
+
+    req.body.image = req.file.filename;
+  } catch (err) {
+    return res.status(500).send({
+      message: err.message || "Some error occurred while creating the reward.",
+    });
+  }
+
+  console.log(req.body);
+
   await Reward.createReward(req.body)
     .then((data) => {
       res.send(data);

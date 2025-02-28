@@ -2,6 +2,7 @@ import db from "../models/index.js";
 const Reward = db.reward;
 const Student = db.student;
 import { Op } from "sequelize";
+import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
 
@@ -19,11 +20,13 @@ exports.findAllRewards = async (page = 1, pageSize = 10, searchQuery = "") => {
       }
     : {};
 
-  const rewards = await Reward.findAll({
+  let rewards = await Reward.findAll({
     offset,
     limit,
     where: whereCondition, // Apply the search condition
   });
+
+  rewards = getFilesForRewards(rewards);
 
   const count = await Reward.count({
     where: whereCondition, // Apply the search condition to the count as well
@@ -35,7 +38,7 @@ exports.findAllRewards = async (page = 1, pageSize = 10, searchQuery = "") => {
 };
 
 exports.findAllRewardsForStudent = async (studentId) => {
-  return await Reward.findAll({
+  const response = await Reward.findAll({
     include: {
       model: Student,
       where: {
@@ -44,10 +47,16 @@ exports.findAllRewardsForStudent = async (studentId) => {
       required: true,
     },
   });
+  return getFilesForRewards(response);
 };
 
 exports.findOneReward = async (rewardId) => {
-  return await Reward.findByPk(rewardId);
+  const response = await Reward.findByPk(rewardId);
+  if (response.image) {
+    response.image = FileHelpers.read(response.image);
+  }
+
+  return response;
 };
 
 exports.createReward = async (rewardData) => {
@@ -61,5 +70,13 @@ exports.updateReward = async (rewardData, rewardId) => {
 exports.deleteReward = async (rewardId) => {
   return await Reward.destroy({ where: { id: rewardId } });
 };
+
+const getFilesForRewards = (rewards) =>
+  rewards.map((reward) => {
+    if (reward.image) {
+      reward.image = FileHelpers.read(reward.image);
+    }
+    return reward;
+  });
 
 export default exports;
