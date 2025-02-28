@@ -19,4 +19,12 @@ router.put("/:id", [authenticate, isAdmin], experience.update);
 // Delete a Experience with id
 router.delete("/:id", [authenticate, isAdmin], experience.delete);
 
+router.get("/types/categories", [authenticate], experience.getCategories);
+
+router.get("/types/fulfillingEvents", [authenticate], experience.getFulfillingEvents);
+
+router.get("/types/experienceTypes", [authenticate], experience.getExperienceTypes);
+
+router.get("/types/schedulingTypes", [authenticate], experience.getSchedulingTypes);
+
 export default router;
