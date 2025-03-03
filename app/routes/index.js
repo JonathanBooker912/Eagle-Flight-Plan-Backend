@@ -12,6 +12,7 @@ import EventRoutes from "./event.routes.js";
 import TaskRoutes from "./task.routes.js";
 import FlightPlanRoutes from "./flightPlan.routes.js";
 import FlightPlanItemRoutes from "./flightPlanItem.routes.js";
+import StrengthRoutes from "./strength.routes.js";
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.use("/event", EventRoutes);
 router.use("/task", TaskRoutes);
 router.use("/flightPlan", FlightPlanRoutes);
 router.use("/flightPlanItem", FlightPlanItemRoutes);
+router.use("/strengths", StrengthRoutes);
 
 // eslint-disable-next-line
 router.get("/", (req, res) => {
