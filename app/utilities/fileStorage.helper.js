@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import util from "util";
+import { v4 as uuidv4 } from "uuid";
 import { fileURLToPath } from "url";
 
 const maxSize = 2 * 1024 * 1024;
@@ -24,8 +25,13 @@ let storage = multer.diskStorage({
     cb(null, path);
   },
   filename: (req, file, cb) => {
-    console.log(file.originalname);
-    cb(null, file.originalname);
+    const fileExt = path.extname(file.originalname);
+
+    const uniqueFilename = `${uuidv4()}-${Date.now()}${fileExt}`;
+
+    req.savedFileName = uniqueFilename;
+
+    cb(null, uniqueFilename);
   },
 });
 
@@ -35,11 +41,13 @@ let uploadFile = multer({
 }).single("image");
 
 let removeFile = (fileName) => {
-  fs.unlinkSync(baseDir + uploadDir + fileName);
+  const path = baseDir + uploadDir + "/" + fileName;
+  fs.unlinkSync(path);
 };
 
 let readFile = (fileName) => {
-  return fs.readFileSync(baseDir + uploadDir + "/" + fileName);
+  const path = baseDir + uploadDir + "/" + fileName;
+  return fs.readFileSync(path);
 };
 
 const exportFunctions = {

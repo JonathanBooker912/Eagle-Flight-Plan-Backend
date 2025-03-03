@@ -23,7 +23,7 @@ const Reward = SequelizeInstance.define("reward", {
   redemptionInfo: {
     type: Sequelize.STRING(255),
   },
-  image: {
+  imageName: {
     type: Sequelize.STRING(255),
   },
 });

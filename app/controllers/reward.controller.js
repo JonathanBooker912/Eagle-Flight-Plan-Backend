@@ -4,23 +4,6 @@ import FileHelpers from "../utilities/fileStorage.helper.js";
 const exports = {};
 
 exports.create = async (req, res) => {
-  // Attempt to upload file
-  try {
-    await FileHelpers.upload(req, res);
-
-    if (req.file == undefined) {
-      return res.status(400).send({ message: "Please upload a file" });
-    }
-
-    req.body.image = req.file.filename;
-  } catch (err) {
-    return res.status(500).send({
-      message: err.message || "Some error occurred while creating the reward.",
-    });
-  }
-
-  console.log(req.body);
-
   await Reward.createReward(req.body)
     .then((data) => {
       res.send(data);
@@ -120,6 +103,37 @@ exports.delete = async (req, res) => {
       });
       console.log("Could not delete reward: " + err);
     });
+};
+
+exports.uploadImage = async (req, res) => {
+  try {
+    await FileHelpers.upload(req, res);
+    res.status(200).send({ fileName: req.savedFileName });
+  } catch (err) {
+    res.status(400).send({ message: "Failed to upload image" });
+  }
+};
+
+exports.getImageForName = async (req, res) => {
+  try {
+    const response = await FileHelpers.read(req.params.fileName);
+    res.status(200).send({ image: response });
+  } catch (err) {
+    res.status(404).send({ message: "Couldn't find image" });
+  }
+};
+
+exports.deleteRewardImage = async (req, res) => {
+  try {
+    await FileHelpers.remove(req.params.fileName);
+    res.status(200).send({
+      message: `Successfully deleted image with name: ${req.params.fileName}`,
+    });
+  } catch (err) {
+    res.status(400).send({
+      message: `There was an error deleting image with name: ${req.params.fileName}`,
+    });
+  }
 };
 
 export default exports;

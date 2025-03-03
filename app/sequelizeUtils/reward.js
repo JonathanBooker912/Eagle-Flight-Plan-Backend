@@ -52,11 +52,11 @@ exports.findAllRewardsForStudent = async (studentId) => {
 
 exports.findOneReward = async (rewardId) => {
   const response = await Reward.findByPk(rewardId);
-  if (response.image) {
-    response.image = FileHelpers.read(response.image);
-  }
+  return readFileForReward(response);
+};
 
-  return response;
+exports.findByPk = async (rewardId) => {
+  return Reward.findByPk(rewardId);
 };
 
 exports.createReward = async (rewardData) => {
@@ -73,10 +73,14 @@ exports.deleteReward = async (rewardId) => {
 
 const getFilesForRewards = (rewards) =>
   rewards.map((reward) => {
-    if (reward.image) {
-      reward.image = FileHelpers.read(reward.image);
-    }
-    return reward;
+    return readFileForReward(reward);
   });
+
+const readFileForReward = (reward) => {
+  if (reward.imageName) {
+    reward.dataValues.image = FileHelpers.read(reward.imageName);
+  }
+  return reward;
+};
 
 export default exports;
