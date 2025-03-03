@@ -73,20 +73,21 @@ exports.deleteReward = async (rewardId) => {
 
 const getFilesForRewards = (rewards) =>
   rewards.map((reward) => {
-    try {
-      return readFileForReward(reward);
-    } catch (err) {
-      console.log(err);
-      reward.dataValues.imageName = null;
-      return reward;
-    }
+    return readFileForReward(reward);
   });
 
 const readFileForReward = (reward) => {
-  if (reward.imageName) {
-    reward.dataValues.image = FileHelpers.read(reward.imageName);
+  try {
+    if (reward.imageName) {
+      reward.dataValues.image = FileHelpers.read(reward.imageName);
+    }
+    return reward;
+  } catch (err) {
+    console.log(err);
+    reward.dataValues.image = null;
+    reward.dataValues.imageName = null;
+    return reward;
   }
-  return reward;
 };
 
 export default exports;
