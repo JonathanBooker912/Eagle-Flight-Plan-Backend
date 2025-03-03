@@ -10,6 +10,9 @@ const Event = SequelizeInstance.define("event", {
   name: {
     type: Sequelize.STRING(100),
   },
+  location: {
+    type: Sequelize.STRING,
+  },
   description: {
     type: Sequelize.STRING(255),
   },
