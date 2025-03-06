@@ -1,10 +1,14 @@
 import db from "../models/index.js";
 const User = db.user;
+const Student = db.student;
+const Major = db.major;
+const Role = db.role;
 const Op = db.Sequelize.Op;
 
 const exports = {};
 
 exports.create = async (userData) => {
+  userData.fullName = userData.fName + " " + userData.lName;
   return await User.create(userData);
 };
 
@@ -22,6 +26,7 @@ exports.findAll = async ({
       [Op.or]: [
         { fName: { [Op.like]: `%${filter}%` } },
         { lName: { [Op.like]: `%${filter}%` } },
+        { fullName: { [Op.like]: `%${filter}%` } },
         { email: { [Op.like]: `%${filter}%` } },
       ],
     };
@@ -32,6 +37,49 @@ exports.findAll = async ({
   }
 
   return await User.findAndCountAll({ where: condition, offset, limit });
+};
+
+exports.findAllForAdmin = async ({
+  page = 1,
+  pageSize = 10,
+  searchQuery = "",
+}) => {
+  const limit = Number(pageSize);
+  const offset = (Number(page) - 1) * limit;
+  let condition = null;
+  if (searchQuery) {
+    condition = {
+      [Op.or]: [
+        { fName: { [Op.like]: `%${searchQuery}%` } },
+        { lName: { [Op.like]: `%${searchQuery}%` } },
+        { fullName: { [Op.like]: `%${searchQuery}%` } },
+        { email: { [Op.like]: `%${searchQuery}%` } },
+      ],
+    };
+  }
+
+  const users = await User.findAll({
+    where: condition,
+    offset,
+    limit,
+    include: [
+      {
+        model: Student,
+        as: "student",
+        include: Major,
+      },
+      {
+        model: Role,
+      },
+    ],
+  });
+
+  let count = await User.count({
+    where: condition,
+  });
+
+  count = Math.ceil(count / pageSize);
+  return { users, count };
 };
 
 exports.findById = async (id) => {
