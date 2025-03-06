@@ -1,5 +1,5 @@
 import user from "../controllers/user.controller.js";
-import { authenticate } from "../authorization/authorization.js";
+import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
 const router = Router();
@@ -9,6 +9,8 @@ router.post("/", [authenticate], user.create);
 
 // Retrieve all People
 router.get("/", user.findAll);
+
+router.get("/admin", [authenticate, isAdmin], user.findAllForAdmin);
 
 // Retrieve a single User with id
 router.get("/:id", [authenticate], user.findOne);
