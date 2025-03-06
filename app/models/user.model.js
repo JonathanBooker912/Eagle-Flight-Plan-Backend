@@ -15,6 +15,10 @@ const User = SequelizeInstance.define("user", {
     type: Sequelize.STRING(255),
     allowNull: false,
   },
+  fullName: {
+    type: Sequelize.STRING(255),
+    allowNull: false,
+  },
   email: {
     type: Sequelize.STRING(255),
     allowNull: false,

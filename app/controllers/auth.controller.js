@@ -64,10 +64,21 @@ exports.login = async (req, res) => {
     });
 
     if (!user) {
-      user = await User.create({ fName: firstName, lName: lastName, email });
+      let fullName = firstName + " " + lastName;
+      user = await User.create({
+        fName: firstName,
+        lName: lastName,
+        email,
+        fullName: fullName,
+      });
       console.log("User registered:", user.dataValues);
     } else {
-      await user.update({ fName: firstName, lName: lastName });
+      let fullName = firstName + " " + lastName;
+      await user.update({
+        fName: firstName,
+        lName: lastName,
+        fullName: fullName,
+      });
       console.log("User details updated");
     }
 
@@ -99,6 +110,7 @@ exports.login = async (req, res) => {
       email: user.email,
       fName: user.fName,
       lName: user.lName,
+      fullName: user.fullName,
       userId: user.id,
       token: session.token,
     };
