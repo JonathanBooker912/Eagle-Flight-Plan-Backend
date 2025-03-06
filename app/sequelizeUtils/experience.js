@@ -4,16 +4,22 @@ const Experience = db.experience;
 
 const exports = {};
 
-exports.findAllExperiences = async (page = 1, pageSize = 10, searchQuery = "") => {
+exports.findAllExperiences = async (
+  page = 1,
+  pageSize = 10,
+  searchQuery = "",
+) => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
-  const whereCondition = searchQuery ? {
-    name: {
-      [Op.like]: `%${searchQuery}%`,
-    },
-  } : {};
+  const whereCondition = searchQuery
+    ? {
+        name: {
+          [Op.like]: `%${searchQuery}%`,
+        },
+      }
+    : {};
 
   const experiences = await Experience.findAll({
     offset,
@@ -27,7 +33,7 @@ exports.findAllExperiences = async (page = 1, pageSize = 10, searchQuery = "") =
 
   const totalPages = Math.ceil(count / pageSize);
 
-  return {experiences, count: totalPages};
+  return { experiences, count: totalPages };
 };
 
 exports.findOneExperience = async (experienceId) => {
@@ -46,6 +52,22 @@ exports.updateExperience = async (experienceData, experienceId) => {
 
 exports.deleteExperience = async (experienceId) => {
   return await Experience.destroy({ where: { id: experienceId } });
+};
+
+exports.getCategories = () => {
+  return Experience.getAttributes().category.values;
+};
+
+// exports.getFulfillingEvents = () => {
+//   return Experience.getAttributes().fulfillingEvent.values;
+// };
+
+exports.getExperienceTypes = () => {
+  return Experience.getAttributes().experienceType.values;
+};
+
+exports.getSchedulingTypes = () => {
+  return Experience.getAttributes().schedulingType.values;
 };
 
 export default exports;

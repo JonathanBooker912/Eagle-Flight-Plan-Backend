@@ -39,14 +39,15 @@ exports.findAll = async (req, res) => {
     req.query.page,
     req.query.pageSize,
     req.query.searchQuery,
-  ).then((data) => {
-    res.send(data);
-  })
-  .catch((err) => {
-    res.status(500).send({
-      message: err.message || "Some error occurred while retrieving tasks.",
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving tasks.",
+      });
     });
-  });
 };
 
 exports.update = async (req, res) => {
@@ -89,6 +90,22 @@ exports.delete = async (req, res) => {
       });
       console.log("Could not delete experience: " + err);
     });
+};
+
+exports.getCategories = (req, res) => {
+  res.send(Experience.getCategories());
+};
+
+// exports.getFulfillingEvents = (req, res) => {
+//   res.send(Experience.getFulfillingEvents());
+// };
+
+exports.getSchedulingTypes = (req, res) => {
+  res.send(Experience.getSchedulingTypes());
+};
+
+exports.getExperienceTypes = (req, res) => {
+  res.send(Experience.getExperienceTypes());
 };
 
 export default exports;
