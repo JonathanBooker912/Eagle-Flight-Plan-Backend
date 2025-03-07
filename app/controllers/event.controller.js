@@ -34,7 +34,25 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Event.findAllEvents(req.query.page, req.query.pageSize)
+  const {
+    page,
+    pageSize,
+    searchQuery,
+    startDate,
+    endDate,
+    location,
+    strengths,
+    sortAttribute,
+    sortDirection,
+  } = req.query;
+  await Event.findAllEvents(page, pageSize, searchQuery, {
+    startDate,
+    endDate,
+    location,
+    strengths,
+    sortAttribute,
+    sortDirection,
+  })
     .then((data) => {
       res.send(data);
     })
