@@ -20,6 +20,12 @@ router.get(
   flightPlanItem.findAllFlightPlanItemsByFlightPlanId,
 );
 
+router.get(
+  "/flightPlan/progress/:flightPlanId",
+  [authenticate],
+  flightPlanItem.getFlightPlanProgress,
+);
+
 // Update a FlightPlanItem with id
 router.put("/:id", [authenticate, isAdmin], flightPlanItem.update);
 

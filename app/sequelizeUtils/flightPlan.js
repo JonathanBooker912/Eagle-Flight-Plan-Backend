@@ -1,6 +1,9 @@
 import db from "../models/index.js";
 const FlightPlan = db.flightPlan;
-
+const FlightPlanItem = db.flightPlanItem;
+const Task = db.task;
+const Experience = db.experience;
+const Event = db.event;
 const exports = {};
 
 exports.findAllFlightPlans = async (page = 1, pageSize = 10) => {
@@ -11,6 +14,55 @@ exports.findAllFlightPlans = async (page = 1, pageSize = 10) => {
   return await FlightPlan.findAll({
     limit,
     offset,
+  });
+};
+
+exports.findFlightPlanForStudent = async (studentId) => {
+  return await FlightPlan.findAll({
+    include: [
+      {
+        model: FlightPlanItem,
+        attributes: ["flightPlanType", "status", "id"],
+        include: [
+          {
+            model: Task,
+            as: "task",
+            attributes: [
+              "id",
+              "category",
+              "taskType",
+              "reflectionRequired",
+              "schedulingType",
+              "name",
+              "description",
+              "rationale",
+              "semestersFromGraduation",
+              "completionType",
+              "pointsEarned",
+            ],
+          },
+          {
+            model: Experience,
+            as: "experience",
+            attributes: [
+              "id",
+              "category",
+              "experienceType",
+              "reflectionRequired",
+              "schedulingType",
+              "description",
+              "name",
+              "rationale",
+              "points",
+            ],
+          },
+          {
+            model: Event,
+            as: "event",
+          },
+        ],
+      },
+    ],
   });
 };
 

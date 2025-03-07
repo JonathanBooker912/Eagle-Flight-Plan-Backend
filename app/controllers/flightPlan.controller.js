@@ -47,6 +47,19 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.findFlightPlanForStudent = async (req, res) => {
+  await FlightPlan.findFlightPlanForStudent(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving flightPlans.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   await FlightPlan.updateFlightPlan(req.body, req.params.id)
     .then((num) => {

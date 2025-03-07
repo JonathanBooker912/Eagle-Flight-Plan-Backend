@@ -107,7 +107,7 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
     pageSize,
   )
     .then((data) => {
-      if (data.length > 0) {
+      if (data.flightPlanItems.length > 0) {
         res.send(data);
       } else {
         res.status(404).send({
@@ -121,6 +121,20 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
           "Error retrieving flightPlanItems for flightPlanId = " + flightPlanId,
       });
       console.log("Could not retrieve flightPlanItems: " + err);
+    });
+};
+
+exports.getFlightPlanProgress = async (req, res) => {
+  await FlightPlanItem.getFlightPlanProgress(req.params.flightPlanId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while retrieving progress for flight plan",
+      });
     });
 };
 

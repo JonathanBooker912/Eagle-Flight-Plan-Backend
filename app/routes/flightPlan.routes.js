@@ -1,4 +1,4 @@
-import flightPlan from "../controllers/flightplan.controller.js";
+import flightPlan from "../controllers/flightPlan.controller.js";
 import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
@@ -9,6 +9,9 @@ router.post("/", [authenticate, isAdmin], flightPlan.create);
 
 // Retrieve all FlightPlans
 router.get("/", [authenticate], flightPlan.findAll);
+
+// Retrieve all FlightPlans for a student
+router.get("/student/:id", [authenticate], flightPlan.findFlightPlanForStudent);
 
 // Retrieve a single FlightPlan with id
 router.get("/:id", [authenticate], flightPlan.findOne);
