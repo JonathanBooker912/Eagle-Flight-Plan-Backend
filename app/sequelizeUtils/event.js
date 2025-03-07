@@ -11,7 +11,6 @@ exports.findAllEvents = async (
   searchQuery = "",
   filters = {},
 ) => {
-  console.log(searchQuery);
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
