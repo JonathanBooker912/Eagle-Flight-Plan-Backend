@@ -20,6 +20,10 @@ const Notification = SequelizeInstance.define("notification", {
     type: Sequelize.BOOLEAN,
     default: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    allowNull: false,
+  },
 });
 
 export default Notification;

@@ -15,29 +15,24 @@ exports.findAllNotifications = async (page = 1, pageSize = 10) => {
   });
 };
 
-exports.findAllNotificationsForUser = async (
-  userId,
-  page = 1,
-  pageSize = 10,
-) => {
+exports.findAllNotificationsForUser = async (userId, page = 1, pageSize = 10) => {
   page = parseInt(page);
   pageSize = parseInt(pageSize);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
+
+  console.log('user id is' +  userId)
+
   return await Notification.findAll({
-    attributes: ["header", "description", "actionLink", "read", "id"],
-    include: {
-      model: User,
-      as: "user",
-      where: {
-        id: userId,
-      },
-      required: true,
+    attributes: ["header", "description", "actionLink", "read", "id", "createdAt", "userId"],
+    where: {
+      'userId': userId, // Corrected: Filter by the userId in the Notification model
     },
     limit,
     offset,
   });
 };
+
 
 exports.findOneNotification = async (notificationId) => {
   return await Notification.findByPk(notificationId);
