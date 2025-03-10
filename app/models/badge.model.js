@@ -20,8 +20,8 @@ const Badge = SequelizeInstance.define("badge", {
   points: {
     type: Sequelize.INTEGER,
   },
-  image: {
-    type: Sequelize.BLOB,
+  imageName: {
+    type: Sequelize.STRING(255),
   },
 });
 
