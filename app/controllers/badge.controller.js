@@ -36,7 +36,7 @@ exports.findOne = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   await Badge.findAllBadges(
-    req.query.page, 
+    req.query.page,
     req.query.pageSize,
     req.query.searchQuery,
   )
@@ -91,7 +91,6 @@ exports.delete = async (req, res) => {
       console.log("Could not delete badge: " + err);
     });
 };
-
 
 exports.uploadImage = async (req, res) => {
   try {

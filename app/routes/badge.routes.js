@@ -31,5 +31,4 @@ router.delete(
   badge.deleteBadgeImage,
 );
 
-
 export default router;
