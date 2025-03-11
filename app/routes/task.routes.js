@@ -1,5 +1,5 @@
 import task from "../controllers/task.controller.js";
-import auth, { authenticate, isAdmin } from "../authorization/authorization.js";
+import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
 const router = Router();
