@@ -1,30 +1,52 @@
 import db from "../models/index.js";
 const Reward = db.reward;
 const Student = db.student;
-import { Op } from "sequelize";
+import { Op, where } from "sequelize";
 import FileHelpers from "../utilities/fileStorage.helper.js";
+import { query } from "express";
 
 const exports = {};
 
-exports.findAllRewards = async (page = 1, pageSize = 10, searchQuery = "") => {
+exports.findAllRewards = async (
+  page = 1,
+  pageSize = 10,
+  searchQuery = "",
+  filters = {},
+) => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
-  const whereCondition = searchQuery
-    ? {
-        // Assuming you want to search by title or description (modify as needed
-        name: {
-          [Op.like]: `%${searchQuery}%`, // Search in the title
-        },
-      }
-    : {};
 
-  let rewards = await Reward.findAll({
+  const whereCondition = {};
+
+  if (searchQuery) {
+    whereCondition.name = { [Op.like]: `%${searchQuery}%` };
+  }
+
+  if (filters.redemptionType) {
+    whereCondition.redemptionType = {
+      [Op.like]: `%${filters.redemptionType}%`,
+    };
+  }
+
+  let order = [];
+
+  if (filters.sortAttribute && filters.sortDirection) {
+    // Default to ascending order if direction is not provided
+    const direction =
+      filters.sortDirection.toUpperCase() === "DESC" ? "DESC" : "ASC";
+    order = [[filters.sortAttribute, direction]];
+  }
+
+  const queryOptions = {
     offset,
     limit,
-    where: whereCondition, // Apply the search condition
-  });
+    where: whereCondition,
+    order,
+  };
+
+  let rewards = await Reward.findAll(queryOptions);
 
   rewards = getFilesForRewards(rewards);
 

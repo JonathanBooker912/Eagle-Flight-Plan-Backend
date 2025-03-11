@@ -36,11 +36,20 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Reward.findAllRewards(
-    req.query.page,
-    req.query.pageSize,
-    req.query.searchQuery,
-  )
+  const {
+    page,
+    pageSize,
+    searchQuery,
+    redemptionType,
+    sortAttribute,
+    sortDirection,
+  } = req.query;
+
+  await Reward.findAllRewards(page, pageSize, searchQuery, {
+    redemptionType,
+    sortAttribute,
+    sortDirection,
+  })
     .then((data) => {
       res.send(data);
     })
