@@ -1,8 +1,10 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 const FlightPlanItem = db.flightPlanItem;
 const Task = db.task;
 const Experience = db.experience;
 const Event = db.event;
+
 const exports = {};
 
 exports.findAllFlightPlanItems = async (page = 1, pageSize = 10) => {
@@ -20,58 +22,66 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
   flightPlanId,
   page = 1,
   pageSize = 10,
+  searchQuery = "",
+  filters = {},
 ) => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
 
-  const response = await FlightPlanItem.findAll({
-    where: { flightPlanId },
-    limit,
+  const whereCondition = {};
+
+  whereCondition.flightPlanId = flightPlanId;
+
+  if (searchQuery) {
+    whereCondition.name = {
+      [Op.like]: `%${searchQuery}%`, // Search in the title
+    };
+  }
+
+  if (filters.status) {
+    whereCondition.status = { [Op.eq]: filters.status };
+  }
+
+  if (filters.flightPlanItemType) {
+    whereCondition.flightPlanItemType = { [Op.eq]: filters.flightPlanItemType };
+  }
+
+  let order = [];
+
+  if (filters.sortAttribute && filters.sortDirection) {
+    const direction =
+      filters.sortDirection.toUpperCase() === "DESC" ? "DESC" : "ASC";
+    order = [[filters.sortAttribute, direction]];
+  }
+
+  const queryOptions = {
     offset,
+    limit,
+    where: whereCondition,
+    order,
     include: [
       {
         model: Task,
         as: "task",
-        attributes: [
-          "id",
-          "category",
-          "taskType",
-          "reflectionRequired",
-          "schedulingType",
-          "name",
-          "description",
-          "rationale",
-          "semestersFromGraduation",
-          "completionType",
-          "pointsEarned",
-        ],
       },
       {
         model: Experience,
         as: "experience",
-        attributes: [
-          "id",
-          "category",
-          "experienceType",
-          "reflectionRequired",
-          "schedulingType",
-          "description",
-          "name",
-          "rationale",
-          "points",
-        ],
       },
       {
         model: Event,
         as: "event",
       },
     ],
-  });
+    subquery: false,
+  };
+
+  const response = await FlightPlanItem.findAll(queryOptions);
 
   const count = await FlightPlanItem.count({
-    where: { flightPlanId },
+    where: whereCondition,
   });
 
   const totalPages = Math.ceil(count / pageSize);
@@ -95,7 +105,17 @@ exports.findOneFlightPlanItem = async (flightPlanItemId) => {
   return await FlightPlanItem.findByPk(flightPlanItemId);
 };
 
+exports.getFlightPlanItemTypes = () => {
+  return FlightPlanItem.getAttributes().flightPlanItemType.values;
+};
+
+exports.getFlightPlanItemStatuses = () => {
+  return FlightPlanItem.getAttributes().status.values;
+};
+
 exports.createFlightPlanItem = async (flightPlanItemData) => {
+  const response =
+    await getTaskOrExperienceForFlightPlanItem(flightPlanItemData);
   return await FlightPlanItem.create(flightPlanItemData);
 };
 

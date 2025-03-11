@@ -22,7 +22,7 @@ exports.findFlightPlanForStudent = async (studentId) => {
     include: [
       {
         model: FlightPlanItem,
-        attributes: ["flightPlanType", "status", "id"],
+        attributes: ["flightPlanItemType", "status", "id"],
         include: [
           {
             model: Task,
@@ -38,7 +38,7 @@ exports.findFlightPlanForStudent = async (studentId) => {
               "rationale",
               "semestersFromGraduation",
               "completionType",
-              "pointsEarned",
+              "points",
             ],
           },
           {

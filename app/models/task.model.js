@@ -42,7 +42,7 @@ const Task = SequelizeInstance.define("task", {
   completionType: {
     type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
   },
-  pointsEarned: {
+  points: {
     type: Sequelize.INTEGER,
   },
 });
