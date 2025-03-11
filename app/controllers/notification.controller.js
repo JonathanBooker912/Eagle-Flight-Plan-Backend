@@ -65,24 +65,32 @@ exports.findAllNotificationsForUser = async (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  await Notification.updateNotification(req.body, req.params.id)
-    .then((num) => {
-      if (num == 1) {
-        res.send({
-          message: "Notification was updated successfully.",
-        });
-      } else {
-        res.send({
-          message: `Cannot update notification with id = ${req.params.id}. Maybe notification was not found or req.body was empty!`,
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error updating notification with id = " + req.params.id,
+  const { userId, notificationId } = req.params; // Extract userId and notificationId from route params
+
+  try {
+    // Update the notification based on userId and notificationId
+    const num = await Notification.updateNotification(
+      req.body,
+      notificationId,
+      userId,
+    );
+
+    if (num[0] === 1) {
+      // `num[0]` is the count of affected rows
+      res.send({
+        message: "Notification updated successfully.",
       });
-      console.log("Could not update notification: " + err);
+    } else {
+      res.send({
+        message: `Cannot update notification with id = ${notificationId} for user = ${userId}. Maybe the notification was not found or req.body was empty.`,
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: "Error updating notification with id = " + notificationId,
     });
+    console.log("Error updating notification:", err);
+  }
 };
 
 exports.delete = async (req, res) => {

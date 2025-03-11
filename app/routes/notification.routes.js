@@ -21,7 +21,11 @@ router.get(
 );
 
 // Update a Notification with id
-router.put("/:id", [authenticate, isAdmin], notification.update);
+router.put(
+  "/user/:userId/notification/:notificationId",
+  [authenticate, isAdmin],
+  notification.update,
+);
 
 // Delete a Notification with id
 router.delete("/:id", [authenticate, isAdmin], notification.delete);
