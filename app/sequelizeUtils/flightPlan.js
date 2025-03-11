@@ -66,6 +66,18 @@ exports.findFlightPlanForStudent = async (studentId) => {
   });
 };
 
+exports.findProgressForFlightPlan = async (flightPlanId) => {
+  const response = await FlightPlanItem.findAll({ where: { flightPlanId } });
+  let completed = response.reduce((previous, current) => {
+    return previous + (current.status == "Complete" ? 1 : 0);
+  }, 0);
+
+  const progress =
+    response.length > 0 ? Math.round(100 * (completed / response.length)) : 0; // Prevent division by zero
+
+  return { progress };
+};
+
 exports.findOneFlightPlan = async (flightPlanId) => {
   return await FlightPlan.findByPk(flightPlanId);
 };

@@ -13,6 +13,12 @@ router.get("/", [authenticate], flightPlan.findAll);
 // Retrieve all FlightPlans for a student
 router.get("/student/:id", [authenticate], flightPlan.findFlightPlanForStudent);
 
+router.get(
+  "/progress/:id",
+  [authenticate],
+  flightPlan.findProgressForFlightPlan,
+);
+
 // Retrieve a single FlightPlan with id
 router.get("/:id", [authenticate], flightPlan.findOne);
 

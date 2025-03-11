@@ -60,6 +60,19 @@ exports.findFlightPlanForStudent = async (req, res) => {
     });
 };
 
+exports.findProgressForFlightPlan = async (req, res) => {
+  await FlightPlan.findProgressForFlightPlan(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving flightPlans.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   await FlightPlan.updateFlightPlan(req.body, req.params.id)
     .then((num) => {

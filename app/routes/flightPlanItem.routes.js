@@ -17,12 +17,6 @@ router.get(
   flightPlanItem.findAllFlightPlanItemsByFlightPlanId,
 );
 
-router.get(
-  "/flightPlan/progress/:flightPlanId",
-  [authenticate],
-  flightPlanItem.getFlightPlanProgress,
-);
-
 router.get("/types", [authenticate], flightPlanItem.getFlightPlanItemTypes);
 
 router.get(

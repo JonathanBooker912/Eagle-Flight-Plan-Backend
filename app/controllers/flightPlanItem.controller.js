@@ -128,21 +128,7 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
     });
 };
 
-exports.getFlightPlanProgress = async (req, res) => {
-  await FlightPlanItem.getFlightPlanProgress(req.params.flightPlanId)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message ||
-          "Some error occurred while retrieving progress for flight plan",
-      });
-    });
-};
-
-exports.getFlightPlanItemTypes = async (req, res) => {
+exports.getFlightPlanItemTypes = (req, res) => {
   const response = FlightPlanItem.getFlightPlanItemTypes();
   res.send(response);
 };
