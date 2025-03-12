@@ -1,20 +1,17 @@
-import db from "../models/index.js";
-const Link = db.link;
+import Link from "../sequelizeUtils/link.js";
 
 const exports = {};
 
-
-exports.findAllLinksById = async (
-    
-  ) => {
-    page = parseInt(page, 10);
-    pageSize = parseInt(pageSize, 10);
-    const offset = (page - 1) * pageSize;
-    const limit = pageSize;
-  
-    return await FlightPlanItem.findAll({
-      where: { flightPlanId },
-      limit,
-      offset,
-    });
-  };
+exports.findAllLinksForStudent = async (req, res) => {
+    await Link.findAllLinksForStudent(
+        req.params.id
+    )    .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving links.",
+        });
+      });
+};
