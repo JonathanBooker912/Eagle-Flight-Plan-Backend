@@ -23,20 +23,25 @@ exports.findAllNotificationsForUser = async (
   page = parseInt(page);
   pageSize = parseInt(pageSize);
   const offset = (page - 1) * pageSize;
-  const limit = pageSize;
-  return await Notification.findAll({
-    attributes: ["header", "description", "actionLink", "read", "id"],
+
+  const { count, rows } = await Notification.findAndCountAll({
+    where: { userId },
+    attributes: [
+      "header",
+      "description",
+      "actionLink",
+      "read",
+      "id",
+      "createdAt",
+    ],
     include: {
       model: User,
-      as: "user",
-      where: {
-        id: userId,
-      },
-      required: true,
     },
-    limit,
+    limit: pageSize,
     offset,
   });
+
+  return { notifications: rows, total: count };
 };
 
 exports.findOneNotification = async (notificationId) => {
@@ -47,12 +52,15 @@ exports.createNotification = async (notificationData) => {
   return await Notification.create(notificationData);
 };
 
-exports.updateNotification = async (notificationData, notificationId) => {
+exports.updateNotification = async (
+  notificationData,
+  notificationId,
+  userId,
+) => {
   return await Notification.update(notificationData, {
-    where: { id: notificationId },
+    where: { id: notificationId, userId: userId }, // Ensure both IDs match
   });
 };
-
 exports.deleteNotification = async (notificationId) => {
   return await Notification.destroy({ where: { id: notificationId } });
 };
