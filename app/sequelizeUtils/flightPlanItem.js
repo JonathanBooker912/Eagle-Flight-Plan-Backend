@@ -102,8 +102,6 @@ exports.getFlightPlanItemStatuses = () => {
 };
 
 exports.createFlightPlanItem = async (flightPlanItemData) => {
-  const response =
-    await getTaskOrExperienceForFlightPlanItem(flightPlanItemData);
   return await FlightPlanItem.create(flightPlanItemData);
 };
 
