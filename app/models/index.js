@@ -20,6 +20,7 @@ import Task from "./task.model.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
 import StudentReward from "./studentReward.model.js";
+import StudentStrength from "./studentStrength.model.js";
 
 const db = {};
 
@@ -43,6 +44,7 @@ db.task = Task;
 db.user = User;
 db.session = Session;
 db.studentReward = StudentReward;
+db.StudentStrength = StudentStrength;
 
 db.Sequelize = Sequelize;
 
@@ -109,9 +111,10 @@ Event.belongsToMany(Experience, { through: "expOption" });
 Event.belongsToMany(Strength, { through: "eventStrength" });
 Strength.belongsToMany(Event, { through: "eventStrength" });
 
-//STUDENTSTRENGTH
-Student.belongsToMany(Strength, { through: "studentStrength" });
-Strength.belongsToMany(Student, { through: "studentStrength" });
+Student.belongsToMany(Strength, { through: StudentStrength, foreignKey: "studentId" });
+Strength.belongsToMany(Student, { through: StudentStrength, foreignKey: "strengthId" });
+
+
 
 /// Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {

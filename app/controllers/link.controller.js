@@ -4,7 +4,6 @@ import Link from "../models/link.model.js"; // Adjust the import according to yo
 const exports = {};
 exports.findAllLinksForStudent = async (req, res) => {
   const studentId = req.params.id;
-  console.log("Request received for student ID:", studentId);
 
   try {
     const links = await Link.findAll({
@@ -22,4 +21,3 @@ exports.findAllLinksForStudent = async (req, res) => {
 };
 
 export default exports;
-
