@@ -19,7 +19,7 @@ exports.findAllFlightPlans = async (page = 1, pageSize = 10) => {
 
 exports.findFlightPlanForStudent = async (studentId) => {
   return await FlightPlan.findAll({
-    where: { id: studentId },
+    where: { studentId },
     include: [
       {
         model: FlightPlanItem,
