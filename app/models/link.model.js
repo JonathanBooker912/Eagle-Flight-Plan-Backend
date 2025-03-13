@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
 
-const Link  = SequelizeInstance.define("link", {
+const Link = SequelizeInstance.define("link", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -14,7 +14,7 @@ const Link  = SequelizeInstance.define("link", {
   link: {
     type: Sequelize.STRING(255),
     allowNull: false,
-  }
+  },
 });
 
 export default Link;

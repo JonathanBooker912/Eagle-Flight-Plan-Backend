@@ -8,7 +8,7 @@ import EventType from "./eventType.model.js";
 import Experience from "./experience.model.js";
 import FlightPlan from "./flightPlan.model.js";
 import FlightPlanItem from "./flightPlanItem.model.js";
-import Link from "./links.model.js";
+import Link from "./link.model.js";
 import Major from "./major.model.js";
 import Notification from "./notification.model.js";
 import Reward from "./reward.model.js";
@@ -121,22 +121,22 @@ db.flightPlan.hasOne(db.semester, {
 db.semester.hasMany(db.flightPlan);
 
 db.student.hasOne(db.link, {
-  as: "link",            // Alias for the link in the student model
-  foreignKey: { 
-    name: "studentId",   // The foreign key in the links table
-    allowNull: false     // The foreign key cannot be null
-  }
+  as: "link", // Alias for the link in the student model
+  foreignKey: {
+    name: "studentId", // The foreign key in the links table
+    allowNull: false, // The foreign key cannot be null
+  },
 });
 
 // In the link model:
 db.link.belongsTo(db.student, {
-  as: "student",         // Alias for the student in the link model
-  foreignKey: { 
-    name: "studentId",   // The foreign key in the links table
-    allowNull: false     // The foreign key cannot be null
-  }
+  as: "student", // Alias for the student in the link model
+  foreignKey: {
+    name: "studentId", // The foreign key in the links table
+    allowNull: false, // The foreign key cannot be null
+  },
 });
- 
+
 // Flight plan to student
 db.flightPlan.hasOne(db.student, {
   as: "student",

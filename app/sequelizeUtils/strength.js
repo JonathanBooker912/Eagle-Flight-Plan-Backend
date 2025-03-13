@@ -9,6 +9,6 @@ exports.findAllStrengths = async () => {
 
 exports.findAllStrengthsForUser = async () => {
   return await Strength.findAllForUser();
-}
+};
 
 export default exports;

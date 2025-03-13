@@ -1,17 +1,25 @@
-import Link from "../sequelizeUtils/link.js";
+// link.controller.js
+import Link from "../models/link.model.js"; // Adjust the import according to your setup
 
 const exports = {};
-
 exports.findAllLinksForStudent = async (req, res) => {
-    await Link.findAllLinksForStudent(
-        req.params.id
-    )    .then((data) => {
-        res.send(data);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving links.",
-        });
-      });
+  const studentId = req.params.id;
+  console.log("Request received for student ID:", studentId);
+
+  try {
+    const links = await Link.findAll({
+      where: { studentId },
+      attributes: ["id", "websiteName", "link", "createdAt", "updatedAt"],
+    });
+
+    res.status(200).json(links); // Send the links as a response
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "Error fetching links", error: err.message });
+  }
 };
+
+export default exports;
+
