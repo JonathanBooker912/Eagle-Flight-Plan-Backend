@@ -1,9 +1,8 @@
 import db from "../models/index.js";
 const Reward = db.reward;
 const Student = db.student;
-import { Op, where } from "sequelize";
+import { Op } from "sequelize";
 import FileHelpers from "../utilities/fileStorage.helper.js";
-import { query } from "express";
 
 const exports = {};
 
