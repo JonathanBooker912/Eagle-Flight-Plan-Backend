@@ -15,6 +15,12 @@ const Semester = SequelizeInstance.define("semester", {
   year: {
     type: Sequelize.STRING(4),
   },
+  startDate: {
+    type: Sequelize.DATE,
+  },
+  endDate: {
+    type: Sequelize.DATE,
+  },
 });
 
 export default Semester;

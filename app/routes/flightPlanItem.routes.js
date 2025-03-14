@@ -10,14 +10,19 @@ router.post("/", [authenticate, isAdmin], flightPlanItem.create);
 // Retrieve all FlightPlanItems
 router.get("/", [authenticate], flightPlanItem.findAll);
 
-// Retrieve a single FlightPlanItem with id
-router.get("/:id", [authenticate], flightPlanItem.findOne);
-
 // Retrieve FlightPlanItems by FlightPlan ID
 router.get(
   "/flightplan/:flightPlanId",
   [authenticate],
   flightPlanItem.findAllFlightPlanItemsByFlightPlanId,
+);
+
+router.get("/types", [authenticate], flightPlanItem.getFlightPlanItemTypes);
+
+router.get(
+  "/statuses",
+  [authenticate],
+  flightPlanItem.getFlightPlanItemStatuses,
 );
 
 // Update a FlightPlanItem with id
