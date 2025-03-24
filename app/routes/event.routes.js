@@ -19,4 +19,28 @@ router.put("/:id", [authenticate, isAdmin], event.update);
 // Delete a Event with id
 router.delete("/:id", [authenticate, isAdmin], event.delete);
 
+router.get(
+    "/types/registrationTypes",
+    [authenticate],
+    event.getRegistrationTypes,
+);
+
+router.get(
+    "/types/attendanceTypes",
+    [authenticate],
+    event.getAttendanceTypes,
+);
+
+// router.get(
+//     "/types/eventTypes",
+//     [authenticate],
+//     event.getEventTypes,
+// );
+
+router.get(
+    "/types/completionTypes",
+    [authenticate],
+    event.getCompletionTypes,
+);
+
 export default router;
