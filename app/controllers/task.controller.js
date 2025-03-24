@@ -34,11 +34,30 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  await Task.findAllTasks(
-    req.query.page,
-    req.query.pageSize,
-    req.query.searchQuery,
-  )
+  const {
+    page,
+    pageSize,
+    searchQuery,
+    category,
+    taskType,
+    schedulingType,
+    completionType,
+    semestersFromGraduation,
+    strengths,
+    sortAttribute,
+    sortDirection,
+  } = req.query;
+
+  await Task.findAllTasks(page, pageSize, searchQuery, {
+    category,
+    taskType,
+    schedulingType,
+    completionType,
+    semestersFromGraduation,
+    strengths,
+    sortAttribute,
+    sortDirection,
+  })
     .then((data) => {
       res.send(data);
     })
