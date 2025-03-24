@@ -105,4 +105,20 @@ exports.delete = async (req, res) => {
     });
 };
 
+exports.getRegistrationTypes = (req, res) => {
+  res.send(Event.getRegistrationTypes());
+};
+
+exports.getAttendanceTypes = (req, res) => {
+  res.send(Event.getAttendanceTypes());
+};
+
+// exports.getEventTypes = (req, res) => {
+//   res.send(Event.getEventTypes());
+// }; 
+
+exports.getCompletionTypes = (req, res) => {
+  res.send(Event.getCompletionTypes());
+};
+
 export default exports;

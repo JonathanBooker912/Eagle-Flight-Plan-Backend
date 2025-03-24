@@ -91,4 +91,20 @@ exports.deleteEvent = async (eventId) => {
   return await Event.destroy({ where: { id: eventId } });
 };
 
+exports.getRegistrationTypes = () => {
+  return Event.getAttributes().registration.values;
+};
+
+exports.getAttendanceTypes = () => {
+  return Event.getAttributes().attendanceType.values;
+};
+
+// exports.getEventTypes = () => {
+//   return Event.getAttributes().attendanceType.values;
+// };
+
+exports.getCompletionTypes = () => {
+  return Event.getAttributes().completionType.values;
+};
+
 export default exports;
