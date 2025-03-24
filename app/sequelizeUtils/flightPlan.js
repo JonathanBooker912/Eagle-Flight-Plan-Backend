@@ -1,4 +1,7 @@
+import { Op } from "sequelize";
 import db from "../models/index.js";
+import Student from "../sequelizeUtils/student.js";
+import Semester from "../sequelizeUtils/semester.js";
 const FlightPlan = db.flightPlan;
 const FlightPlanItem = db.flightPlanItem;
 const Task = db.task;
@@ -14,6 +17,69 @@ exports.findAllFlightPlans = async (page = 1, pageSize = 10) => {
   return await FlightPlan.findAll({
     limit,
     offset,
+  });
+};
+
+exports.generateFlightPlan = async (studentId) => {
+  if (!studentId) {
+    throw Error("Unable to generate flight plan for student with invalid id");
+  }
+
+  const student = (await Student.getStudentWithFlightPlanInfo(studentId))[0];
+  const currentSemester = await Semester.getCurrentSemester();
+  const existingFlightPlans = await exports.findFlightPlanForStudent(studentId);
+
+  if (!currentSemester) {
+    throw Error("Unable to get current semester");
+  }
+  if (!student) {
+    throw Error(`Unable to find student with id: ${studentId}`);
+  }
+
+  const flightPlanData = {
+    studentId,
+    semesterId: currentSemester.id,
+    semestersFromGrad: student.semestersFromGrad,
+  };
+
+  const flightPlan = await FlightPlan.create(flightPlanData);
+
+  const tasks = await Task.findAll({
+    where: {
+      semestersFromGrad: {
+        [Op.gte]: student.semestersFromGrad,
+      },
+    },
+  });
+
+  const experiences = await Experience.findAll();
+
+  const flightPlanItemTasks = tasks.map((task) => {
+    return {
+      type: "Task",
+      status: "Incomplete",
+      taskId: task.id,
+      pointsEarned: 10,
+      flightPlanId: flightPlan.id,
+    };
+  });
+
+  const flightPlanItemExperiences = experiences.map((experience) => {
+    return {
+      type: "Experience",
+      status: "Incomplete",
+      experienceId: experience.id,
+      pointsEarned: 10,
+      flightPlanId: flightPlan.id,
+    };
+  });
+
+  flightPlanItemTasks.forEach(async (itemTask) => {
+    await FlightPlanItem.create(itemTask);
+  });
+
+  flightPlanItemExperiences.forEach(async (itemExperience) => {
+    await FlightPlanItem.create(itemExperience);
   });
 };
 
