@@ -111,10 +111,14 @@ Event.belongsToMany(Experience, { through: "expOption" });
 Event.belongsToMany(Strength, { through: "eventStrength" });
 Strength.belongsToMany(Event, { through: "eventStrength" });
 
-Student.belongsToMany(Strength, { through: StudentStrength, foreignKey: "studentId" });
-Strength.belongsToMany(Student, { through: StudentStrength, foreignKey: "strengthId" });
-
-
+Student.belongsToMany(Strength, {
+  through: StudentStrength,
+  foreignKey: "studentId",
+});
+Strength.belongsToMany(Student, {
+  through: StudentStrength,
+  foreignKey: "strengthId",
+});
 
 /// Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {

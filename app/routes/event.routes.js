@@ -20,16 +20,12 @@ router.put("/:id", [authenticate, isAdmin], event.update);
 router.delete("/:id", [authenticate, isAdmin], event.delete);
 
 router.get(
-    "/types/registrationTypes",
-    [authenticate],
-    event.getRegistrationTypes,
+  "/types/registrationTypes",
+  [authenticate],
+  event.getRegistrationTypes,
 );
 
-router.get(
-    "/types/attendanceTypes",
-    [authenticate],
-    event.getAttendanceTypes,
-);
+router.get("/types/attendanceTypes", [authenticate], event.getAttendanceTypes);
 
 // router.get(
 //     "/types/eventTypes",
@@ -37,10 +33,6 @@ router.get(
 //     event.getEventTypes,
 // );
 
-router.get(
-    "/types/completionTypes",
-    [authenticate],
-    event.getCompletionTypes,
-);
+router.get("/types/completionTypes", [authenticate], event.getCompletionTypes);
 
 export default router;

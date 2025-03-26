@@ -4,9 +4,13 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/student/:id", (req, res, next) => {
+router.get(
+  "/student/:id",
+  (req, res, next) => {
     console.log("Strength route hit for student ID:", req.params.id);
-    next();  // Make sure to pass control to the next middleware
-  }, strengths.getStrengthsForStudent);
+    next(); // Make sure to pass control to the next middleware
+  },
+  strengths.getStrengthsForStudent,
+);
 
 export default router;

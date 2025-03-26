@@ -2,7 +2,6 @@ import Badge from "../sequelizeUtils/badge.js";
 import Student from "../models/student.model.js";
 import BadgeModel from "../models/badge.model.js";
 
-
 import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
@@ -46,8 +45,8 @@ exports.getBadgesForStudent = async (req, res) => {
       where: { id: studentId }, // Find student by their ID
       include: [
         {
-          model: BadgeModel,  // Include the BadgeModel
-          through: { attributes: [] },  // Don't include extra fields from the join table
+          model: BadgeModel, // Include the BadgeModel
+          through: { attributes: [] }, // Don't include extra fields from the join table
         },
       ],
     });

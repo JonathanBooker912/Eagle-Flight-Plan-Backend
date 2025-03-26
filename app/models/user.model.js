@@ -25,7 +25,7 @@ const User = SequelizeInstance.define("user", {
   },
   profileDescription: {
     type: Sequelize.STRING(255),
-  }
+  },
 });
 
 export default User;
