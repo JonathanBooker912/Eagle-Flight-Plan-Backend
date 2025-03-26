@@ -99,21 +99,25 @@ exports.findAll = async (req, res) => {
 
 exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
   const flightPlanId = req.params.flightPlanId;
-  const { page, pageSize } = req.query;
+  const {
+    page,
+    pageSize,
+    searchQuery,
+    status,
+    flightPlanItemType,
+    sortAttribute,
+    sortDirection,
+  } = req.query;
 
   await FlightPlanItem.findAllFlightPlanItemsByFlightPlanId(
     flightPlanId,
     page,
     pageSize,
+    searchQuery,
+    { status, flightPlanItemType, sortAttribute, sortDirection },
   )
     .then((data) => {
-      if (data.length > 0) {
-        res.send(data);
-      } else {
-        res.status(404).send({
-          message: `No flightPlanItems found for flightPlanId = ${flightPlanId}.`,
-        });
-      }
+      res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -122,6 +126,16 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
       });
       console.log("Could not retrieve flightPlanItems: " + err);
     });
+};
+
+exports.getFlightPlanItemTypes = (req, res) => {
+  const response = FlightPlanItem.getFlightPlanItemTypes();
+  res.send(response);
+};
+
+exports.getFlightPlanItemStatuses = (req, res) => {
+  const response = FlightPlanItem.getFlightPlanItemStatuses();
+  res.send(response);
 };
 
 exports.update = async (req, res) => {

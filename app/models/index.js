@@ -175,4 +175,8 @@ db.flightPlanItem.hasOne(db.experience, {
 });
 db.experience.hasMany(db.flightPlanItem);
 
+// notificaiton to user
+Notification.belongsTo(User, { foreignKey: "sentBy" });
+User.hasMany(Notification, { foreignKey: "sentBy" });
+
 export default db;
