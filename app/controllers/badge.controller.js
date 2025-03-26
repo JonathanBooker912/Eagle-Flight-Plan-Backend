@@ -1,4 +1,8 @@
 import Badge from "../sequelizeUtils/badge.js";
+import Student from "../models/student.model.js";
+import BadgeModel from "../models/badge.model.js";
+
+
 import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
@@ -32,6 +36,35 @@ exports.findOne = async (req, res) => {
       });
       console.log("Could not find badge: " + err);
     });
+};
+
+exports.getBadgesForStudent = async (req, res) => {
+  const studentId = req.params.id; // Getting student ID from the URL parameter
+
+  try {
+    const studentWithBadges = await Student.findOne({
+      where: { id: studentId }, // Find student by their ID
+      include: [
+        {
+          model: BadgeModel,  // Include the BadgeModel
+          through: { attributes: [] },  // Don't include extra fields from the join table
+        },
+      ],
+    });
+
+    if (studentWithBadges) {
+      res.status(200).send(studentWithBadges);
+    } else {
+      res.status(404).send({
+        message: `No badges found for student with id = ${studentId}.`,
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: "Error retrieving badges for student with id = " + studentId,
+    });
+    console.log("Error: ", err);
+  }
 };
 
 exports.findAll = async (req, res) => {

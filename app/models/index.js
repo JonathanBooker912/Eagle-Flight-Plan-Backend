@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 import BadExpTask from "./badExpTask.model.js";
-import BadgeFulfill from "./badgeFulfill.model.js";
+import BadgeAwarded from "./badgeAwarded.model.js";
 import Badge from "./badge.model.js";
 import Event from "./event.model.js";
 import EventType from "./eventType.model.js";
@@ -25,7 +25,7 @@ import StudentStrength from "./studentStrength.model.js";
 const db = {};
 
 db.badExpTask = BadExpTask;
-db.badgeFulfill = BadgeFulfill;
+db.BadgeAwarded = BadgeAwarded;
 db.badge = Badge;
 db.event = Event;
 db.eventType = EventType;
@@ -84,9 +84,9 @@ Badge.belongsToMany(Student, { through: "studentBadge" });
 Badge.belongsToMany(Task, { through: db.badExpTask });
 Task.belongsToMany(Badge, { through: db.badExpTask });
 
-// BADGEFULFILL
-Badge.belongsToMany(Student, { through: db.badgeFulfill });
-Student.belongsToMany(Badge, { through: db.badgeFulfill });
+// BadgeAwarded
+Badge.belongsToMany(Student, { through: db.BadgeAwarded });
+Student.belongsToMany(Badge, { through: db.BadgeAwarded });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });
