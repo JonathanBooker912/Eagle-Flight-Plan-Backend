@@ -71,3 +71,9 @@ exports.getSchedulingTypes = () => {
 };
 
 export default exports;
+
+// Non default exports
+
+export const getAllExperiences = async () => {
+  return await Experience.findAll();
+};

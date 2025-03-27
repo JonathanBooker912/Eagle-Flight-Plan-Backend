@@ -119,3 +119,17 @@ exports.getCompletionTypes = () => {
 };
 
 export default exports;
+
+// Non default exports
+
+export const getAllTasksGreaterThanSemestersFromGrad = async (
+  semestersFromGrad,
+) => {
+  return await Task.findAll({
+    where: {
+      semestersFromGrad: {
+        [Op.gte]: semestersFromGrad,
+      },
+    },
+  });
+};

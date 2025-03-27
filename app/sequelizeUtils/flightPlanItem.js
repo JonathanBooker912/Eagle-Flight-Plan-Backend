@@ -1,10 +1,16 @@
-import db from "../models/index.js";
+// Core Imports
 import { Op } from "sequelize";
-const FlightPlanItem = db.flightPlanItem;
-const Task = db.task;
-const Experience = db.experience;
-const Event = db.event;
 
+// Models
+import db from "../models/index.js";
+const {
+  flightPlanItem: FlightPlanItem,
+  task: Task,
+  experience: Experience,
+  event: Event,
+} = db;
+
+// Module Exports Placeholder
 const exports = {};
 
 exports.findAllFlightPlanItems = async (page = 1, pageSize = 10) => {
@@ -75,7 +81,6 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
         as: "event",
       },
     ],
-    subquery: false,
   };
 
   const response = await FlightPlanItem.findAll(queryOptions);
