@@ -129,25 +129,32 @@ db.flightPlanItem.hasOne(db.flightPlan, {
 db.flightPlan.hasMany(db.flightPlanItem);
 
 // Flight plan to Task
-db.flightPlanItem.hasOne(db.task, {
+// FlightPlanItem belongs to Task
+db.flightPlanItem.belongsTo(db.task, {
   as: "task",
-  foreignKey: { name: "id", allowNull: true },
+  foreignKey: { name: "taskId", allowNull: true },
 });
-db.task.hasMany(db.flightPlanItem);
+db.task.hasMany(db.flightPlanItem, {
+  foreignKey: { name: "taskId", allowNull: true },
+});
 
-// Flight plan to Event
-db.flightPlanItem.hasOne(db.event, {
+// FlightPlanItem belongs to Event
+db.flightPlanItem.belongsTo(db.event, {
   as: "event",
-  foreignKey: { name: "id", allowNull: true },
+  foreignKey: { name: "eventId", allowNull: true },
 });
-db.event.hasMany(db.flightPlanItem);
+db.event.hasMany(db.flightPlanItem, {
+  foreignKey: { name: "eventId", allowNull: true },
+});
 
-// Flight plan to Experience
-db.flightPlanItem.hasOne(db.experience, {
+// FlightPlanItem belongs to Experience
+db.flightPlanItem.belongsTo(db.experience, {
   as: "experience",
-  foreignKey: { name: "id", allowNull: true },
+  foreignKey: { name: "experienceId", allowNull: true },
 });
-db.experience.hasMany(db.flightPlanItem);
+db.experience.hasMany(db.flightPlanItem, {
+  foreignKey: { name: "experienceId", allowNull: true },
+});
 
 // notificaiton to user
 Notification.belongsTo(User, { foreignKey: "sentBy" });
