@@ -169,6 +169,7 @@ export const getFlightPlanItemsForNewFlightPlan = async (
 ) => {
   const completedItems = getAllCompletedFlightPlanItemsForStudent(student);
 
+  /* eslint-disable no-undef */
   const [taskItems, experienceItems] = await Promise.all([
     getTaskItems(completedItems, newFlightPlan),
     getExperienceItems(completedItems, newFlightPlan),
