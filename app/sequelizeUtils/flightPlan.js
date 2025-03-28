@@ -51,7 +51,7 @@ exports.generateFlightPlan = async (studentId) => {
   if (!student) {
     throw Error(`Unable to find student with id: ${studentId}`);
   }
-  if (student.flightPlan[0]?.semestersFromGrad < 0) {
+  if (student.flightPlanItems[0]?.semestersFromGrad < 0) {
     throw Error("Student semesters from graduation can't be negative");
   }
   if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
