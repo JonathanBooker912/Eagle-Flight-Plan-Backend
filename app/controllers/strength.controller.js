@@ -11,7 +11,7 @@ exports.getStrengthsForStudent = async (req, res) => {
   try {
     // Try fetching the student and include strengths in the response
     const student = await Student.findOne({
-      where: { id: 11 }, // Find the student by ID
+      where: { id: studentId }, // Find the student by ID
       include: {
         model: Strength, // Include the related Strength model
         through: { attributes: [] }, // Exclude join table attributes (only strengths)
