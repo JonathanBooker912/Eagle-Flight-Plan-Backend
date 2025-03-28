@@ -14,6 +14,7 @@ import TaskRoutes from "./task.routes.js";
 import FlightPlanRoutes from "./flightPlan.routes.js";
 import FlightPlanItemRoutes from "./flightPlanItem.routes.js";
 import StrengthRoutes from "./strength.routes.js";
+import StudentRoutes from "./student.routes.js";
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.use("/link", LinkRoutes);
 router.use("/flightPlan", FlightPlanRoutes);
 router.use("/flightPlanItem", FlightPlanItemRoutes);
 router.use("/strengths", StrengthRoutes);
+router.use("/students", StudentRoutes);
 
 // eslint-disable-next-line
 router.get("/", (req, res) => {
