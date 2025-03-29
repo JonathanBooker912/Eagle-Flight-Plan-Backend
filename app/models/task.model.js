@@ -36,7 +36,7 @@ const Task = SequelizeInstance.define("task", {
   rationale: {
     type: Sequelize.STRING,
   },
-  semestersFromGraduation: {
+  semestersFromGrad: {
     type: Sequelize.INTEGER,
   },
   completionType: {

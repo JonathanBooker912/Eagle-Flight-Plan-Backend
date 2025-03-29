@@ -15,6 +15,20 @@ exports.create = async (req, res) => {
     });
 };
 
+exports.generate = async (req, res) => {
+  await FlightPlan.generateFlightPlan(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          `Some error occurred while generating a flight plan for student with id: ${req.params.id}`,
+      });
+    });
+};
+
 exports.findOne = async (req, res) => {
   await FlightPlan.findOneFlightPlan(req.params.id)
     .then((data) => {

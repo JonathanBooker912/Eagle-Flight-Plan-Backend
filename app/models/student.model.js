@@ -16,6 +16,9 @@ const Student = SequelizeInstance.define("student", {
   pointsUsed: {
     type: Sequelize.INTEGER,
   },
+  semestersFromGrad: {
+    type: Sequelize.INTEGER,
+  },
 });
 
 export default Student;

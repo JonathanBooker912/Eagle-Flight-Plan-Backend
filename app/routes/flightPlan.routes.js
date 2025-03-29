@@ -7,6 +7,8 @@ const router = Router();
 // Create a new FlightPlan
 router.post("/", [authenticate, isAdmin], flightPlan.create);
 
+router.post("/generate/:id", [authenticate, isAdmin], flightPlan.generate);
+
 // Retrieve all FlightPlans
 router.get("/", [authenticate], flightPlan.findAll);
 
