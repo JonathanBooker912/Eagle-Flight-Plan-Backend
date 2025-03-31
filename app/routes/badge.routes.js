@@ -19,16 +19,7 @@ router.put("/:id", [authenticate, isAdmin], badge.update);
 // Delete a Role with id
 router.delete("/:id", [authenticate, isAdmin], badge.delete);
 
-router.post("/upload", [authenticate, isAdmin], badge.uploadImage);
-
-router.get("/image/:fileName", [authenticate, isAdmin], badge.getImageForName);
 // Delete a Badge with id
 router.delete("/:id", [authenticate, isAdmin], badge.delete);
-
-router.delete(
-  "/image/:fileName",
-  [authenticate, isAdmin],
-  badge.deleteBadgeImage,
-);
 
 export default router;

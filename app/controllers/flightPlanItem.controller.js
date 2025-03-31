@@ -61,6 +61,20 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.createSubmission = async (req, res) => {
+  await FlightPlanItem.createSubmission(req.params.flightPlanItemId, req.body)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          "Error creating submission for flightPlanItem with id = " +
+          req.params.flightPlanItemId,
+      });
+    });
+};
+
 exports.findOne = async (req, res) => {
   await FlightPlanItem.findOneFlightPlanItem(req.params.id)
     .then((data) => {

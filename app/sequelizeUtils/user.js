@@ -82,6 +82,18 @@ exports.findAllForAdmin = async ({
   return { users, count };
 };
 
+exports.findAllAdmins = async () => {
+  return await User.findAll({
+    include: {
+      model: Role,
+      required: true,
+      where: {
+        name: "Admin",
+      },
+    },
+  });
+};
+
 exports.findById = async (id) => {
   return await User.findByPk(id);
 };

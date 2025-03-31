@@ -7,6 +7,12 @@ const router = Router();
 // Create a new FlightPlanItem
 router.post("/", [authenticate, isAdmin], flightPlanItem.create);
 
+router.post(
+  "/submit/:flightPlanItemId",
+  [authenticate],
+  flightPlanItem.createSubmission,
+);
+
 // Retrieve all FlightPlanItems
 router.get("/", [authenticate], flightPlanItem.findAll);
 
