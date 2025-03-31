@@ -22,6 +22,7 @@ import Session from "./session.model.js";
 import StudentReward from "./studentReward.model.js";
 import StudentStrength from "./studentStrength.model.js";
 import Submission from "./submission.model.js";
+import EventStudents from "./eventStudents.model.js";
 
 const db = {};
 
@@ -47,6 +48,7 @@ db.session = Session;
 db.studentReward = StudentReward;
 db.StudentStrength = StudentStrength;
 db.submission = Submission;
+db.eventStudents = EventStudents;
 
 db.Sequelize = Sequelize;
 
@@ -120,6 +122,23 @@ Student.belongsToMany(Strength, {
 Strength.belongsToMany(Student, {
   through: StudentStrength,
   foreignKey: "strengthId",
+});
+
+// Define associations
+EventStudents.belongsTo(Student, { foreignKey: "studentId" });
+EventStudents.belongsTo(Event, { foreignKey: "eventId" });
+
+//Event to Students
+db.event.belongsToMany(db.student, {
+  through: db.eventStudents,
+  foreignKey: "eventId",
+  otherKey: "studentId",
+});
+
+db.student.belongsToMany(db.event, {
+  through: db.eventStudents,
+  foreignKey: "studentId",
+  otherKey: "eventId",
 });
 
 /// Flight Plan to Semester
