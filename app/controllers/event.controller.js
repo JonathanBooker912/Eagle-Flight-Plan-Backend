@@ -33,6 +33,25 @@ exports.findOne = async (req, res) => {
     });
 };
 
+exports.findByToken = async (req, res) => {
+  await Event.findEventByToken(req.params.eventToken)
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find event with token = ${req.params.eventToken}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving event with token = " + req.params.eventToken,
+      });
+      console.log("Could not find event: " + err);
+    });
+};
+
 exports.findAll = async (req, res) => {
   const {
     page,

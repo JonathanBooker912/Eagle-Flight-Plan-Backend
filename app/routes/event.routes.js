@@ -13,6 +13,9 @@ router.get("/", [authenticate], event.findAll);
 // Retrieve a single Event with id
 router.get("/:id", [authenticate], event.findOne);
 
+// Retrieve a single Event with a check-in token
+router.get("/token/:eventToken", [authenticate], event.findByToken);
+
 // Update a Event with id
 router.put("/:id", [authenticate, isAdmin], event.update);
 

@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 const Event = db.event;
+const EventCheckInToken = db.eventCheckinTokens;
 const Strength = db.strength;
 const EventStudents = db.eventStudents;
 
@@ -78,6 +79,20 @@ exports.findAllEvents = async (
 
 exports.findOneEvent = async (eventId) => {
   return await Event.findByPk(eventId);
+};
+
+exports.findEventByToken = async (eventToken) => {
+  const data = await EventCheckInToken.findOne({
+    where: { token: eventToken },
+    include: [
+      {
+        model: Event,
+        as: "event",
+      },
+    ],
+  });
+
+  return data.event;
 };
 
 exports.createEvent = async (eventData) => {
