@@ -7,7 +7,7 @@ exports.uploadFile = async (req, res) => {
     await FileHelpers.upload(req, res);
     res.status(200).send({ fileName: req.savedFileName });
   } catch (err) {
-    res.status(400).send({ message: "Failed to upload image" });
+    res.status(400).send({ message: err.message || "Failed to upload" });
   }
 };
 

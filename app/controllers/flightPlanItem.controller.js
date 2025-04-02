@@ -72,6 +72,7 @@ exports.createSubmission = async (req, res) => {
           "Error creating submission for flightPlanItem with id = " +
           req.params.flightPlanItemId,
       });
+      console.log(err);
     });
 };
 

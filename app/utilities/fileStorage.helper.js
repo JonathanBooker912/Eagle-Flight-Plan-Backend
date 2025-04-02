@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import util from "util";
+import mime from "mime-types";
 import { v4 as uuidv4 } from "uuid";
 import { fileURLToPath } from "url";
 
@@ -34,7 +35,7 @@ let storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let subDir = "photos";
 
-    if (req.body.folder === "submissions") {
+    if (req.query.folder === "submissions") {
       subDir = "submissions";
     }
 
@@ -88,7 +89,9 @@ let readFile = (fileName) => {
   for (const folder of directories) {
     const filePath = path.join(uploadDir, folder, fileName);
     if (fs.existsSync(filePath)) {
-      return fs.readFileSync(filePath);
+      const fileBuffer = fs.readFileSync(filePath);
+      const mimeType = mime.lookup(filePath) || "application/octet-stream"; // Default if not recognized
+      return { data: fileBuffer, mimeType };
     }
   }
 

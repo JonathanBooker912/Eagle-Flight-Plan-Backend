@@ -1,5 +1,4 @@
 import Badge from "../sequelizeUtils/badge.js";
-import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
 

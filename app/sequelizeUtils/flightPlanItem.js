@@ -1,3 +1,4 @@
+import db from "../models/index.js";
 // Core Imports
 import { Op } from "sequelize";
 

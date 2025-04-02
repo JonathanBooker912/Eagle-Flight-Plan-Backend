@@ -6,4 +6,16 @@ const router = Router();
 
 router.post("/", [authenticate], submission.create);
 
+router.get(
+  "/flightPlanItem/:flightPlanItemId",
+  [authenticate],
+  submission.findAllForFlightPlanItem,
+);
+
+router.delete(
+  "/flightPlanItem/:flightPlanItemId",
+  [authenticate],
+  submission.discardSubmissionForFlightPlanItem,
+);
+
 export default router;
