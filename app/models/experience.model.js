@@ -27,6 +27,9 @@ const Experience = SequelizeInstance.define("experience", {
   schedulingType: {
     type: Sequelize.ENUM("one-time", "every semester", "special event"),
   },
+  semestersFromGrad: {
+    type: Sequelize.INTEGER,
+  },
   description: {
     type: Sequelize.STRING(255),
   },
