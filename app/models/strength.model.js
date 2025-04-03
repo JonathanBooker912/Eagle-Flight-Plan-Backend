@@ -53,6 +53,10 @@ const Strength = SequelizeInstance.define("strength", {
       "Strategic Planning",
     ),
   },
+  description: {
+    type: Sequelize.STRING(255),
+    allowNull: false,
+  },
   number: {
     type: Sequelize.INTEGER,
   },
