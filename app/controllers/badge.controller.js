@@ -38,31 +38,50 @@ exports.findOne = async (req, res) => {
 };
 
 exports.getBadgesForStudent = async (req, res) => {
-  const studentId = req.params.id; // Getting student ID from the URL parameter
+  const studentId = req.params.id;
+  const page = parseInt(req.query.page) || 1;
+  const pageSize = parseInt(req.query.pageSize) || 6;
+  const offset = (page - 1) * pageSize;
+
+  console.log('Fetching badges for student:', studentId);
+  console.log('Page:', page, 'PageSize:', pageSize, 'Offset:', offset);
 
   try {
-    const studentWithBadges = await Student.findOne({
-      where: { id: studentId }, // Find student by their ID
-      include: [
-        {
-          model: BadgeModel, // Include the BadgeModel
-          through: { attributes: [] }, // Don't include extra fields from the join table
-        },
-      ],
-    });
-
-    if (studentWithBadges) {
-      res.status(200).send(studentWithBadges);
-    } else {
-      res.status(404).send({
-        message: `No badges found for student with id = ${studentId}.`,
+    // First get the total count
+    const student = await Student.findByPk(studentId);
+    if (!student) {
+      console.log('No student found with ID:', studentId);
+      return res.status(404).send({
+        message: `No student found with id = ${studentId}.`,
       });
     }
+
+    console.log('Found student:', student.id);
+
+    const totalBadges = await student.countBadges();
+    console.log('Total badges count:', totalBadges);
+
+    // Then get the paginated badges
+    const badges = await student.getBadges({
+      limit: pageSize,
+      offset: offset
+    });
+    console.log('Retrieved badges:', badges.length);
+
+    const response = {
+      data: {
+        badges: badges || [],
+        total: totalBadges
+      }
+    };
+    console.log('Sending response:', response);
+    res.status(200).send(response);
   } catch (err) {
+    console.log("Error details:", err);
     res.status(500).send({
       message: "Error retrieving badges for student with id = " + studentId,
+      error: err.message
     });
-    console.log("Error: ", err);
   }
 };
 
