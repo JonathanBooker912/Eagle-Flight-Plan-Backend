@@ -32,7 +32,7 @@ router.get(
 );
 
 // Update a FlightPlanItem with id
-router.put("/:id", [authenticate, isAdmin], flightPlanItem.update);
+router.put("/:id", [authenticate], flightPlanItem.update);
 
 // Delete a FlightPlanItem with id
 router.delete("/:id", [authenticate, isAdmin], flightPlanItem.delete);
