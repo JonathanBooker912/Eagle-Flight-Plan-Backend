@@ -39,23 +39,19 @@ exports.findOne = async (req, res) => {
 
 exports.getBadgesForStudent = async (req, res) => {
   const studentId = req.params.id; // Getting student ID from the URL parameter
+  const page = req.query.page || 1;
+  const pageSize = req.query.pageSize || 10;
 
   try {
-    const studentWithBadges = await Student.findOne({
-      where: { id: studentId }, // Find student by their ID
-      include: [
-        {
-          model: BadgeModel, // Include the BadgeModel
-          through: { attributes: [] }, // Don't include extra fields from the join table
-        },
-      ],
-    });
+    const result = await Badge.findAllBadgesForStudent(studentId, page, pageSize);
 
-    if (studentWithBadges) {
-      res.status(200).send(studentWithBadges);
+    if (result.badges.length > 0) {
+      res.status(200).send(result);
     } else {
-      res.status(404).send({
-        message: `No badges found for student with id = ${studentId}.`,
+      res.status(200).send({
+        badges: [],
+        total: 0,
+        count: 0
       });
     }
   } catch (err) {
