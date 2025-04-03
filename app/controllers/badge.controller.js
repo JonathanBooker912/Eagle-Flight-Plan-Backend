@@ -124,35 +124,4 @@ exports.delete = async (req, res) => {
     });
 };
 
-exports.uploadImage = async (req, res) => {
-  try {
-    await FileHelpers.upload(req, res);
-    res.status(200).send({ fileName: req.savedFileName });
-  } catch (err) {
-    res.status(400).send({ message: "Failed to upload image" });
-  }
-};
-
-exports.getImageForName = async (req, res) => {
-  try {
-    const response = await FileHelpers.read(req.params.fileName);
-    res.status(200).send({ image: response });
-  } catch (err) {
-    res.status(404).send({ message: "Couldn't find image" });
-  }
-};
-
-exports.deleteBadgeImage = async (req, res) => {
-  try {
-    await FileHelpers.remove(req.params.fileName);
-    res.status(200).send({
-      message: `Successfully deleted image with name: ${req.params.fileName}`,
-    });
-  } catch (err) {
-    res.status(400).send({
-      message: `There was an error deleting image with name: ${req.params.fileName}`,
-    });
-  }
-};
-
 export default exports;

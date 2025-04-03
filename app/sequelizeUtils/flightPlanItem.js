@@ -1,15 +1,13 @@
+import db from "../models/index.js";
 // Core Imports
 import { Op } from "sequelize";
 
-// Models
-import db from "../models/index.js";
-const {
-  flightPlanItem: FlightPlanItem,
-  task: Task,
-  experience: Experience,
-  event: Event,
-} = db;
-
+const FlightPlanItem = db.flightPlanItem;
+const Task = db.task;
+const Experience = db.experience;
+const Event = db.event;
+const SubmissionItem = db.submissionItem;
+import FileHelpers from "../utilities/fileStorage.helper.js";
 // Module Exports Placeholder
 const exports = {};
 
@@ -108,6 +106,31 @@ exports.getFlightPlanItemStatuses = () => {
 
 exports.createFlightPlanItem = async (flightPlanItemData) => {
   return await FlightPlanItem.create(flightPlanItemData);
+};
+
+exports.createSubmission = async (flightPlanItemId, { submissionItems }) => {
+  const flightPlanItem = await FlightPlanItem.findOne({
+    where: { id: flightPlanItemId },
+  });
+
+  if (!flightPlanItem) {
+    throw Error(`Can't find flightPlanItem with id: ${flightPlanItemId}`);
+  }
+  if (flightPlanItem.status == "Complete") {
+    throw Error(`This flight plan item is already completed`);
+  }
+  // If the submission type is text
+
+  // If the submission type is files
+
+  submissionItems.forEach(async (submissionItem) => {
+    if (submissionItem.submissionType == "text") {
+      await SubmissionItem.create(submissionItem);
+      return;
+    }
+
+    FileHelpers.upload({ ...submissionItem, folder: "submission" });
+  });
 };
 
 exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {

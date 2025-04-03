@@ -79,7 +79,7 @@ const getFilesForBadges = (badges) =>
 const readFileForBadge = (badge) => {
   try {
     if (badge.imageName) {
-      badge.dataValues.image = FileHelpers.read(badge.imageName);
+      badge.dataValues.image = FileHelpers.read(badge.imageName, "photos");
     }
     return badge;
   } catch (err) {

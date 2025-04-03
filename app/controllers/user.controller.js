@@ -37,6 +37,16 @@ exports.findAllForAdmin = async (req, res) => {
     );
 };
 
+exports.findAllAdmins = async (req, res) => {
+  await UserUtils.findAllAdmins()
+    .then((data) => res.send(data))
+    .catch((err) =>
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving users.",
+      }),
+    );
+};
+
 exports.findOne = async (req, res) => {
   await UserUtils.findById(req.params.id)
     .then((data) => {
