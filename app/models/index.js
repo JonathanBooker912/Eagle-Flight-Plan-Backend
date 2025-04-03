@@ -19,6 +19,7 @@ import Task from "./task.model.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
 import StudentReward from "./studentReward.model.js";
+import Submission from "./submission.model.js";
 
 const db = {};
 
@@ -41,6 +42,7 @@ db.task = Task;
 db.user = User;
 db.session = Session;
 db.studentReward = StudentReward;
+db.submission = Submission;
 
 db.Sequelize = Sequelize;
 
@@ -154,6 +156,14 @@ db.flightPlanItem.belongsTo(db.experience, {
 });
 db.experience.hasMany(db.flightPlanItem, {
   foreignKey: { name: "experienceId", allowNull: true },
+});
+
+db.submission.belongsTo(db.flightPlanItem, {
+  as: "flightPlanItem",
+  foreignKey: { name: "flightPlanItemId", allowNull: false },
+});
+db.flightPlanItem.hasMany(db.submission, {
+  as: "submission",
 });
 
 // notificaiton to user

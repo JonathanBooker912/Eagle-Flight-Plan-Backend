@@ -7,6 +7,12 @@ const router = Router();
 // Create a new FlightPlanItem
 router.post("/", [authenticate, isAdmin], flightPlanItem.create);
 
+router.post(
+  "/submit/:flightPlanItemId",
+  [authenticate],
+  flightPlanItem.createSubmission,
+);
+
 // Retrieve all FlightPlanItems
 router.get("/", [authenticate], flightPlanItem.findAll);
 
@@ -26,7 +32,7 @@ router.get(
 );
 
 // Update a FlightPlanItem with id
-router.put("/:id", [authenticate, isAdmin], flightPlanItem.update);
+router.put("/:id", [authenticate], flightPlanItem.update);
 
 // Delete a FlightPlanItem with id
 router.delete("/:id", [authenticate, isAdmin], flightPlanItem.delete);

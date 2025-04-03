@@ -13,7 +13,7 @@ const FlightPlanItem = SequelizeInstance.define(
       type: Sequelize.ENUM("Task", "Experience"),
     },
     status: {
-      type: Sequelize.ENUM("Complete", "Incomplete", "Pending"),
+      type: Sequelize.ENUM("Complete", "Incomplete", "Pending", "Registered"),
     },
     dueDate: {
       type: Sequelize.DATE,
