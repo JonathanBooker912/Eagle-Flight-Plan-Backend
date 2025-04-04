@@ -1,13 +1,14 @@
 import { Sequelize } from "sequelize";
 
 import BadExpTask from "./badExpTask.model.js";
-import BadgeFulfill from "./badgeFulfill.model.js";
+import BadgeAwarded from "./badgeAwarded.model.js";
 import Badge from "./badge.model.js";
 import Event from "./event.model.js";
 import EventType from "./eventType.model.js";
 import Experience from "./experience.model.js";
 import FlightPlan from "./flightPlan.model.js";
 import FlightPlanItem from "./flightPlanItem.model.js";
+import Link from "./link.model.js";
 import Major from "./major.model.js";
 import Notification from "./notification.model.js";
 import Reward from "./reward.model.js";
@@ -19,18 +20,20 @@ import Task from "./task.model.js";
 import User from "./user.model.js";
 import Session from "./session.model.js";
 import StudentReward from "./studentReward.model.js";
+import StudentStrength from "./studentStrength.model.js";
 import Submission from "./submission.model.js";
 
 const db = {};
 
 db.badExpTask = BadExpTask;
-db.badgeFulfill = BadgeFulfill;
+db.BadgeAwarded = BadgeAwarded;
 db.badge = Badge;
 db.event = Event;
 db.eventType = EventType;
 db.experience = Experience;
 db.flightPlan = FlightPlan;
 db.flightPlanItem = FlightPlanItem;
+db.link = Link;
 db.major = Major;
 db.notification = Notification;
 db.reward = Reward;
@@ -42,6 +45,7 @@ db.task = Task;
 db.user = User;
 db.session = Session;
 db.studentReward = StudentReward;
+db.StudentStrength = StudentStrength;
 db.submission = Submission;
 
 db.Sequelize = Sequelize;
@@ -82,9 +86,9 @@ Badge.belongsToMany(Student, { through: "studentBadge" });
 Badge.belongsToMany(Task, { through: db.badExpTask });
 Task.belongsToMany(Badge, { through: db.badExpTask });
 
-// BADGEFULFILL
-Badge.belongsToMany(Student, { through: db.badgeFulfill });
-Student.belongsToMany(Badge, { through: db.badgeFulfill });
+// BadgeAwarded
+Badge.belongsToMany(Student, { through: db.BadgeAwarded });
+Student.belongsToMany(Badge, { through: db.BadgeAwarded });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });
@@ -109,12 +113,38 @@ Event.belongsToMany(Experience, { through: "expOption" });
 Event.belongsToMany(Strength, { through: "eventStrength" });
 Strength.belongsToMany(Event, { through: "eventStrength" });
 
+Student.belongsToMany(Strength, {
+  through: StudentStrength,
+  foreignKey: "studentId",
+});
+Strength.belongsToMany(Student, {
+  through: StudentStrength,
+  foreignKey: "strengthId",
+});
+
 /// Flight Plan to Semester
 db.flightPlan.hasOne(db.semester, {
   as: "semester",
   foreignKey: { name: "id", allowNull: false },
 });
 db.semester.hasMany(db.flightPlan);
+
+db.student.hasOne(db.link, {
+  as: "link", // Alias for the link in the student model
+  foreignKey: {
+    name: "studentId", // The foreign key in the links table
+    allowNull: false, // The foreign key cannot be null
+  },
+});
+
+// In the link model:
+db.link.belongsTo(db.student, {
+  as: "student", // Alias for the student in the link model
+  foreignKey: {
+    name: "studentId", // The foreign key in the links table
+    allowNull: false, // The foreign key cannot be null
+  },
+});
 
 // Flight plan to student
 db.flightPlan.hasOne(db.student, {

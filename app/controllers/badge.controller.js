@@ -33,6 +33,31 @@ exports.findOne = async (req, res) => {
     });
 };
 
+exports.getBadgesForStudent = async (req, res) => {
+  const studentId = req.params.id; // Getting student ID from the URL parameter
+  const page = req.query.page || 1;
+  const pageSize = req.query.pageSize || 10;
+
+  try {
+    const result = await Badge.findAllBadgesForStudent(studentId, page, pageSize);
+
+    if (result.badges.length > 0) {
+      res.status(200).send(result);
+    } else {
+      res.status(200).send({
+        badges: [],
+        total: 0,
+        count: 0
+      });
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: "Error retrieving badges for student with id = " + studentId,
+    });
+    console.log("Error: ", err);
+  }
+};
+
 exports.findAll = async (req, res) => {
   await Badge.findAllBadges(
     req.query.page,

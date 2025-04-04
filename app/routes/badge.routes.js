@@ -16,6 +16,9 @@ router.get("/:id", [authenticate], badge.findOne);
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], badge.update);
 
+// Route to get badges for a student
+router.get("/student/:id", [authenticate], badge.getBadgesForStudent);
+
 // Delete a Role with id
 router.delete("/:id", [authenticate, isAdmin], badge.delete);
 

@@ -1,10 +1,15 @@
 import strengths from "../controllers/strength.controller.js";
-import { authenticate } from "../authorization/authorization.js";
 import { Router } from "express";
 
 const router = Router();
 
-// Retrieve all strengths
-router.get("/", [authenticate], strengths.findAll);
+router.get(
+  "/student/:id",
+  (req, res, next) => {
+    console.log("Strength route hit for student ID:", req.params.id);
+    next(); // Make sure to pass control to the next middleware
+  },
+  strengths.getStrengthsForStudent,
+);
 
 export default router;

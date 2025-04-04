@@ -115,7 +115,7 @@ exports.getAttendanceTypes = (req, res) => {
 
 // exports.getEventTypes = (req, res) => {
 //   res.send(Event.getEventTypes());
-// }; 
+// };
 
 exports.getCompletionTypes = (req, res) => {
   res.send(Event.getCompletionTypes());
