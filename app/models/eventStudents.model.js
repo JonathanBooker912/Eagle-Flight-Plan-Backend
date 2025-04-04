@@ -1,8 +1,6 @@
 // EventStudents.model.js
 import { Sequelize } from "sequelize";
 import SequelizeInstance from "../sequelizeUtils/sequelizeInstance.js";
-import Student from "./student.model.js"; // Import the Student model
-import Event from "./event.model.js"; // Import the Event model
 
 const EventStudents = SequelizeInstance.define("EventStudents", {
   eventId: {
@@ -23,6 +21,10 @@ const EventStudents = SequelizeInstance.define("EventStudents", {
     type: Sequelize.BOOLEAN,
     defaultValue: false, 
   },
+  recordedTime: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  }
 });
 
 

@@ -113,7 +113,8 @@ exports.registerStudents = async (eventId, studentIds) => {
   const registrations = studentIds.map(studentId => ({
     eventId,
     studentId,
-    attended: false, // Default to not attended
+    attended: false,
+    recordedTime: null,
   }));
   return await EventStudents.bulkCreate(registrations);
 };
@@ -131,6 +132,21 @@ exports.markAttendance = async (eventId, studentIds) => {
         eventStudent.attended = !eventStudent.attended;
         await eventStudent.save();
       }
+
+      if (eventStudent.attended) {
+        eventStudent.recordedTime = Date.now();
+        await eventStudent.save();
+      }
+      else {
+        eventStudent.recordedTime = null;
+        await eventStudent.save();
+      }
+
+      console.log("Date for eventStudent:");
+      console.log(Date.now());
+      console.log(eventStudent.recordedTime);
+
+      
     }
 
     return { message: "Attendance updated successfully." };
@@ -161,7 +177,8 @@ exports.getRegisteredStudents = async (eventId) => {
     const studentsWithAttendanceStatus = students.map((eventStudent) => ({
       id: eventStudent.id,
       studentId: eventStudent.studentId,
-      attendedStatus: eventStudent.attended, // Add the attended status from EventStudents table
+      attendedStatus: eventStudent.attended, 
+      recordedTime: eventStudent.recordedTime,
       user: {
         id: eventStudent["student.user.id"],
         fName: eventStudent["student.user.fName"],
