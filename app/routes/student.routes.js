@@ -20,4 +20,12 @@ router.put("/:id", [authenticate, isAdmin], student.update);
 // Delete a Student with id
 router.delete("/:id", [authenticate, isAdmin], student.delete);
 
+router.get(
+  "/flightPlan/:id",
+  [authenticate, isAdmin],
+  student.findStudentForFlightPlanId,
+);
+
+router.put("/:id/points", [authenticate], student.updatePoints);
+
 export default router;

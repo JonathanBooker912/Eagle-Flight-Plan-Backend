@@ -143,6 +143,28 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (req, res) => {
     });
 };
 
+exports.getPendingApprovals = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const searchQuery = req.query.searchQuery || "";
+
+    const response = await FlightPlanItem.getPendingApprovals(
+      page,
+      pageSize,
+      searchQuery,
+    );
+    res.send(response);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message ||
+        "Some error occurred while retrieving pending approvals.",
+    });
+    console.log("Error retrieving pending approvals: " + err);
+  }
+};
+
 exports.getFlightPlanItemTypes = (req, res) => {
   const response = FlightPlanItem.getFlightPlanItemTypes();
   res.send(response);
@@ -196,6 +218,34 @@ exports.update = async (req, res) => {
     res.status(400).send({
       message: err.message || "Error updating flightPlanItem.",
     });
+  }
+};
+
+exports.approveFlightPlanItem = async (req, res) => {
+  try {
+    const response = await FlightPlanItem.approveFlightPlanItem(req.params.id);
+    res.send(response);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message ||
+        "Some error occurred while approving the flight plan item.",
+    });
+    console.log("Error approving flight plan item: " + err);
+  }
+};
+
+exports.rejectFlightPlanItem = async (req, res) => {
+  try {
+    const response = await FlightPlanItem.rejectFlightPlanItem(req.params.id);
+    res.send(response);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message ||
+        "Some error occurred while rejecting the flight plan item.",
+    });
+    console.log("Error rejecting flight plan item: " + err);
   }
 };
 

@@ -3,10 +3,13 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 
 const FlightPlanItem = db.flightPlanItem;
+const FlightPlan = db.flightPlan;
 const Task = db.task;
 const Experience = db.experience;
 const Event = db.event;
-const SubmissionItem = db.submissionItem;
+const Submission = db.submission;
+const Student = db.student;
+const User = db.user;
 import FileHelpers from "../utilities/fileStorage.helper.js";
 // Module Exports Placeholder
 const exports = {};
@@ -104,6 +107,56 @@ exports.getFlightPlanItemStatuses = () => {
   return FlightPlanItem.getAttributes().status.values;
 };
 
+exports.getPendingApprovals = async (
+  page = 1,
+  pageSize = 10,
+  searchQuery = "",
+) => {
+  // Calculate offset for pagination
+  const offset = (page - 1) * pageSize;
+
+  // Build the where clause
+  const whereClause = { status: "Pending" };
+
+  // Add name filter if search query is provided
+  if (searchQuery && searchQuery.trim() !== "") {
+    whereClause.name = {
+      [Op.like]: `%${searchQuery}%`,
+    };
+  }
+
+  // Get total count for pagination
+  const totalCount = await FlightPlanItem.count({
+    where: whereClause,
+  });
+
+  // Get paginated results
+  const items = await FlightPlanItem.findAll({
+    where: whereClause,
+    include: [
+      {
+        model: Task,
+        as: "task",
+      },
+      {
+        model: Submission,
+        as: "submission",
+      },
+    ],
+    limit: pageSize,
+    offset: offset,
+    order: [["createdAt", "DESC"]], // Sort by newest first
+  });
+
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / pageSize);
+
+  return {
+    flightPlanItems: items,
+    count: totalPages,
+  };
+};
+
 exports.createFlightPlanItem = async (flightPlanItemData) => {
   return await FlightPlanItem.create(flightPlanItemData);
 };
@@ -137,6 +190,20 @@ exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {
   return await FlightPlanItem.update(flightPlanItemData, {
     where: { id: flightPlanItemId },
   });
+};
+
+exports.approveFlightPlanItem = async (flightPlanItemId) => {
+  return await FlightPlanItem.update(
+    { status: "Complete" },
+    { where: { id: flightPlanItemId } },
+  );
+};
+
+exports.rejectFlightPlanItem = async (flightPlanItemId) => {
+  return await FlightPlanItem.update(
+    { status: "Rejected" },
+    { where: { id: flightPlanItemId } },
+  );
 };
 
 exports.deleteFlightPlanItem = async (flightPlanItemId) => {

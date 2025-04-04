@@ -31,8 +31,26 @@ router.get(
   flightPlanItem.getFlightPlanItemStatuses,
 );
 
+router.get(
+  "/pendingApprovals",
+  [authenticate, isAdmin],
+  flightPlanItem.getPendingApprovals,
+);
+
 // Update a FlightPlanItem with id
 router.put("/:id", [authenticate], flightPlanItem.update);
+
+router.put(
+  "/:id/approve",
+  [authenticate, isAdmin],
+  flightPlanItem.approveFlightPlanItem,
+);
+
+router.put(
+  "/:id/reject",
+  [authenticate, isAdmin],
+  flightPlanItem.rejectFlightPlanItem,
+);
 
 // Delete a FlightPlanItem with id
 router.delete("/:id", [authenticate, isAdmin], flightPlanItem.delete);

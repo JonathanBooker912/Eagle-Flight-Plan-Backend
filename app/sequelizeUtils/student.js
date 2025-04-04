@@ -105,4 +105,32 @@ exports.delete = async (id) => {
   return await Student.destroy({ where: { id } });
 };
 
+exports.findStudentForFlightPlanId = async (flightPlanId) => {
+  const flightPlan = await FlightPlan.findByPk(flightPlanId);
+  return await Student.findOne({
+    where: { id: flightPlan.studentId },
+    include: [
+      {
+        model: User,
+        as: "user",
+      },
+    ],
+  });
+};
+
+exports.addPoints = async (studentId, points) => {
+  const student = await Student.findByPk(studentId);
+
+  if (!student) {
+    throw new Error("Student not found");
+  }
+
+  const newPoints = student.pointsAwarded + points;
+
+  return await Student.update(
+    { pointsAwarded: newPoints },
+    { where: { id: studentId } },
+  );
+};
+
 export default exports;
