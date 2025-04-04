@@ -1,8 +1,4 @@
 import Badge from "../sequelizeUtils/badge.js";
-import Student from "../models/student.model.js";
-import BadgeModel from "../models/badge.model.js";
-
-import FileHelpers from "../utilities/fileStorage.helper.js";
 
 const exports = {};
 
