@@ -110,7 +110,7 @@ exports.getCompletionTypes = () => {
 
 // Method to register students for an event
 exports.registerStudents = async (eventId, studentIds) => {
-  const registrations = studentIds.map(studentId => ({
+  const registrations = studentIds.map((studentId) => ({
     eventId,
     studentId,
     attended: false,
@@ -123,7 +123,7 @@ exports.registerStudents = async (eventId, studentIds) => {
 exports.markAttendance = async (eventId, studentIds) => {
   try {
     for (const studentId of studentIds) {
-      const eventStudent = await EventStudents.findOne({ 
+      const eventStudent = await EventStudents.findOne({
         where: { eventId, studentId },
       });
 
@@ -136,8 +136,7 @@ exports.markAttendance = async (eventId, studentIds) => {
       if (eventStudent.attended) {
         eventStudent.recordedTime = Date.now();
         await eventStudent.save();
-      }
-      else {
+      } else {
         eventStudent.recordedTime = null;
         await eventStudent.save();
       }
@@ -145,8 +144,6 @@ exports.markAttendance = async (eventId, studentIds) => {
       console.log("Date for eventStudent:");
       console.log(Date.now());
       console.log(eventStudent.recordedTime);
-
-      
     }
 
     return { message: "Attendance updated successfully." };
@@ -155,7 +152,6 @@ exports.markAttendance = async (eventId, studentIds) => {
     throw new Error("Error marking attendance.");
   }
 };
-
 
 // Method to fetch students registered for an event
 exports.getRegisteredStudents = async (eventId) => {
@@ -177,7 +173,7 @@ exports.getRegisteredStudents = async (eventId) => {
     const studentsWithAttendanceStatus = students.map((eventStudent) => ({
       id: eventStudent.id,
       studentId: eventStudent.studentId,
-      attendedStatus: eventStudent.attended, 
+      attendedStatus: eventStudent.attended,
       recordedTime: eventStudent.recordedTime,
       user: {
         id: eventStudent["student.user.id"],
@@ -188,7 +184,9 @@ exports.getRegisteredStudents = async (eventId) => {
       },
     }));
 
-    console.log(`Registered students found: ${JSON.stringify(studentsWithAttendanceStatus)}`);
+    console.log(
+      `Registered students found: ${JSON.stringify(studentsWithAttendanceStatus)}`,
+    );
     return studentsWithAttendanceStatus;
   } catch (error) {
     console.error("Error fetching registered students:", error);

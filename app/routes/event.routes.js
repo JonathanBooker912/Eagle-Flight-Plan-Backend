@@ -42,9 +42,17 @@ router.post("/:id/register", [authenticate, isAdmin], event.registerStudents);
 router.post("/:id/attend", [authenticate, isAdmin], event.markAttendance);
 
 // Retrieve registered students for an event
-router.get("/:id/registered-students", [authenticate], event.getRegisteredStudents);
+router.get(
+  "/:id/registered-students",
+  [authenticate],
+  event.getRegisteredStudents,
+);
 
 // Retrieve attending students for an event
-router.get("/:id/attending-students", [authenticate], event.getAttendingStudents);
+router.get(
+  "/:id/attending-students",
+  [authenticate],
+  event.getAttendingStudents,
+);
 
 export default router;

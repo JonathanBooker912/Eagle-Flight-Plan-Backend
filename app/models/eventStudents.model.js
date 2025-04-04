@@ -13,20 +13,19 @@ const EventStudents = SequelizeInstance.define("EventStudents", {
   studentId: {
     type: Sequelize.INTEGER,
     references: {
-      model: "students", 
+      model: "students",
       key: "id",
     },
   },
   attended: {
     type: Sequelize.BOOLEAN,
-    defaultValue: false, 
+    defaultValue: false,
   },
   recordedTime: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
-  }
+    defaultValue: new Date(),
+  },
 });
-
 
 // Export the model
 export default EventStudents;

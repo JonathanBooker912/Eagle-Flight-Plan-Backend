@@ -127,6 +127,8 @@ Strength.belongsToMany(Student, {
 // Define associations
 EventStudents.belongsTo(Student, { foreignKey: "studentId" });
 EventStudents.belongsTo(Event, { foreignKey: "eventId" });
+EventStudents.belongsTo(Student, { foreignKey: "studentId" });
+EventStudents.belongsTo(Event, { foreignKey: "eventId" });
 
 //Event to Students
 db.event.belongsToMany(db.student, {

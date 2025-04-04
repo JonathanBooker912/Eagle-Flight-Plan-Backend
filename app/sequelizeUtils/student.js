@@ -65,39 +65,35 @@ exports.findAll = async ({
   let condition = null;
 
   if (filter) {
-      condition = {
-          [Op.or]: [
-              { '$user.fName$': { [Op.like]: `%${filter}%` } },
-              { '$user.lName$': { [Op.like]: `%${filter}%` } },
-              { '$user.fullName$': { [Op.like]: `%${filter}%` } },
-              { '$user.email$': { [Op.like]: `%${filter}%` } },
-          ],
-      };
+    condition = {
+      [Op.or]: [
+        { "$user.fName$": { [Op.like]: `%${filter}%` } },
+        { "$user.lName$": { [Op.like]: `%${filter}%` } },
+        { "$user.fullName$": { [Op.like]: `%${filter}%` } },
+        { "$user.email$": { [Op.like]: `%${filter}%` } },
+      ],
+    };
   } else if (id) {
-      condition = {
-          [Op.or]: [
-              { '$user.id$': { [Op.like]: `%${id}%` } },
-          ],
-      };
+    condition = {
+      [Op.or]: [{ "$user.id$": { [Op.like]: `%${id}%` } }],
+    };
   } else if (email) {
-      condition = {
-          [Op.or]: [
-              { '$user.email$': { [Op.like]: `%${email}%` } },
-          ],
-      };
+    condition = {
+      [Op.or]: [{ "$user.email$": { [Op.like]: `%${email}%` } }],
+    };
   }
-  
+
   return await Student.findAndCountAll({
-      where: {}, // No conditions on Student
-      offset,
-      limit,
-      include: [{ model: User, as: "user", required: true, where: condition }],
-  });  
+    where: {}, // No conditions on Student
+    offset,
+    limit,
+    include: [{ model: User, as: "user", required: true, where: condition }],
+  });
 };
 
 exports.findById = async (id) => {
   return await Student.findByPk(id, {
-    include: [{ model: User, as: "user" }], 
+    include: [{ model: User, as: "user" }],
   });
 };
 

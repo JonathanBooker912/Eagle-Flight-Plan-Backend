@@ -122,10 +122,10 @@ exports.getCompletionTypes = (req, res) => {
 };
 
 exports.registerStudents = async (req, res) => {
-  const eventId = req.params.id; 
-  const {studentIds} = req.body; 
+  const eventId = req.params.id;
+  const { studentIds } = req.body;
   console.log(eventId);
-  console.log(studentIds)
+  console.log(studentIds);
   try {
     const data = await Event.registerStudents(eventId, studentIds);
     res.send(data);
@@ -146,15 +146,19 @@ exports.markAttendance = async (req, res) => {
   }
 
   try {
-    console.log(`Marking attendance for eventId: ${eventId}, studentIds:`, studentIds);
+    console.log(
+      `Marking attendance for eventId: ${eventId}, studentIds:`,
+      studentIds,
+    );
 
     const data = await Event.markAttendance(eventId, studentIds);
     console.log("Database update result:", data);
     res.send(data);
-
   } catch (err) {
     console.error("Error marking attendance:", err);
-    res.status(500).send({ message: "Error marking attendance.", error: err.message });
+    res
+      .status(500)
+      .send({ message: "Error marking attendance.", error: err.message });
   }
 };
 
