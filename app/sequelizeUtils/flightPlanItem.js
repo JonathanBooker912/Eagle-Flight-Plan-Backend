@@ -3,13 +3,10 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 
 const FlightPlanItem = db.flightPlanItem;
-const FlightPlan = db.flightPlan;
 const Task = db.task;
 const Experience = db.experience;
 const Event = db.event;
 const Submission = db.submission;
-const Student = db.student;
-const User = db.user;
 import FileHelpers from "../utilities/fileStorage.helper.js";
 // Module Exports Placeholder
 const exports = {};
@@ -178,7 +175,7 @@ exports.createSubmission = async (flightPlanItemId, { submissionItems }) => {
 
   submissionItems.forEach(async (submissionItem) => {
     if (submissionItem.submissionType == "text") {
-      await SubmissionItem.create(submissionItem);
+      await Submission.create(submissionItem);
       return;
     }
 
