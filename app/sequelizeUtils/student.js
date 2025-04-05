@@ -133,4 +133,23 @@ exports.addPoints = async (studentId, points) => {
   );
 };
 
+exports.updatePoints = async (studentId, points) => {
+  const student = await Student.findByPk(studentId);
+  const newPoints = student.pointsAwarded + points;
+  return await Student.update(
+    { pointsAwarded: newPoints },
+    { where: { id: studentId } },
+  );
+};
+
+exports.getPoints = async (studentId) => {
+  const student = await Student.findByPk(studentId);
+  return student.pointsAwarded;
+};
+
+exports.getStudent = async (studentId) => {
+  const student = await Student.findByPk(studentId);
+  return student;
+};
+
 export default exports;

@@ -6,11 +6,12 @@ const {
   task: Task,
   experience: Experience,
   event: Event,
+  semester: Semester,
 } = db;
 
 // Sequelize Utilities
 import Student from "../sequelizeUtils/student.js";
-import Semester from "../sequelizeUtils/semester.js";
+import SemesterUtils from "../sequelizeUtils/semester.js";
 
 // Helpers
 import {
@@ -43,7 +44,7 @@ exports.generateFlightPlan = async (studentId) => {
   }
 
   const student = await Student.getStudentWithFlightPlanInfo(studentId);
-  const currentSemester = await Semester.getCurrentSemester();
+  const currentSemester = await SemesterUtils.getCurrentSemester();
 
   if (!currentSemester) {
     throw Error("Unable to get current semester");
@@ -83,6 +84,10 @@ exports.findFlightPlanForStudent = async (studentId) => {
   return await FlightPlan.findAll({
     where: { studentId },
     include: [
+      {
+        model: Semester,
+        as: "semester",
+      },
       {
         model: FlightPlanItem,
         include: [

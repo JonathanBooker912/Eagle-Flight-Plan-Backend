@@ -135,4 +135,29 @@ exports.updatePoints = async (req, res) => {
     });
 };
 
+exports.getPoints = async (req, res) => {
+  await Student.getPoints(req.params.id)
+    .then((data) => {
+      console.log("data", data);
+      res.send({ points: data });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving points.",
+      });
+    });
+};
+
+exports.getStudent = async (req, res) => {
+  await Student.getStudent(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving student.",
+      });
+    });
+};
+
 export default exports;

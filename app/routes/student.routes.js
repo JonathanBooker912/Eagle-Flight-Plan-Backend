@@ -26,6 +26,9 @@ router.get(
   student.findStudentForFlightPlanId,
 );
 
-router.put("/:id/points", [authenticate], student.updatePoints);
+router.put("/:id/points", [authenticate, isAdmin], student.updatePoints);
 
+router.get("/:id/points", [authenticate, isAdmin], student.getPoints);
+
+router.get("/:id", [authenticate, isAdmin], student.getStudent);
 export default router;
