@@ -207,4 +207,86 @@ exports.getAttendingStudents = async (req, res) => {
   }
 };
 
+exports.getEventFulfillableExperiences = async (req, res) => {
+  try {
+    const { eventId, studentId } = req.params;
+    const data = await Event.getEventFulfillableExperiences(eventId, studentId);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message || "Error retrieving fulfillable experiences for event.",
+    });
+    console.log("Could not get fulfillable experiences:", err);
+  }
+};
+
+exports.generateCheckInToken = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { expirationTimestamp } = req.body;
+
+    // Validate expiration timestamp if provided
+    if (expirationTimestamp !== undefined) {
+      const timestamp = new Date(expirationTimestamp);
+      if (isNaN(timestamp.getTime())) {
+        return res.status(400).send({
+          message: "Invalid expiration timestamp format",
+        });
+      }
+    }
+
+    const checkInToken = await Event.generateEventCheckInToken(
+      eventId,
+      expirationTimestamp,
+    );
+
+    res.send({
+      token: checkInToken.token,
+      expirationTimestamp: checkInToken.expirationTimestamp,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error generating check-in token.",
+    });
+    console.log("Could not generate check-in token:", err);
+  }
+};
+
+exports.getCheckInToken = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { expirationTimestamp } = req.body;
+
+    // Validate expiration timestamp if provided
+    if (expirationTimestamp !== undefined) {
+      const timestamp = new Date(expirationTimestamp);
+      if (isNaN(timestamp.getTime())) {
+        return res.status(400).send({
+          message: "Invalid expiration timestamp format",
+        });
+      }
+    }
+
+    const checkInToken = await Event.getEventCheckInToken(
+      eventId,
+      expirationTimestamp,
+    );
+    if (!checkInToken) {
+      return res.status(404).send({
+        message: "Check-in token not found",
+      });
+    }
+    res.send({
+      token: checkInToken.token,
+      expirationTimestamp: checkInToken.expirationTimestamp,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error getting check-in token.",
+    });
+    console.log("Could not get check-in token:", err);
+  }
+};
+
 export default exports;

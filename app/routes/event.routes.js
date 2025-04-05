@@ -58,4 +58,25 @@ router.get(
   event.getAttendingStudents,
 );
 
+// Get flight plan items that can be fulfilled by an event
+router.get(
+  "/:eventId/fulfillableFlightPlanItems/:studentId",
+  [authenticate],
+  event.getEventFulfillableExperiences,
+);
+
+// Generate a check-in token for an event
+router.post(
+  "/:eventId/check-in-token",
+  [authenticate, isAdmin],
+  event.generateCheckInToken,
+);
+
+// Get the current check-in token for an event
+router.get(
+  "/:eventId/check-in-token",
+  [authenticate, isAdmin],
+  event.getCheckInToken,
+);
+
 export default router;
