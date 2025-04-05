@@ -121,4 +121,71 @@ exports.getCompletionTypes = (req, res) => {
   res.send(Event.getCompletionTypes());
 };
 
+exports.registerStudents = async (req, res) => {
+  const eventId = req.params.id;
+  const { studentIds } = req.body;
+  console.log(eventId);
+  console.log(studentIds);
+  try {
+    const data = await Event.registerStudents(eventId, studentIds);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while registering students.",
+    });
+  }
+};
+
+exports.markAttendance = async (req, res) => {
+  const eventId = req.params.id;
+  const studentIds = req.body.studentIds;
+
+  if (!eventId || !Array.isArray(studentIds) || studentIds.length === 0) {
+    console.error("Invalid payload received:", req.body);
+    return res.status(400).send({ message: "Invalid eventId or studentIds." });
+  }
+
+  try {
+    console.log(
+      `Marking attendance for eventId: ${eventId}, studentIds:`,
+      studentIds,
+    );
+
+    const data = await Event.markAttendance(eventId, studentIds);
+    console.log("Database update result:", data);
+    res.send(data);
+  } catch (err) {
+    console.error("Error marking attendance:", err);
+    res
+      .status(500)
+      .send({ message: "Error marking attendance.", error: err.message });
+  }
+};
+
+exports.getRegisteredStudents = async (req, res) => {
+  const eventId = req.params.id; // Get event ID from request params
+  try {
+    const students = await Event.getRegisteredStudents(eventId);
+    res.send(students);
+  } catch (err) {
+    console.error("Error retrieving registered students:", err);
+    res.status(500).send({
+      message: "Error retrieving registered students.",
+      error: err.message, // Include error message for debugging
+    });
+  }
+};
+
+exports.getAttendingStudents = async (req, res) => {
+  const eventId = req.params.id; // Get event ID from request params
+  try {
+    const students = await Event.getAttendingStudents(eventId);
+    res.send(students);
+  } catch (err) {
+    res.status(500).send({
+      message: "Error retrieving attending students.",
+    });
+  }
+};
+
 export default exports;

@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import { Op } from "sequelize";
 const Event = db.event;
 const Strength = db.strength;
+const EventStudents = db.eventStudents;
 
 const exports = {};
 
@@ -107,4 +108,108 @@ exports.getCompletionTypes = () => {
   return Event.getAttributes().completionType.values;
 };
 
+// Method to register students for an event
+exports.registerStudents = async (eventId, studentIds) => {
+  const registrations = studentIds.map((studentId) => ({
+    eventId,
+    studentId,
+    attended: false,
+    recordedTime: null,
+  }));
+  return await EventStudents.bulkCreate(registrations);
+};
+
+// In your backend, modify the markAttendance function to toggle the attendance status
+exports.markAttendance = async (eventId, studentIds) => {
+  try {
+    for (const studentId of studentIds) {
+      const eventStudent = await EventStudents.findOne({
+        where: { eventId, studentId },
+      });
+
+      if (eventStudent) {
+        // Toggle attendance status
+        eventStudent.attended = !eventStudent.attended;
+        await eventStudent.save();
+      }
+
+      if (eventStudent.attended) {
+        eventStudent.recordedTime = Date.now();
+        await eventStudent.save();
+      } else {
+        eventStudent.recordedTime = null;
+        await eventStudent.save();
+      }
+
+      console.log("Date for eventStudent:");
+      console.log(Date.now());
+      console.log(eventStudent.recordedTime);
+    }
+
+    return { message: "Attendance updated successfully." };
+  } catch (error) {
+    console.error("Error marking attendance:", error);
+    throw new Error("Error marking attendance.");
+  }
+};
+
+// Method to fetch students registered for an event
+exports.getRegisteredStudents = async (eventId) => {
+  try {
+    console.log(`Fetching registered students for event ID: ${eventId}`);
+
+    const students = await EventStudents.findAll({
+      where: { eventId },
+      include: [
+        {
+          model: db.student,
+          include: [{ model: db.user, as: "user" }], // Include user data
+        },
+      ],
+      raw: true, // Raw true will make Sequelize return a plain object (avoids circular reference)
+    });
+
+    // Transform the data to remove circular references and return a cleaner structure
+    const studentsWithAttendanceStatus = students.map((eventStudent) => ({
+      id: eventStudent.id,
+      studentId: eventStudent.studentId,
+      attendedStatus: eventStudent.attended,
+      recordedTime: eventStudent.recordedTime,
+      user: {
+        id: eventStudent["student.user.id"],
+        fName: eventStudent["student.user.fName"],
+        lName: eventStudent["student.user.lName"],
+        fullName: eventStudent["student.user.fullName"],
+        email: eventStudent["student.user.email"],
+      },
+    }));
+
+    console.log(
+      `Registered students found: ${JSON.stringify(studentsWithAttendanceStatus)}`,
+    );
+    return studentsWithAttendanceStatus;
+  } catch (error) {
+    console.error("Error fetching registered students:", error);
+    throw new Error("Error retrieving registered students.");
+  }
+};
+
+// Method to fetch attending students for an event
+exports.getAttendingStudents = async (eventId) => {
+  try {
+    const students = await EventStudents.findAll({
+      where: { eventId, attended: true },
+      include: [
+        {
+          model: db.student,
+          include: [{ model: db.user, as: "user" }], // Include user data
+        },
+      ],
+    });
+    return students;
+  } catch (error) {
+    console.error("Error fetching attending students:", error);
+    throw new Error("Error retrieving attending students.");
+  }
+};
 export default exports;

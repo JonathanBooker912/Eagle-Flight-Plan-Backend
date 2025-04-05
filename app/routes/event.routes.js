@@ -35,4 +35,24 @@ router.get("/types/attendanceTypes", [authenticate], event.getAttendanceTypes);
 
 router.get("/types/completionTypes", [authenticate], event.getCompletionTypes);
 
+// Register students for an event
+router.post("/:id/register", [authenticate, isAdmin], event.registerStudents);
+
+// Mark attendance for students at an event
+router.post("/:id/attend", [authenticate, isAdmin], event.markAttendance);
+
+// Retrieve registered students for an event
+router.get(
+  "/:id/registered-students",
+  [authenticate],
+  event.getRegisteredStudents,
+);
+
+// Retrieve attending students for an event
+router.get(
+  "/:id/attending-students",
+  [authenticate],
+  event.getAttendingStudents,
+);
+
 export default router;
