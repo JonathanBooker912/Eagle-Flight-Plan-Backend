@@ -28,7 +28,7 @@ router.get(
 
 router.put("/:id/points", [authenticate, isAdmin], student.updatePoints);
 
-router.get("/:id/points", [authenticate, isAdmin], student.getPoints);
+router.get("/:id/points", [authenticate], student.getPoints);
 
 router.get("/:id", [authenticate, isAdmin], student.getStudent);
 export default router;
