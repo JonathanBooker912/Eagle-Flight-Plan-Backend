@@ -96,7 +96,7 @@ Student.belongsToMany(Badge, { through: db.BadgeAwarded });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });
-Major.belongsToMany(Student, { through: "studentMajors" });
+Major.belongsToMany(Student, { through: "studentMajor" });
 
 Student.belongsToMany(Reward, { through: db.studentReward });
 Reward.belongsToMany(Student, { through: db.studentReward });
