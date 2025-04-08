@@ -79,4 +79,11 @@ router.get(
   event.getCheckInToken,
 );
 
+// Student check-in to event using token
+router.post(
+  "/:eventId/check-in/:studentId",
+  [authenticate],
+  event.checkInStudent,
+);
+
 export default router;

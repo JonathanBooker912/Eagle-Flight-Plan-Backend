@@ -39,7 +39,11 @@ exports.getBadgesForStudent = async (req, res) => {
   const pageSize = req.query.pageSize || 10;
 
   try {
-    const result = await Badge.findAllBadgesForStudent(studentId, page, pageSize);
+    const result = await Badge.findAllBadgesForStudent(
+      studentId,
+      page,
+      pageSize,
+    );
 
     if (result.badges.length > 0) {
       res.status(200).send(result);
@@ -47,7 +51,7 @@ exports.getBadgesForStudent = async (req, res) => {
       res.status(200).send({
         badges: [],
         total: 0,
-        count: 0
+        count: 0,
       });
     }
   } catch (err) {

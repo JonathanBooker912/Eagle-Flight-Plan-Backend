@@ -23,12 +23,10 @@ exports.create = async (req, res) => {
     req.body.pointsAwarded == null ||
     req.body.pointsUsed == null
   ) {
-    return res
-      .status(400)
-      .send({
-        message:
-          "Graduation date, points awarded, and points used cannot be empty!",
-      });
+    return res.status(400).send({
+      message:
+        "Graduation date, points awarded, and points used cannot be empty!",
+    });
   }
 
   const studentData = {

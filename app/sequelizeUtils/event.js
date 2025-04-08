@@ -475,4 +475,61 @@ exports.getAttendingStudents = async (eventId) => {
     throw new Error("Error retrieving attending students.");
   }
 };
+
+exports.checkInStudent = async (eventId, studentId, token) => {
+  // Get the event to verify it exists
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Get the student to verify they exist
+  const student = await db.student.findByPk(studentId);
+  if (!student) {
+    throw new Error(`Student with id ${studentId} not found`);
+  }
+
+  // Find the token and verify it's valid
+  const checkInToken = await EventCheckInToken.findOne({
+    where: {
+      eventId,
+      token,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only accept tokens that haven't expired
+      },
+    },
+  });
+
+  if (!checkInToken) {
+    throw new Error("Invalid or expired check-in token");
+  }
+
+  // Check if student is already checked in
+  const existingCheckIn = await db.eventStudents.findOne({
+    where: {
+      eventId,
+      studentId,
+    },
+  });
+
+  if (existingCheckIn && existingCheckIn.attended) {
+    throw new Error("Student is already checked in to this event");
+  } else if (existingCheckIn) {
+    // Update existing check-in record
+    existingCheckIn.attended = true;
+    await existingCheckIn.save();
+    return existingCheckIn;
+  }
+
+  // Create the check-in record
+  const checkIn = await db.eventStudents.create({
+    eventId,
+    studentId,
+    attended: true,
+    checkInTime: new Date(),
+  });
+
+  return checkIn;
+};
+
 export default exports;
