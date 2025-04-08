@@ -37,7 +37,11 @@ exports.findAllBadges = async (page = 1, pageSize = 10, searchQuery = "") => {
   return { badges, count: totalPages };
 };
 
-exports.findAllBadgesForStudent = async (studentId, page = 1, pageSize = 10) => {
+exports.findAllBadgesForStudent = async (
+  studentId,
+  page = 1,
+  pageSize = 10,
+) => {
   page = parseInt(page, 10);
   pageSize = parseInt(pageSize, 10);
   const offset = (page - 1) * pageSize;
