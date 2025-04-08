@@ -12,4 +12,6 @@ router.get(
   strengths.getStrengthsForStudent,
 );
 
+router.get("/", strengths.getAllStrengths);
+
 export default router;

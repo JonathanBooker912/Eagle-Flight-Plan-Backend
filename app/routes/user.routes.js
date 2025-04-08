@@ -21,6 +21,6 @@ router.get("/:id", [authenticate], user.findOne);
 router.put("/:id", [authenticate], user.update);
 
 // Delete a User with id
-router.delete("/:id", [authenticate], user.delete);
+router.delete("/:id", [authenticate, isAdmin], user.delete);
 
 export default router;

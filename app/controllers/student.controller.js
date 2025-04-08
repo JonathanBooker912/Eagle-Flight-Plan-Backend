@@ -15,7 +15,6 @@ exports.findStudentForUserId = async (req, res) => {
     });
 };
 
-// Create and Save a new Student
 exports.create = async (req, res) => {
   // Validate required fields in the request body
   if (
@@ -23,12 +22,10 @@ exports.create = async (req, res) => {
     req.body.pointsAwarded == null ||
     req.body.pointsUsed == null
   ) {
-    return res
-      .status(400)
-      .send({
-        message:
-          "Graduation date, points awarded, and points used cannot be empty!",
-      });
+    return res.status(400).send({
+      message:
+        "Graduation date, points awarded, and points used cannot be empty!",
+    });
   }
 
   const studentData = {
@@ -110,6 +107,57 @@ exports.delete = async (req, res) => {
         .status(500)
         .send({ message: `Error deleting Student with id=${req.params.id}` }),
     );
+};
+
+exports.findStudentForFlightPlanId = async (req, res) => {
+  await Student.findStudentForFlightPlanId(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while retrieving student for flight plan id.",
+      });
+    });
+};
+
+exports.updatePoints = async (req, res) => {
+  await Student.updatePoints(req.params.id, req.body.points)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while updating points.",
+      });
+    });
+};
+
+exports.getPoints = async (req, res) => {
+  await Student.getPoints(req.params.id)
+    .then((data) => {
+      console.log("data", data);
+      res.send({ points: data });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving points.",
+      });
+    });
+};
+
+exports.getStudent = async (req, res) => {
+  await Student.getStudent(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving student.",
+      });
+    });
 };
 
 export default exports;
