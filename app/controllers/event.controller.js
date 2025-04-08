@@ -33,6 +33,25 @@ exports.findOne = async (req, res) => {
     });
 };
 
+exports.findByToken = async (req, res) => {
+  await Event.findEventByToken(req.params.eventToken)
+    .then((data) => {
+      if (data) {
+        res.send(data);
+      } else {
+        res.status(404).send({
+          message: `Cannot find event with token = ${req.params.eventToken}.`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error retrieving event with token = " + req.params.eventToken,
+      });
+      console.log("Could not find event: " + err);
+    });
+};
+
 exports.findAll = async (req, res) => {
   const {
     page,
@@ -185,6 +204,112 @@ exports.getAttendingStudents = async (req, res) => {
     res.status(500).send({
       message: "Error retrieving attending students.",
     });
+  }
+};
+
+exports.getEventFulfillableExperiences = async (req, res) => {
+  try {
+    const { eventId, studentId } = req.params;
+    const data = await Event.getEventFulfillableExperiences(eventId, studentId);
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        err.message || "Error retrieving fulfillable experiences for event.",
+    });
+    console.log("Could not get fulfillable experiences:", err);
+  }
+};
+
+exports.generateCheckInToken = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { expirationTimestamp } = req.body;
+
+    // Validate expiration timestamp if provided
+    if (expirationTimestamp !== undefined) {
+      const timestamp = new Date(expirationTimestamp);
+      if (isNaN(timestamp.getTime())) {
+        return res.status(400).send({
+          message: "Invalid expiration timestamp format",
+        });
+      }
+    }
+
+    const checkInToken = await Event.generateEventCheckInToken(
+      eventId,
+      expirationTimestamp,
+    );
+
+    res.send({
+      token: checkInToken.token,
+      expirationTimestamp: checkInToken.expirationTimestamp,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error generating check-in token.",
+    });
+    console.log("Could not generate check-in token:", err);
+  }
+};
+
+exports.getCheckInToken = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+    const { expirationTimestamp } = req.body;
+
+    // Validate expiration timestamp if provided
+    if (expirationTimestamp !== undefined) {
+      const timestamp = new Date(expirationTimestamp);
+      if (isNaN(timestamp.getTime())) {
+        return res.status(400).send({
+          message: "Invalid expiration timestamp format",
+        });
+      }
+    }
+
+    const checkInToken = await Event.getEventCheckInToken(
+      eventId,
+      expirationTimestamp,
+    );
+    if (!checkInToken) {
+      return res.status(404).send({
+        message: "Check-in token not found",
+      });
+    }
+    res.send({
+      token: checkInToken.token,
+      expirationTimestamp: checkInToken.expirationTimestamp,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error getting check-in token.",
+    });
+    console.log("Could not get check-in token:", err);
+  }
+};
+
+exports.checkInStudent = async (req, res) => {
+  try {
+    const { eventId, studentId } = req.params;
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).send({
+        message: "Check-in token is required",
+      });
+    }
+
+    const checkIn = await Event.checkInStudent(eventId, studentId, token);
+    res.send({
+      message: "Successfully checked in to event",
+      checkIn,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Error checking in student to event",
+    });
+    console.log("Could not check in student:", err);
   }
 };
 

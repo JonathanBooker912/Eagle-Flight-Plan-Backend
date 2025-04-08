@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 const Event = db.event;
+const EventCheckInToken = db.eventCheckinTokens;
 const Strength = db.strength;
 const EventStudents = db.eventStudents;
 
@@ -80,6 +81,24 @@ exports.findOneEvent = async (eventId) => {
   return await Event.findByPk(eventId);
 };
 
+exports.findEventByToken = async (eventToken) => {
+  const data = await EventCheckInToken.findOne({
+    where: {
+      token: eventToken,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only accept tokens that haven't expired
+      },
+    },
+    include: [
+      {
+        model: Event,
+        as: "event",
+      },
+    ],
+  });
+  return data?.event;
+};
+
 exports.createEvent = async (eventData) => {
   return await Event.create(eventData);
 };
@@ -106,6 +125,254 @@ exports.getAttendanceTypes = () => {
 
 exports.getCompletionTypes = () => {
   return Event.getAttributes().completionType.values;
+};
+
+exports.getEventFulfillableExperiences = async (eventId, studentId) => {
+  // Get the event with its associated experiences through the expOption join table
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: db.experience,
+        through: { attributes: [] }, // Don't include join table attributes
+        as: "experiences",
+      },
+    ],
+  });
+
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Get the student's active flight plan
+  const student = await db.student.findOne({
+    where: { id: studentId },
+    include: [
+      {
+        model: db.flightPlan,
+        include: [
+          {
+            model: db.flightPlanItem,
+            include: [
+              {
+                model: db.experience,
+                as: "experience",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!student || !student.flightPlans || student.flightPlans.length === 0) {
+    throw new Error(`No active flight plan found for student ${studentId}`);
+  }
+
+  // Get the most recent flight plan
+  const activeFlightPlan = student.flightPlans[0];
+
+  // Get all incomplete flight plan items with experiences
+  const incompleteFlightPlanItems = activeFlightPlan.flightPlanItems.filter(
+    (item) => item.status !== "Complete" && item.experience,
+  );
+
+  // Cross-reference the event's experiences with the flight plan items
+  const fulfillableFlightPlanItems = incompleteFlightPlanItems.filter(
+    (flightPlanItem) =>
+      event.experiences.some(
+        (eventExp) => eventExp.id === flightPlanItem.experience.id,
+      ),
+  );
+
+  return {
+    eventId,
+    eventName: event.name,
+    fulfillableFlightPlanItems: fulfillableFlightPlanItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      status: item.status,
+      dueDate: item.dueDate,
+      experience: {
+        id: item.experience.id,
+        name: item.experience.name,
+        description: item.experience.description,
+        points: item.experience.points,
+      },
+    })),
+  };
+};
+
+exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
+  // Generate a token using timestamp and eventId
+  const timestamp = Date.now();
+  const token = `${eventId}-${timestamp}`;
+
+  // Get the event to check its end time
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Use provided expiration timestamp, event end time, or default to 24 hours from now
+  const finalExpirationTimestamp = expirationTimestamp
+    ? new Date(expirationTimestamp)
+    : event.endTime
+      ? new Date(event.endTime)
+      : new Date(timestamp + 24 * 60 * 60 * 1000);
+
+  // Create the token in the database
+  const checkInToken = await EventCheckInToken.create({
+    token,
+    eventId,
+    expirationTimestamp: finalExpirationTimestamp,
+  });
+
+  return checkInToken;
+};
+
+exports.getEventCheckInToken = async (eventId) => {
+  // Get the event to check its end time
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Find the most recent valid token for this event
+  const currentToken = await EventCheckInToken.findOne({
+    where: {
+      eventId,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only get tokens that haven't expired
+      },
+    },
+    order: [["createdAt", "DESC"]], // Get the most recent token
+  });
+
+  return currentToken;
+};
+
+exports.getEventFulfillableExperiences = async (eventId, studentId) => {
+  // Get the event with its associated experiences through the expOption join table
+  const event = await Event.findByPk(eventId, {
+    include: [
+      {
+        model: db.experience,
+        through: { attributes: [] }, // Don't include join table attributes
+        as: "experiences",
+      },
+    ],
+  });
+
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Get the student's active flight plan
+  const student = await db.student.findOne({
+    where: { id: studentId },
+    include: [
+      {
+        model: db.flightPlan,
+        include: [
+          {
+            model: db.flightPlanItem,
+            include: [
+              {
+                model: db.experience,
+                as: "experience",
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!student || !student.flightPlans || student.flightPlans.length === 0) {
+    throw new Error(`No active flight plan found for student ${studentId}`);
+  }
+
+  // Get the most recent flight plan
+  const activeFlightPlan = student.flightPlans[0];
+
+  // Get all incomplete flight plan items with experiences
+  const incompleteFlightPlanItems = activeFlightPlan.flightPlanItems.filter(
+    (item) => item.status !== "Complete" && item.experience,
+  );
+
+  // Cross-reference the event's experiences with the flight plan items
+  const fulfillableFlightPlanItems = incompleteFlightPlanItems.filter(
+    (flightPlanItem) =>
+      event.experiences.some(
+        (eventExp) => eventExp.id === flightPlanItem.experience.id,
+      ),
+  );
+
+  return {
+    eventId,
+    eventName: event.name,
+    fulfillableFlightPlanItems: fulfillableFlightPlanItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      status: item.status,
+      dueDate: item.dueDate,
+      experience: {
+        id: item.experience.id,
+        name: item.experience.name,
+        description: item.experience.description,
+        points: item.experience.points,
+      },
+    })),
+  };
+};
+
+exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
+  // Generate a token using timestamp and eventId
+  const timestamp = Date.now();
+  const token = `${eventId}-${timestamp}`;
+
+  // Get the event to check its end time
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Use provided expiration timestamp, event end time, or default to 24 hours from now
+  const finalExpirationTimestamp = expirationTimestamp
+    ? new Date(expirationTimestamp)
+    : event.endTime
+      ? new Date(event.endTime)
+      : new Date(timestamp + 24 * 60 * 60 * 1000);
+
+  // Create the token in the database
+  const checkInToken = await EventCheckInToken.create({
+    token,
+    eventId,
+    expirationTimestamp: finalExpirationTimestamp,
+  });
+
+  return checkInToken;
+};
+
+exports.getEventCheckInToken = async (eventId) => {
+  // Get the event to check its end time
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Find the most recent valid token for this event
+  const currentToken = await EventCheckInToken.findOne({
+    where: {
+      eventId,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only get tokens that haven't expired
+      },
+    },
+    order: [["createdAt", "DESC"]], // Get the most recent token
+  });
+
+  return currentToken;
 };
 
 // Method to register students for an event
@@ -212,4 +479,61 @@ exports.getAttendingStudents = async (eventId) => {
     throw new Error("Error retrieving attending students.");
   }
 };
+
+exports.checkInStudent = async (eventId, studentId, token) => {
+  // Get the event to verify it exists
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error(`Event with id ${eventId} not found`);
+  }
+
+  // Get the student to verify they exist
+  const student = await db.student.findByPk(studentId);
+  if (!student) {
+    throw new Error(`Student with id ${studentId} not found`);
+  }
+
+  // Find the token and verify it's valid
+  const checkInToken = await EventCheckInToken.findOne({
+    where: {
+      eventId,
+      token,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only accept tokens that haven't expired
+      },
+    },
+  });
+
+  if (!checkInToken) {
+    throw new Error("Invalid or expired check-in token");
+  }
+
+  // Check if student is already checked in
+  const existingCheckIn = await db.eventStudents.findOne({
+    where: {
+      eventId,
+      studentId,
+    },
+  });
+
+  if (existingCheckIn && existingCheckIn.attended) {
+    throw new Error("Student is already checked in to this event");
+  } else if (existingCheckIn) {
+    // Update existing check-in record
+    existingCheckIn.attended = true;
+    await existingCheckIn.save();
+    return existingCheckIn;
+  }
+
+  // Create the check-in record
+  const checkIn = await db.eventStudents.create({
+    eventId,
+    studentId,
+    attended: true,
+    checkInTime: new Date(),
+  });
+
+  return checkIn;
+};
+
 export default exports;

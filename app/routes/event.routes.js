@@ -13,6 +13,9 @@ router.get("/", [authenticate], event.findAll);
 // Retrieve a single Event with id
 router.get("/:id", [authenticate], event.findOne);
 
+// Retrieve a single Event with a check-in token
+router.get("/token/:eventToken", [authenticate], event.findByToken);
+
 // Update a Event with id
 router.put("/:id", [authenticate, isAdmin], event.update);
 
@@ -53,6 +56,34 @@ router.get(
   "/:id/attending-students",
   [authenticate],
   event.getAttendingStudents,
+);
+
+// Get flight plan items that can be fulfilled by an event
+router.get(
+  "/:eventId/fulfillableFlightPlanItems/:studentId",
+  [authenticate],
+  event.getEventFulfillableExperiences,
+);
+
+// Generate a check-in token for an event
+router.post(
+  "/:eventId/check-in-token",
+  [authenticate, isAdmin],
+  event.generateCheckInToken,
+);
+
+// Get the current check-in token for an event
+router.get(
+  "/:eventId/check-in-token",
+  [authenticate, isAdmin],
+  event.getCheckInToken,
+);
+
+// Student check-in to event using token
+router.post(
+  "/:eventId/check-in/:studentId",
+  [authenticate],
+  event.checkInStudent,
 );
 
 export default router;

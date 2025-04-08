@@ -4,6 +4,7 @@ import BadExpTask from "./badExpTask.model.js";
 import BadgeAwarded from "./badgeAwarded.model.js";
 import Badge from "./badge.model.js";
 import Event from "./event.model.js";
+import EventCheckinTokens from "./eventCheckinTokens.js";
 import EventType from "./eventType.model.js";
 import Experience from "./experience.model.js";
 import FlightPlan from "./flightPlan.model.js";
@@ -30,6 +31,7 @@ db.badExpTask = BadExpTask;
 db.BadgeAwarded = BadgeAwarded;
 db.badge = Badge;
 db.event = Event;
+db.eventCheckinTokens = EventCheckinTokens;
 db.eventType = EventType;
 db.experience = Experience;
 db.flightPlan = FlightPlan;
@@ -141,6 +143,17 @@ db.student.belongsToMany(db.event, {
   through: db.eventStudents,
   foreignKey: "studentId",
   otherKey: "eventId",
+});
+
+// Event Check-In Tokens to Event
+db.event.hasMany(db.eventCheckinTokens, {
+  as: "checkinTokens",
+  foreignKey: { name: "eventId", allowNull: false },
+});
+
+db.eventCheckinTokens.belongsTo(db.event, {
+  as: "event",
+  foreignKey: { name: "eventId", allowNull: false },
 });
 
 /// Flight Plan to Semester
