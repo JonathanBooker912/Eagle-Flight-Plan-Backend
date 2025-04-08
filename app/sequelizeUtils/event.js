@@ -83,7 +83,12 @@ exports.findOneEvent = async (eventId) => {
 
 exports.findEventByToken = async (eventToken) => {
   const data = await EventCheckInToken.findOne({
-    where: { token: eventToken },
+    where: {
+      token: eventToken,
+      expirationTimestamp: {
+        [Op.gt]: new Date(), // Only accept tokens that haven't expired
+      },
+    },
     include: [
       {
         model: Event,
@@ -91,8 +96,7 @@ exports.findEventByToken = async (eventToken) => {
       },
     ],
   });
-
-  return data.event;
+  return data?.event;
 };
 
 exports.createEvent = async (eventData) => {
