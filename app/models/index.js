@@ -157,11 +157,14 @@ db.eventCheckinTokens.belongsTo(db.event, {
 });
 
 /// Flight Plan to Semester
-db.flightPlan.hasOne(db.semester, {
+db.flightPlan.belongsTo(db.semester, {
   as: "semester",
-  foreignKey: { name: "id", allowNull: false },
+  foreignKey: { name: "semesterId", allowNull: false },
 });
-db.semester.hasMany(db.flightPlan);
+db.semester.hasMany(db.flightPlan, {
+  as: "flightPlans",
+  foreignKey: { name: "semesterId", allowNull: false },
+});
 
 db.student.hasOne(db.link, {
   as: "link", // Alias for the link in the student model
