@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
+import crypto from "crypto";
 const Event = db.event;
 const EventCheckInToken = db.eventCheckinTokens;
 const Strength = db.strength;
@@ -205,7 +206,10 @@ exports.getEventFulfillableExperiences = async (eventId, studentId) => {
 exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
   // Generate a token using timestamp and eventId
   const timestamp = Date.now();
-  const token = `${eventId}-${timestamp}`;
+  const token = crypto
+    .createHash("md5")
+    .update(`${eventId}-${timestamp}`)
+    .digest("hex");
 
   // Get the event to check its end time
   const event = await Event.findByPk(eventId);
@@ -329,7 +333,10 @@ exports.getEventFulfillableExperiences = async (eventId, studentId) => {
 exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
   // Generate a token using timestamp and eventId
   const timestamp = Date.now();
-  const token = `${eventId}-${timestamp}`;
+  const token = crypto
+    .createHash("md5")
+    .update(`${eventId}-${timestamp}`)
+    .digest("hex");
 
   // Get the event to check its end time
   const event = await Event.findByPk(eventId);

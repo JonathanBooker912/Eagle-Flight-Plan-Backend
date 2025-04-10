@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express, { json, urlencoded } from "express";
 import SequelizeInstance from "./app/sequelizeUtils/sequelizeInstance.js";
 import routes from "./app/routes/index.js";
