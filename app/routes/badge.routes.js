@@ -13,6 +13,9 @@ router.get("/", [authenticate], badge.findAll);
 // Retrieve a single Role with id
 router.get("/:id", [authenticate], badge.findOne);
 
+// Retrieve all rule types
+router.get("/types/rules", [authenticate], badge.getRuleTypes);
+
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], badge.update);
 

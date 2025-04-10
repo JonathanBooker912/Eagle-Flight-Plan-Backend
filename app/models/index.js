@@ -90,6 +90,9 @@ Badge.belongsToMany(Student, { through: "studentBadge" });
 Badge.belongsToMany(Task, { through: db.badExpTask });
 Task.belongsToMany(Badge, { through: db.badExpTask });
 
+Badge.belongsToMany(Experience, { through: db.badExpTask });
+Experience.belongsToMany(Badge, { through: db.badExpTask });
+
 // BadgeAwarded
 Badge.belongsToMany(Student, { through: db.BadgeAwarded });
 Student.belongsToMany(Badge, { through: db.BadgeAwarded });

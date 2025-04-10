@@ -23,6 +23,10 @@ const Badge = SequelizeInstance.define("badge", {
   imageName: {
     type: Sequelize.STRING(255),
   },
+  ruleType: {
+    type: Sequelize.ENUM("Task and Experience Defined"),
+    defaultValue: "Task and Experience Defined",
+  },
 });
 
 export default Badge;

@@ -78,6 +78,10 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.getRuleTypes = async (req, res) => {
+  res.send(Badge.getRuleTypes());
+};
+
 exports.update = async (req, res) => {
   await Badge.updateBadge(req.body, req.params.id)
     .then((num) => {
