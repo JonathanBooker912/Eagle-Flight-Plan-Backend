@@ -5,16 +5,11 @@ const Task = db.task;
 const exports = {};
 
 exports.findAllTasks = async (
-  page = 1,
-  pageSize = 10,
+  page,
+  pageSize,
   searchQuery = "",
   filters = {},
 ) => {
-  page = parseInt(page, 10);
-  pageSize = parseInt(pageSize, 10);
-  const offset = (page - 1) * pageSize;
-  const limit = pageSize;
-
   const whereCondition = {};
 
   if (searchQuery) {
@@ -38,7 +33,7 @@ exports.findAllTasks = async (
   }
 
   const direction =
-    filters.sortDirection.toUpperCase() === "DESC" ? "DESC" : "ASC";
+    filters?.sortDirection?.toUpperCase() === "DESC" ? "DESC" : "ASC";
 
   if (
     filters.semestersFromGraduation &&
@@ -66,12 +61,25 @@ exports.findAllTasks = async (
     order = [[filters.sortAttribute, direction]];
   }
 
-  const queryOptions = {
-    offset,
-    limit,
-    where: whereCondition,
-    order,
-  };
+  let queryOptions = {};
+
+  if (page && pageSize) {
+    page = parseInt(page, 10);
+    pageSize = parseInt(pageSize, 10);
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+    queryOptions = {
+      offset,
+      limit,
+      where: whereCondition,
+      order,
+    };
+  } else {
+    queryOptions = {
+      where: whereCondition,
+      order,
+    };
+  }
 
   const tasks = await Task.findAll(queryOptions);
 
