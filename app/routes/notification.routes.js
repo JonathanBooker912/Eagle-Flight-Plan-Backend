@@ -23,7 +23,7 @@ router.get(
 // Update a Notification with id
 router.put(
   "/user/:userId/notification/:notificationId",
-  [authenticate, isAdmin],
+  [authenticate],
   notification.update,
 );
 
