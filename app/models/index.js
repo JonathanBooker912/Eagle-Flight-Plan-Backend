@@ -28,7 +28,7 @@ import EventStudents from "./eventStudents.model.js";
 const db = {};
 
 db.badExpTask = BadExpTask;
-db.BadgeAwarded = BadgeAwarded;
+db.badgeAwarded = BadgeAwarded;
 db.badge = Badge;
 db.event = Event;
 db.eventCheckinTokens = EventCheckinTokens;
@@ -93,9 +93,8 @@ Task.belongsToMany(Badge, { through: db.badExpTask });
 Badge.belongsToMany(Experience, { through: db.badExpTask });
 Experience.belongsToMany(Badge, { through: db.badExpTask });
 
-// BadgeAwarded
-Badge.belongsToMany(Student, { through: db.BadgeAwarded });
-Student.belongsToMany(Badge, { through: db.BadgeAwarded });
+Badge.belongsToMany(Student, { through: db.badgeAwarded });
+Student.belongsToMany(Badge, { through: db.badgeAwarded });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });

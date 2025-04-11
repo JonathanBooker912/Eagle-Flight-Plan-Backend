@@ -1,4 +1,5 @@
 import badge from "../controllers/badge.controller.js";
+import badgeAwarded from "../controllers/badgeAwarded.controller.js";
 import { authenticate, isAdmin } from "../authorization/authorization.js";
 import { Router } from "express";
 
@@ -6,6 +7,8 @@ const router = Router();
 
 // Create a new Role
 router.post("/", [authenticate, isAdmin], badge.create);
+
+router.post("/award", [authenticate, isAdmin], badgeAwarded.awardBadge);
 
 // Retrieve all Role
 router.get("/", [authenticate], badge.findAll);

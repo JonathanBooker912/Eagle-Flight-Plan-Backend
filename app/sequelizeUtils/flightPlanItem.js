@@ -8,6 +8,7 @@ const Experience = db.experience;
 const Event = db.event;
 const Submission = db.submission;
 import FileHelpers from "../utilities/fileStorage.helper.js";
+import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
 // Module Exports Placeholder
 const exports = {};
 
@@ -190,10 +191,12 @@ exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {
 };
 
 exports.approveFlightPlanItem = async (flightPlanItemId) => {
-  return await FlightPlanItem.update(
+  const response = await FlightPlanItem.update(
     { status: "Complete" },
     { where: { id: flightPlanItemId } },
   );
+  await kickOffBadgeAwarding(flightPlanItemId);
+  return response;
 };
 
 exports.rejectFlightPlanItem = async (flightPlanItemId) => {

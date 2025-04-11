@@ -110,4 +110,8 @@ exports.delete = async (id) => {
   return await User.destroy({ where: { id } });
 };
 
+exports.findByStudentId = async (studentId) => {
+  return await User.findOne({ where: { studentId } });
+};
+
 export default exports;

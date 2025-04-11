@@ -1,4 +1,5 @@
 import db from "../models/index.js";
+import User from "./user.js";
 const Badge = db.badge;
 const BadExpTask = db.badExpTask;
 const Student = db.student;
@@ -142,6 +143,8 @@ exports.deleteBadge = async (badgeId) => {
   return await Badge.destroy({ where: { id: badgeId } });
 };
 
+export default exports;
+
 const getFilesForBadges = (badges) =>
   badges.map((badge) => {
     return readFileForBadge(badge);
@@ -160,5 +163,3 @@ const readFileForBadge = (badge) => {
     return badge;
   }
 };
-
-export default exports;
