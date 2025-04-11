@@ -1,6 +1,6 @@
 import db from "../models/index.js";
-import User from "./user.js";
 const Badge = db.badge;
+const BadgeAwarded = db.badgeAwarded;
 const BadExpTask = db.badExpTask;
 const Student = db.student;
 const Task = db.task;
@@ -92,6 +92,24 @@ exports.findByPk = async (badgeId) => {
 
 exports.getRuleTypes = () => {
   return Badge.getAttributes().ruleType.values;
+};
+
+exports.getUnviewedBadges = async (studentId) => {
+  return Badge.findAll({
+    include: {
+      model: BadgeAwarded,
+      as: "badgeAwarded",
+      where: {
+        studentId: studentId,
+        viewed: false,
+      },
+      required: true,
+    },
+  });
+};
+
+exports.viewBadge = async (badgeId) => {
+  return BadgeAwarded.update({ viewed: true }, { where: { badgeId: badgeId } });
 };
 
 exports.createBadge = async (badgeData) => {

@@ -93,8 +93,12 @@ Task.belongsToMany(Badge, { through: db.badExpTask });
 Badge.belongsToMany(Experience, { through: db.badExpTask });
 Experience.belongsToMany(Badge, { through: db.badExpTask });
 
-Badge.belongsToMany(Student, { through: db.badgeAwarded });
-Student.belongsToMany(Badge, { through: db.badgeAwarded });
+// BADGEAWARDED
+Badge.hasMany(BadgeAwarded, { foreignKey: "badgeId", as: "badgeAwarded" });
+BadgeAwarded.belongsTo(Badge, { foreignKey: "badgeId", as: "badge" });
+
+Student.hasMany(BadgeAwarded, { foreignKey: "studentId", as: "badgeAwarded" });
+BadgeAwarded.belongsTo(Student, { foreignKey: "studentId", as: "student" });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });

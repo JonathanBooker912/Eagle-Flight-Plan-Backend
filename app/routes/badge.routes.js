@@ -19,6 +19,12 @@ router.get("/:id", [authenticate], badge.findOne);
 // Retrieve all rule types
 router.get("/types/rules", [authenticate], badge.getRuleTypes);
 
+// Retrieve all unviewed badges for a student
+router.get("/student/:id/unviewed", [authenticate], badge.getUnviewedBadges);
+
+// View a badge
+router.put("/:id/view", [authenticate], badge.viewBadge);
+
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], badge.update);
 
