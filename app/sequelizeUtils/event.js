@@ -398,22 +398,25 @@ exports.unregisterStudents = async (eventId, studentIds) => {
 };
 
 exports.getRegisteredEventsForStudent = async (studentId) => {
-  return await db.eventStudents.findAll({
-    where: { studentId },
-    include: [db.event],
-  }).then((records) => records.map((r) => r.event));
+  return await db.eventStudents
+    .findAll({
+      where: { studentId },
+      include: [db.event],
+    })
+    .then((records) => records.map((r) => r.event));
 };
 
 exports.getAttendingEventsForStudent = async (studentId) => {
-  return await db.eventStudents.findAll({
-    where: {
-      studentId,
-      attended: true,
-    },
-    include: [db.event],
-  }).then((records) => records.map((r) => r.event));
+  return await db.eventStudents
+    .findAll({
+      where: {
+        studentId,
+        attended: true,
+      },
+      include: [db.event],
+    })
+    .then((records) => records.map((r) => r.event));
 };
-
 
 // In your backend, modify the markAttendance function to toggle the attendance status
 exports.markAttendance = async (eventId, studentIds) => {

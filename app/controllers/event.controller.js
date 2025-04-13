@@ -179,7 +179,6 @@ exports.unregisterStudents = async (req, res) => {
   }
 };
 
-
 exports.getRegisteredEventsForStudent = async (req, res) => {
   try {
     const { studentId } = req.params;
@@ -201,7 +200,6 @@ exports.getAttendingEventsForStudent = async (req, res) => {
     res.status(500).send({ message: "Failed to get attending events." });
   }
 };
-
 
 exports.markAttendance = async (req, res) => {
   const eventId = req.params.id;

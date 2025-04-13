@@ -43,9 +43,15 @@ router.post("/:id/register", [authenticate], event.registerStudents);
 
 router.delete("/:id/unregister", [authenticate], event.unregisterStudents);
 
-router.get("/student/:studentId/registered-events", event.getRegisteredEventsForStudent);
+router.get(
+  "/student/:studentId/registered-events",
+  event.getRegisteredEventsForStudent,
+);
 
-router.get("/student/:studentId/attending-events", event.getAttendingEventsForStudent);
+router.get(
+  "/student/:studentId/attending-events",
+  event.getAttendingEventsForStudent,
+);
 
 // Mark attendance for students at an event
 router.post("/:id/attend", [authenticate], event.markAttendance);
