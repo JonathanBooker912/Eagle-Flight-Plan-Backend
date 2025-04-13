@@ -386,6 +386,35 @@ exports.registerStudents = async (eventId, studentIds) => {
   return await EventStudents.bulkCreate(registrations);
 };
 
+exports.unregisterStudents = async (eventId, studentIds) => {
+  return await EventStudents.destroy({
+    where: {
+      eventId,
+      studentId: {
+        [Op.in]: studentIds,
+      },
+    },
+  });
+};
+
+exports.getRegisteredEventsForStudent = async (studentId) => {
+  return await db.eventStudents.findAll({
+    where: { studentId },
+    include: [db.event],
+  }).then((records) => records.map((r) => r.event));
+};
+
+exports.getAttendingEventsForStudent = async (studentId) => {
+  return await db.eventStudents.findAll({
+    where: {
+      studentId,
+      attended: true,
+    },
+    include: [db.event],
+  }).then((records) => records.map((r) => r.event));
+};
+
+
 // In your backend, modify the markAttendance function to toggle the attendance status
 exports.markAttendance = async (eventId, studentIds) => {
   try {

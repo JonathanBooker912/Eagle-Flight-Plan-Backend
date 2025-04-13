@@ -39,10 +39,16 @@ router.get("/types/attendanceTypes", [authenticate], event.getAttendanceTypes);
 router.get("/types/completionTypes", [authenticate], event.getCompletionTypes);
 
 // Register students for an event
-router.post("/:id/register", [authenticate, isAdmin], event.registerStudents);
+router.post("/:id/register", [authenticate], event.registerStudents);
+
+router.delete("/:id/unregister", [authenticate], event.unregisterStudents);
+
+router.get("/student/:studentId/registered-events", event.getRegisteredEventsForStudent);
+
+router.get("/student/:studentId/attending-events", event.getAttendingEventsForStudent);
 
 // Mark attendance for students at an event
-router.post("/:id/attend", [authenticate, isAdmin], event.markAttendance);
+router.post("/:id/attend", [authenticate], event.markAttendance);
 
 // Retrieve registered students for an event
 router.get(

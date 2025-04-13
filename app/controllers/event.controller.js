@@ -155,6 +155,54 @@ exports.registerStudents = async (req, res) => {
   }
 };
 
+exports.unregisterStudents = async (req, res) => {
+  const eventId = req.params.id;
+  const { studentIds } = req.body;
+
+  if (!eventId || !Array.isArray(studentIds) || studentIds.length === 0) {
+    return res.status(400).send({
+      message: "Invalid eventId or studentIds.",
+    });
+  }
+
+  try {
+    const result = await Event.unregisterStudents(eventId, studentIds);
+    res.send({
+      message: "Successfully unregistered students from event.",
+      result,
+    });
+  } catch (err) {
+    console.error("Error unregistering students:", err);
+    res.status(500).send({
+      message: err.message || "Failed to unregister students.",
+    });
+  }
+};
+
+
+exports.getRegisteredEventsForStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const events = await Event.getRegisteredEventsForStudent(studentId);
+    res.send(events);
+  } catch (err) {
+    console.error("Error fetching registered events for student:", err);
+    res.status(500).send({ message: "Failed to get registered events." });
+  }
+};
+
+exports.getAttendingEventsForStudent = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const events = await Event.getAttendingEventsForStudent(studentId);
+    res.send(events);
+  } catch (err) {
+    console.error("Error fetching attending events for student:", err);
+    res.status(500).send({ message: "Failed to get attending events." });
+  }
+};
+
+
 exports.markAttendance = async (req, res) => {
   const eventId = req.params.id;
   const studentIds = req.body.studentIds;
