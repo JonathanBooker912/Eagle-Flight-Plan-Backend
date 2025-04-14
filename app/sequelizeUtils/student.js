@@ -144,7 +144,7 @@ exports.updatePoints = async (studentId, points) => {
 
 exports.getPoints = async (studentId) => {
   const student = await Student.findByPk(studentId);
-  return student.pointsAwarded;
+  return student.pointsAwarded - student.pointsUsed;
 };
 
 exports.getStudent = async (studentId) => {
