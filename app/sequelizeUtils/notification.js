@@ -44,6 +44,26 @@ exports.findAllNotificationsForUser = async (
   return { notifications: rows, total: count };
 };
 
+exports.findAllNotificationsForUserWithoutPagination = async (userId) => {
+  const notifications = await Notification.findAll({
+    where: { userId },
+    attributes: [
+      "header",
+      "description",
+      "actionLink",
+      "read",
+      "id",
+      "createdAt",
+    ],
+    include: {
+      model: User,
+    },
+    order: [['createdAt', 'DESC']]
+  });
+
+  return { notifications };
+};
+
 exports.findOneNotification = async (notificationId) => {
   return await Notification.findByPk(notificationId);
 };

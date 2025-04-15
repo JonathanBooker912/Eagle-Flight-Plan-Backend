@@ -20,6 +20,13 @@ router.get(
   notification.findAllNotificationsForUser,
 );
 
+// Retrieve all notifications for a user without pagination
+router.get(
+  "/user/:id/all",
+  [authenticate],
+  notification.findAllNotificationsForUserWithoutPagination,
+);
+
 // Update a Notification with id
 router.put(
   "/user/:userId/notification/:notificationId",
