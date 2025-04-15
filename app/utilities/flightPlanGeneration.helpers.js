@@ -5,25 +5,23 @@ const Student = db.student;
 const Major = db.major;
 const Strength = db.strength;
 const FlightPlan = db.flightPlan;
-
 export const getFlightPlanItemsForNewFlightPlan = async (
-  studentId,
+  student,
   newFlightPlan,
 ) => {
-  const student = await getStudentWithGenerationInfo(studentId);
-
   const completedItems = getAllCompletedFlightPlanItemsForStudent(student);
 
   /* eslint-disable no-undef */
   const [taskItems, experienceItems] = await Promise.all([
-    getTaskItems(completedItems, newFlightPlan, student),
-    getExperienceItems(completedItems, newFlightPlan, student),
+    getTaskItems(completedItems, newFlightPlan),
+    getExperienceItems(completedItems, newFlightPlan),
   ]);
 
   const formatItem = (type, item) => ({
     flightPlanItemType: type,
     status: "Incomplete",
     [`${type.toLowerCase()}Id`]: item.id,
+    pointsEarned: item.points,
     flightPlanId: newFlightPlan.id,
     name: item.name,
   });
@@ -34,7 +32,7 @@ export const getFlightPlanItemsForNewFlightPlan = async (
   ];
 };
 
-const getStudentWithGenerationInfo = async (studentId) => {
+export const getStudentWithGenerationInfo = async (studentId) => {
   return await Student.findOne({
     where: { id: studentId },
     include: [
@@ -43,6 +41,50 @@ const getStudentWithGenerationInfo = async (studentId) => {
       { model: Strength, as: "strengths" },
     ],
   });
+};
+
+const getTaskItems = async (completedItems, newFlightPlan) => {
+  const completedTaskIds = completedItems
+    .filter(({ flightPlanItemType }) => flightPlanItemType === "Task")
+    .map(({ taskId }) => taskId);
+  const allTasks = await getAllTasksGreaterThanSemestersFromGrad(
+    newFlightPlan.semestersFromGrad,
+  );
+
+  return getTasksForNewFlightPlan(completedTaskIds, allTasks);
+};
+
+const getAllTasksGreaterThanSemestersFromGrad = async (semestersFromGrad) => {
+  const allTasks = await Task.findAll({
+    include: [{ model: Strength }, { model: Major }],
+  });
+  return allTasks.filter((task) => task.semestersFromGrad >= semestersFromGrad);
+};
+
+const getExperienceItems = async (completedItems, newFlightPlan) => {
+  const completedExperienceIds = completedItems
+    .filter(({ flightPlanItemType }) => flightPlanItemType === "Experience")
+    .map(({ experienceId }) => experienceId);
+
+  let allExperiences = await Experience.findAll();
+
+  const allOneTimeExperiences = allExperiences.filter(
+    ({ schedulingType, semestersFromGrad }) =>
+      schedulingType === "one-time" &&
+      semestersFromGrad >= newFlightPlan.semestersFromGrad,
+  );
+
+  const allEverySemesterExperiences = allExperiences.filter(
+    ({ schedulingType }) => schedulingType === "every semester",
+  );
+
+  const experienceItems = getExperiencesForNewFlightPlan(
+    completedExperienceIds,
+    allOneTimeExperiences,
+    allEverySemesterExperiences,
+  );
+
+  return experienceItems;
 };
 
 const getAllCompletedFlightPlanItemsForStudent = (student) => {
@@ -59,127 +101,17 @@ const getAllCompletedFlightPlanItemsForStudent = (student) => {
   return completedFlightPlanItems;
 };
 
-const getTaskItems = async (completedItems, newFlightPlan, student) => {
-  const completedTaskIds = completedItems
-    .filter(({ flightPlanItemType }) => flightPlanItemType === "Task")
-    .map(({ taskId }) => taskId);
+const getTasksForNewFlightPlan = (completedTasks, allTasks) => {
+  if (!allTasks) return [];
 
-  const allTasks = await getAllTasksGreaterThanSemestersFromGrad(
-    newFlightPlan.semestersFromGrad,
-  );
+  allTasks = allTasks.filter((task) => !completedTasks.includes(task.id));
 
-  const nonSpecificTasks = allTasks.filter(
-    (task) => task.strengths.length == 0 && task.majors.length == 0,
-  );
-
-  const finalNonSpecificTasks = processNonSpecificTasks(
-    completedTaskIds,
-    nonSpecificTasks,
-  );
-
-  const specificTasks = allTasks.filter(
-    (task) => task.strengths.length > 0 || task.majors.length > 0,
-  );
-
-  const finalSpecificTasks = processSpecificTasks(
-    completedTaskIds,
-    specificTasks,
-    student,
-  );
-
-  return [...finalNonSpecificTasks, ...finalSpecificTasks];
-};
-
-const getAllTasksGreaterThanSemestersFromGrad = async (semestersFromGrad) => {
-  const allTasks = await Task.findAll({
-    include: [{ model: Strength }, { model: Major }],
+  return allTasks.filter((task) => {
+    return task.strengths.length == 0 && task.majors.length == 0;
   });
-  return allTasks.filter((task) => task.semestersFromGrad >= semestersFromGrad);
 };
 
-const processNonSpecificTasks = (completedTaskIds, nonSpecificTasks) => {
-  const oneTimeTasks = nonSpecificTasks.filter(
-    (task) => task.schedulingType === "one-time",
-  );
-
-  const everySemesterTasks = nonSpecificTasks.filter(
-    (task) => task.schedulingType === "every semester",
-  );
-
-  const uncompletedOneTimeTasks = oneTimeTasks.filter(
-    (task) => !completedTaskIds.includes(task.id),
-  );
-
-  return [...uncompletedOneTimeTasks, ...everySemesterTasks];
-};
-
-const processSpecificTasks = (completedTaskIds, specificTasks, student) => {
-  const relevantSpecificTasks = specificTasks.filter(
-    (task) =>
-      task.strengths.some((strength) => student.strengths.includes(strength)) ||
-      task.majors.some((major) => student.majors.includes(major)),
-  );
-
-  const oneTimeSpecificTasks = relevantSpecificTasks.filter(
-    (task) => task.schedulingType === "one-time",
-  );
-
-  const uncompletedOneTimeSpecificTasks = oneTimeSpecificTasks.filter(
-    (task) => !completedTaskIds.includes(task.id),
-  );
-
-  const everySemesterSpecificTasks = relevantSpecificTasks.filter(
-    (task) => task.schedulingType === "every semester",
-  );
-
-  return [...uncompletedOneTimeSpecificTasks, ...everySemesterSpecificTasks];
-};
-
-const getExperienceItems = async (completedItems, newFlightPlan, student) => {
-  const completedExperienceIds = completedItems
-    .filter(({ flightPlanItemType }) => flightPlanItemType === "Experience")
-    .map(({ experienceId }) => experienceId);
-
-  let allExperiences = await getAllExperiencesGreaterThanSemestersFromGrad(
-    newFlightPlan.semestersFromGrad,
-  );
-
-  const nonSpecificExperiences = allExperiences.filter(
-    (experience) =>
-      experience.strengths.length == 0 && experience.majors.length == 0,
-  );
-
-  const finalNonSpecificExperiences = processNonSpecificExperiences(
-    completedExperienceIds,
-    nonSpecificExperiences,
-  );
-
-  const specificExperiences = allExperiences.filter(
-    (experience) =>
-      experience.strengths.length > 0 || experience.majors.length > 0,
-  );
-
-  const finalSpecificExperiences = processSpecificExperiences(
-    completedExperienceIds,
-    specificExperiences,
-    student,
-  );
-
-  return [...finalNonSpecificExperiences, ...finalSpecificExperiences];
-};
-
-const getAllExperiencesGreaterThanSemestersFromGrad = async (
-  semestersFromGrad,
-) => {
-  const allExperiences = await Experience.findAll({
-    include: [{ model: Strength }, { model: Major }],
-  });
-  return allExperiences.filter(
-    (experience) => experience.semestersFromGrad >= semestersFromGrad,
-  );
-};
-
-const processNonSpecificExperiences = (
+const getExperiencesForNewFlightPlan = (
   completedExperienceIds,
   nonSpecificExperiences,
 ) => {
@@ -198,7 +130,7 @@ const processNonSpecificExperiences = (
   return [...uncompletedOneTimeExperiences, ...everySemesterExperiences];
 };
 
-const processSpecificExperiences = (
+const getOneTimeExperiences = (
   completedExperienceIds,
   specificExperiences,
   student,
