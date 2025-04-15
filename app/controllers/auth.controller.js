@@ -118,14 +118,12 @@ exports.login = async (req, res) => {
         email,
         fullName,
       });
-      console.log("User registered:", user.dataValues);
     } else {
       await user.update({
         fName: firstName,
         lName: lastName,
         fullName,
       });
-      console.log("User details updated");
     }
 
     // Handle session
