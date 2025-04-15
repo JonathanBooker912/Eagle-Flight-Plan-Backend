@@ -64,6 +64,19 @@ exports.findAllNotificationsForUser = async (req, res) => {
     });
 };
 
+exports.findAllNotificationsForUserWithoutPagination = async (req, res) => {
+  await Notification.findAllNotificationsForUserWithoutPagination(req.params.id)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving notifications.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   const { userId, notificationId } = req.params; // Extract userId and notificationId from route params
 

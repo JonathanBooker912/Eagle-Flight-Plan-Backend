@@ -37,11 +37,32 @@ exports.findAllNotificationsForUser = async (
     include: {
       model: User,
     },
+    order: [["createdAt", "DESC"]],
     limit: pageSize,
     offset,
   });
 
   return { notifications: rows, total: count };
+};
+
+exports.findAllNotificationsForUserWithoutPagination = async (userId) => {
+  const notifications = await Notification.findAll({
+    where: { userId },
+    attributes: [
+      "header",
+      "description",
+      "actionLink",
+      "read",
+      "id",
+      "createdAt",
+    ],
+    include: {
+      model: User,
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  return { notifications };
 };
 
 exports.findOneNotification = async (notificationId) => {
