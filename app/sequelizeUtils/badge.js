@@ -1,6 +1,10 @@
 import db from "../models/index.js";
 const Badge = db.badge;
+const BadgeAwarded = db.badgeAwarded;
+const BadExpTask = db.badExpTask;
 const Student = db.student;
+const Task = db.task;
+const Experience = db.experience;
 import { Op } from "sequelize";
 import FileHelpers from "../utilities/fileStorage.helper.js";
 
@@ -66,7 +70,19 @@ exports.findAllBadgesForStudent = async (
 };
 
 exports.findOneBadge = async (badgeId) => {
-  const response = await Badge.findByPk(badgeId);
+  const response = await Badge.findOne({
+    where: { id: badgeId },
+    include: [
+      {
+        model: Task,
+        as: "tasks",
+      },
+      {
+        model: Experience,
+        as: "experiences",
+      },
+    ],
+  });
   return readFileForBadge(response);
 };
 
@@ -74,17 +90,78 @@ exports.findByPk = async (badgeId) => {
   return Badge.findByPk(badgeId);
 };
 
+exports.getRuleTypes = () => {
+  return Badge.getAttributes().ruleType.values;
+};
+
+exports.getUnviewedBadges = async (studentId) => {
+  return Badge.findAll({
+    include: {
+      model: BadgeAwarded,
+      as: "badgeAwarded",
+      where: {
+        studentId: studentId,
+        viewed: false,
+      },
+      required: true,
+    },
+  });
+};
+
+exports.viewBadge = async (badgeId) => {
+  return BadgeAwarded.update({ viewed: true }, { where: { badgeId: badgeId } });
+};
+
 exports.createBadge = async (badgeData) => {
-  return await Badge.create(badgeData);
+  const badge = await Badge.create(badgeData);
+  if (badgeData.ruleType === "Task and Experience Defined") {
+    badgeData.tasks.forEach(async (data) => {
+      await BadExpTask.create({
+        badgeId: badge.id,
+        taskId: data.task.id,
+        quantity: data.quantity,
+      });
+    });
+    badgeData.experiences.forEach(async (data) => {
+      await BadExpTask.create({
+        badgeId: badge.id,
+        experienceId: data.experience.id,
+        quantity: data.quantity,
+      });
+    });
+  }
+
+  return badge;
 };
 
 exports.updateBadge = async (badgeData, badgeId) => {
+  await BadExpTask.destroy({ where: { badgeId: badgeId } });
+  if (badgeData.ruleType === "Task and Experience Defined") {
+    badgeData.tasks.forEach(async (data) => {
+      await BadExpTask.create({
+        badgeId: badgeId,
+        taskId: data.task.id,
+        quantity: data.quantity,
+      });
+    });
+    badgeData.experiences.forEach(async (data) => {
+      await BadExpTask.create({
+        badgeId: badgeId,
+        experienceId: data.experience.id,
+        quantity: data.quantity,
+      });
+    });
+  }
+
   return await Badge.update(badgeData, { where: { id: badgeId } });
 };
 
 exports.deleteBadge = async (badgeId) => {
+  await BadExpTask.destroy({ where: { badgeId: badgeId } });
   return await Badge.destroy({ where: { id: badgeId } });
 };
+
+export default exports;
 
 const getFilesForBadges = (badges) =>
   badges.map((badge) => {
@@ -104,5 +181,3 @@ const readFileForBadge = (badge) => {
     return badge;
   }
 };
-
-export default exports;

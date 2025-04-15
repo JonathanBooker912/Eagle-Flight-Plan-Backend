@@ -1,5 +1,4 @@
 import FlightPlanItem from "../sequelizeUtils/flightPlanItem.js";
-
 const validateFlightPlanItem = (flightPlanItem) => {
   const hasTask =
     flightPlanItem.taskId !== undefined && flightPlanItem.taskId !== null;

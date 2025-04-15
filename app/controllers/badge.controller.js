@@ -78,6 +78,32 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.getRuleTypes = async (req, res) => {
+  res.send(Badge.getRuleTypes());
+};
+
+exports.getUnviewedBadges = async (req, res) => {
+  const studentId = req.params.id;
+
+  try {
+    const result = await Badge.getUnviewedBadges(studentId);
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(500).send({
+      message:
+        "Error retrieving unviewed badges for student with id = " + studentId,
+    });
+    console.log("Error: ", err);
+  }
+};
+
+exports.viewBadge = async (req, res) => {
+  const badgeId = req.params.id;
+  await Badge.viewBadge(badgeId).then((data) => {
+    res.send(data);
+  });
+};
+
 exports.update = async (req, res) => {
   await Badge.updateBadge(req.body, req.params.id)
     .then((num) => {

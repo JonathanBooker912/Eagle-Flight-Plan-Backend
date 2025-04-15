@@ -28,7 +28,7 @@ import EventStudents from "./eventStudents.model.js";
 const db = {};
 
 db.badExpTask = BadExpTask;
-db.BadgeAwarded = BadgeAwarded;
+db.badgeAwarded = BadgeAwarded;
 db.badge = Badge;
 db.event = Event;
 db.eventCheckinTokens = EventCheckinTokens;
@@ -90,9 +90,15 @@ Badge.belongsToMany(Student, { through: "studentBadge" });
 Badge.belongsToMany(Task, { through: db.badExpTask });
 Task.belongsToMany(Badge, { through: db.badExpTask });
 
-// BadgeAwarded
-Badge.belongsToMany(Student, { through: db.BadgeAwarded });
-Student.belongsToMany(Badge, { through: db.BadgeAwarded });
+Badge.belongsToMany(Experience, { through: db.badExpTask });
+Experience.belongsToMany(Badge, { through: db.badExpTask });
+
+// BADGEAWARDED
+Badge.hasMany(BadgeAwarded, { foreignKey: "badgeId", as: "badgeAwarded" });
+BadgeAwarded.belongsTo(Badge, { foreignKey: "badgeId", as: "badge" });
+
+Student.hasMany(BadgeAwarded, { foreignKey: "studentId", as: "badgeAwarded" });
+BadgeAwarded.belongsTo(Student, { foreignKey: "studentId", as: "student" });
 
 // STUDENTMAJOR
 Student.belongsToMany(Major, { through: "studentMajor" });

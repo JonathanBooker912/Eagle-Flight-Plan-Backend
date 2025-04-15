@@ -28,6 +28,10 @@ const BadgeAwarded = SequelizeInstance.define(
         key: "id", // Referencing the id column in Student
       },
     },
+    viewed: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     tableName: "BadgeAwarded", // Make sure the table name is correct
