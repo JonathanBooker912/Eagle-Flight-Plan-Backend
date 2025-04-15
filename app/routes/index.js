@@ -17,6 +17,7 @@ import StrengthRoutes from "./strength.routes.js";
 import StudentRoutes from "./student.routes.js";
 import SubmissionRoutes from "./submission.routes.js";
 import FileRoutes from "./file.routes.js";
+import MajorRoutes from "./major.routes.js";
 
 const router = Router();
 
@@ -38,6 +39,7 @@ router.use("/strengths", StrengthRoutes);
 router.use("/students", StudentRoutes);
 router.use("/submission", SubmissionRoutes);
 router.use("/file", FileRoutes);
+router.use("/majors", MajorRoutes);
 
 // eslint-disable-next-line
 router.get("/", (req, res) => {
