@@ -53,14 +53,13 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     whereCondition.flightPlanItemType = { [Op.eq]: filters.flightPlanItemType };
   }
 
-  let order = [];
+  let order = [["status", "DESC"]];
 
   if (filters.sortAttribute && filters.sortDirection) {
     const direction =
       filters.sortDirection.toUpperCase() === "DESC" ? "DESC" : "ASC";
     order = [[filters.sortAttribute, direction]];
   }
-
   const queryOptions = {
     offset,
     limit,
