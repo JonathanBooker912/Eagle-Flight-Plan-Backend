@@ -1,7 +1,5 @@
 import db from "../models/index.js";
 const Major = db.major;
-const Student = db.student;
-const StudentMajor = db.studentMajor;
 const Op = db.Sequelize.Op;
 
 const exports = {};
