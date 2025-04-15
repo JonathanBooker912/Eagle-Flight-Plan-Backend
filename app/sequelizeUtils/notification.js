@@ -37,6 +37,7 @@ exports.findAllNotificationsForUser = async (
     include: {
       model: User,
     },
+    order: [["createdAt", "DESC"]],
     limit: pageSize,
     offset,
   });
