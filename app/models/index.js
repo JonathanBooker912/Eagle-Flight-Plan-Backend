@@ -122,6 +122,9 @@ Strength.belongsToMany(Task, { through: "taskStrength" });
 Experience.belongsToMany(Major, { through: "experienceMajor" });
 Major.belongsToMany(Experience, { through: "experienceMajor" });
 
+Experience.belongsToMany(Strength, { through: "experienceStrength" });
+Strength.belongsToMany(Experience, { through: "experienceStrength" });
+
 // EXPOPTIONS
 Experience.belongsToMany(Event, { through: "expOption", as: "events" });
 Event.belongsToMany(Experience, { through: "expOption", as: "experiences" });

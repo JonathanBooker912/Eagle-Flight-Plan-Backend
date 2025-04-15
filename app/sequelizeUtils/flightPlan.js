@@ -7,16 +7,14 @@ const {
   experience: Experience,
   event: Event,
   semester: Semester,
+  student: Student,
 } = db;
 
 // Sequelize Utilities
 import SemesterUtils from "../sequelizeUtils/semester.js";
 
 // Helpers
-import {
-  getFlightPlanItemsForNewFlightPlan,
-  getStudentWithGenerationInfo,
-} from "../utilities/flightPlanGeneration.helpers.js";
+import { getFlightPlanItemsForNewFlightPlan } from "../utilities/flightPlanGeneration.helpers.js";
 
 // Module Exports Placeholder
 const exports = {};
@@ -36,20 +34,27 @@ exports.generateFlightPlan = async (studentId) => {
   if (!studentId) {
     throw Error("Unable to generate flight plan for student with invalid id");
   }
-  const student = await getStudentWithGenerationInfo(studentId);
+
   const currentSemester = await SemesterUtils.getCurrentSemester();
+
   if (!currentSemester) {
     throw Error("Unable to get current semester");
   }
-  if (!student) {
-    throw Error(`Unable to find student with id: ${studentId}`);
-  }
+
+  const student = await Student.findByPk(studentId, {
+    include: [
+      {
+        model: FlightPlan,
+      },
+    ],
+  });
+
   if (student.flightPlans[0]?.semestersFromGrad < 0) {
     throw Error("Student semesters from graduation can't be negative");
   }
-  if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
-    throw Error("Student's flight plan has already been generated");
-  }
+  // if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
+  //   throw Error("Student's flight plan has already been generated");
+  // }
 
   // // This is running under the assumption that the students semestersFromGrad has already been decremented and it is the current and updated value.
   const flightPlanData = {
@@ -57,16 +62,22 @@ exports.generateFlightPlan = async (studentId) => {
     semesterId: currentSemester.id,
     semestersFromGrad: student.semestersFromGrad,
   };
-  const flightPlan = await FlightPlan.create(flightPlanData);
+  // const flightPlan = await FlightPlan.create(flightPlanData);
+  const flightPlan = await FlightPlan.findOne({
+    where: {
+      studentId: 3,
+      semestersFromGrad: 1,
+    },
+  });
 
   const flightPlanItems = await getFlightPlanItemsForNewFlightPlan(
-    student,
+    studentId,
     flightPlan,
   );
 
-  flightPlanItems.forEach(async (flightPlanItem) => {
-    await FlightPlanItem.create(flightPlanItem);
-  });
+  // flightPlanItems.forEach(async (flightPlanItem) => {
+  //   await FlightPlanItem.create(flightPlanItem);
+  // });
 
   return flightPlanItems;
 };
