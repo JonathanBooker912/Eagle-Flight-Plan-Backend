@@ -58,7 +58,7 @@ exports.findAllNotificationsForUserWithoutPagination = async (userId) => {
     include: {
       model: User,
     },
-    order: [['createdAt', 'DESC']]
+    order: [["createdAt", "DESC"]],
   });
 
   return { notifications };
