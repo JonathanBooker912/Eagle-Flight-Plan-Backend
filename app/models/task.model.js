@@ -18,12 +18,6 @@ const Task = SequelizeInstance.define("task", {
       "Volunteer",
     ),
   },
-  taskType: {
-    type: Sequelize.ENUM("Automatic", "Manual"),
-  },
-  reflectionRequired: {
-    type: Sequelize.BOOLEAN,
-  },
   schedulingType: {
     type: Sequelize.ENUM("one-time", "every semester", "special event"),
   },
@@ -38,6 +32,10 @@ const Task = SequelizeInstance.define("task", {
   },
   semestersFromGrad: {
     type: Sequelize.INTEGER,
+  },
+  submissionType: {
+    type: Sequelize.ENUM("text", "files", "both"),
+    defaultValue: "text",
   },
   completionType: {
     type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),

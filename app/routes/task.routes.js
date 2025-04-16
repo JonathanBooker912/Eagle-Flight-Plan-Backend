@@ -23,7 +23,7 @@ router.get("/types/categories", [authenticate], task.getCategories);
 
 router.get("/types/schedulingTypes", [authenticate], task.getSchedulingTypes);
 
-router.get("/types/taskTypes", [authenticate], task.getTaskTypes);
+router.get("/types/submissionTypes", [authenticate], task.getSubmissionTypes);
 
 router.get("/types/completionTypes", [authenticate], task.getCompletionTypes);
 
