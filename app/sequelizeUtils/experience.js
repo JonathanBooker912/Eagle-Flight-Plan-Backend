@@ -5,14 +5,10 @@ const Experience = db.experience;
 const exports = {};
 
 exports.findAllExperiences = async (
-  page = 1,
-  pageSize = 10,
+  page = null,
+  pageSize = null,
   searchQuery = "",
 ) => {
-  page = parseInt(page, 10);
-  pageSize = parseInt(pageSize, 10);
-  const offset = (page - 1) * pageSize;
-  const limit = pageSize;
   const whereCondition = searchQuery
     ? {
         name: {
@@ -20,6 +16,18 @@ exports.findAllExperiences = async (
         },
       }
     : {};
+
+  // If pagination parameters are not provided, return all records
+  if (!page || !pageSize) {
+    const experiences = await Experience.findAll({
+      where: whereCondition,
+    });
+    return { experiences, count: experiences.length };
+  }
+
+  // Otherwise, use pagination
+  const offset = (parseInt(page, 10) - 1) * parseInt(pageSize, 10);
+  const limit = parseInt(pageSize, 10);
 
   const experiences = await Experience.findAll({
     offset,
@@ -31,7 +39,7 @@ exports.findAllExperiences = async (
     where: whereCondition,
   });
 
-  const totalPages = Math.ceil(count / pageSize);
+  const totalPages = Math.ceil(count / parseInt(pageSize, 10));
 
   return { experiences, count: totalPages };
 };
