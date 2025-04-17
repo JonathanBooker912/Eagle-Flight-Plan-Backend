@@ -2,6 +2,7 @@ import db from "../models/index.js";
 import authconfig from "../config/auth.config.js";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import { auth } from "../authorization/firebase/firebase.js";
 
 const User = db.user;
 const Role = db.role;
@@ -12,50 +13,97 @@ import { google } from "googleapis";
 
 const exports = {};
 
+const verifyFirebaseToken = async (idToken) => {
+  const decoded = await auth.verifyIdToken(idToken);
+  const email = decoded.email;
+  const nameParts = decoded.name?.split(" ") || [];
+  const firstName = nameParts[0];
+  const lastName = nameParts.slice(1).join(" ") || "";
+  console.log("Verified Firebase token");
+  return { email, firstName, lastName };
+};
+
+const verifyGoogleToken = async (idToken) => {
+  const client = new OAuth2Client(process.env.CLIENT_ID);
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  const email = payload.email;
+  const firstName = payload.given_name;
+  const lastName = payload.family_name;
+  console.log("Verified Google ID token");
+  return { email, firstName, lastName };
+};
+
+const getUserInfoFromAccessToken = async (accessToken) => {
+  try {
+    const oauth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    oauth2Client.setCredentials({ access_token: accessToken });
+    const oauth2 = google.oauth2({ auth: oauth2Client, version: "v2" });
+    const { data } = await oauth2.userinfo.get();
+    console.log("Retrieved user info with access token");
+    return {
+      email: data.email,
+      firstName: data.given_name,
+      lastName: data.family_name,
+    };
+  } catch (error) {
+    console.error("Failed to retrieve user info with access token:", error);
+    return null;
+  }
+};
+
 exports.login = async (req, res) => {
   try {
-    console.log(req.body);
-    const googleToken = req.body.credential;
-    if (!googleToken) {
-      return res.status(400).send({ message: "Missing Google token" });
+    const {
+      credential: idToken,
+      accessToken,
+      clientType = "google",
+    } = req.body;
+
+    if (!idToken) {
+      return res.status(400).send({ message: "Missing token" });
     }
 
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    let googleUser;
-
+    let userInfo;
     try {
-      const ticket = await client.verifyIdToken({
-        idToken: googleToken,
-        audience: process.env.GOOGLE_CLIENT_ID,
-      });
-      googleUser = ticket.getPayload();
+      if (clientType === "firebase") {
+        userInfo = await verifyFirebaseToken(idToken);
+      } else if (clientType === "google") {
+        userInfo = await verifyGoogleToken(idToken);
+      } else {
+        return res
+          .status(400)
+          .send({ message: "Invalid client type specified" });
+      }
     } catch (error) {
-      console.error("Google token verification failed:", error);
-      return res.status(401).send({ message: "Invalid Google token" });
+      console.error(`${clientType} token verification failed:`, error.message);
+      return res.status(401).send({ message: "Invalid token" });
     }
 
-    let { email, given_name: firstName, family_name: lastName } = googleUser;
-
-    if ((!email || !firstName || !lastName) && req.body.accessToken) {
-      try {
-        const oauth2Client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-        oauth2Client.setCredentials({ access_token: req.body.accessToken });
-        const oauth2 = google.oauth2({ auth: oauth2Client, version: "v2" });
-        const { data } = await oauth2.userinfo.get();
-        email = email || data.email;
-        firstName = firstName || data.given_name;
-        lastName = lastName || data.family_name;
-      } catch (error) {
-        console.error("Failed to retrieve user info:", error);
-        return res
-          .status(500)
-          .send({ message: "Failed to retrieve user info" });
+    // If we're missing any user info and have an access token, try to get it
+    if (
+      (!userInfo.email || !userInfo.firstName || !userInfo.lastName) &&
+      accessToken
+    ) {
+      const accessTokenInfo = await getUserInfoFromAccessToken(accessToken);
+      if (accessTokenInfo) {
+        userInfo = {
+          email: userInfo.email || accessTokenInfo.email,
+          firstName: userInfo.firstName || accessTokenInfo.firstName,
+          lastName: userInfo.lastName || accessTokenInfo.lastName,
+        };
       }
     }
 
-    if (!email) {
+    if (!userInfo.email) {
       return res.status(400).send({ message: "Unable to retrieve email" });
     }
+
+    const { email, firstName, lastName } = userInfo;
+    const fullName = `${firstName} ${lastName}`.trim();
     console.log(`User login attempt: ${email}`);
 
     let user = await User.findOne({
@@ -64,24 +112,23 @@ exports.login = async (req, res) => {
     });
 
     if (!user) {
-      let fullName = firstName + " " + lastName;
       user = await User.create({
         fName: firstName,
         lName: lastName,
         email,
-        fullName: fullName,
+        fullName,
       });
       console.log("User registered:", user.dataValues);
     } else {
-      let fullName = firstName + " " + lastName;
       await user.update({
         fName: firstName,
         lName: lastName,
-        fullName: fullName,
+        fullName,
       });
       console.log("User details updated");
     }
 
+    // Handle session
     let session = await Session.findOne({
       where: { email, token: { [Op.ne]: "" } },
     });
@@ -106,7 +153,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    const userInfo = {
+    const userInfoObj = {
       email: user.email,
       fName: user.fName,
       lName: user.lName,
@@ -114,8 +161,9 @@ exports.login = async (req, res) => {
       userId: user.id,
       token: session.token,
     };
-    console.log(userInfo);
-    return res.send(userInfo);
+
+    console.log("Login successful:", userInfoObj);
+    return res.send(userInfoObj);
   } catch (error) {
     console.error("Login error:", error);
     return res.status(500).send({ message: "Internal server error" });
