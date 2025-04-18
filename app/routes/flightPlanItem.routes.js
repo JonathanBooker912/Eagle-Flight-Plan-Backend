@@ -55,4 +55,13 @@ router.put(
 // Delete a FlightPlanItem with id
 router.delete("/:id", [authenticate, isAdmin], flightPlanItem.delete);
 
+
+// Get FlightPlanItems with Events for a specific student
+router.get(
+  "/student/:studentId/flightplan/:flightPlanId/with-events",
+  [authenticate],
+  flightPlanItem.getFlightPlanItemsWithEventsForStudent
+);
+
+
 export default router;

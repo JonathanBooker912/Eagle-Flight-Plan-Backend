@@ -268,6 +268,18 @@ exports.getEventFulfillableExperiences = async (req, res) => {
   }
 };
 
+exports.getEventsForExperience = async (req, res) => {
+  try {
+    const { experienceId } = req.params;
+    const events = await Event.getEventsForExperience(experienceId);
+    res.send(events);
+  } catch (err) {
+    console.error("Error fetching events for experience:", err);
+    res.status(500).send({ message: "Failed to get events for experience." });
+  }
+};
+
+
 exports.generateCheckInToken = async (req, res) => {
   try {
     const { eventId } = req.params;
