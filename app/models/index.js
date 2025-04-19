@@ -104,8 +104,12 @@ BadgeAwarded.belongsTo(Student, { foreignKey: "studentId", as: "student" });
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajor" });
 
-Student.belongsToMany(Reward, { through: db.studentReward });
-Reward.belongsToMany(Student, { through: db.studentReward });
+Student.belongsToMany(Reward, {
+  through: { model: StudentReward, unique: false },
+});
+Reward.belongsToMany(Student, {
+  through: { model: StudentReward, unique: false },
+});
 
 // TASKMAJOR
 Task.belongsToMany(Major, { through: "taskMajor" });
