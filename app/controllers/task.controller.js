@@ -68,6 +68,21 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.findAllOptionalForStudentId = async (req, res) => {
+  await Task.findAllOptionalForStudentId(
+    req.params.studentId,
+    req.query.searchQuery,
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving tasks.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   await Task.updateTask(req.body, req.params.id)
     .then((num) => {

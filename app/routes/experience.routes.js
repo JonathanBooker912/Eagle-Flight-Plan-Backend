@@ -10,6 +10,12 @@ router.post("/", [authenticate, isAdmin], experience.create);
 // Retrieve all Experience
 router.get("/", [authenticate], experience.findAll);
 
+router.get(
+  "/optional/:studentId",
+  [authenticate, isAdmin],
+  experience.findAllOptionalForFlightPlanId,
+);
+
 // Retrieve a single Experience with id
 router.get("/:id", [authenticate], experience.findOne);
 

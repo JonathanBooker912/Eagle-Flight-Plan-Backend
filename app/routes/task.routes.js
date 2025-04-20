@@ -13,6 +13,12 @@ router.get("/:id", [authenticate], task.findOne);
 // Retrieve all Role
 router.get("/", [authenticate], task.findAll);
 
+router.get(
+  "/optional/:studentId",
+  [authenticate, isAdmin],
+  task.findAllOptionalForStudentId,
+);
+
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], task.update);
 

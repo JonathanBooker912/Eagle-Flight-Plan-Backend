@@ -1,6 +1,8 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 const Experience = db.experience;
+const FlightPlanItem = db.flightPlanItem;
+const FlightPlan = db.flightPlan;
 
 const exports = {};
 
@@ -42,6 +44,38 @@ exports.findAllExperiences = async (
   const totalPages = Math.ceil(count / parseInt(pageSize, 10));
 
   return { experiences, count: totalPages };
+};
+
+exports.findAllOptionalForFlightPlanId = async (
+  studentId,
+  searchQuery = "",
+) => {
+  const flightPlanItems = await FlightPlanItem.findAll({
+    include: [
+      {
+        model: FlightPlan,
+        as: "flightPlan",
+        required: true,
+        where: {
+          studentId: studentId,
+        },
+      },
+    ],
+  });
+
+  const experienceIds = flightPlanItems
+    .map((item) => item.experienceId)
+    .filter((id) => id !== null);
+
+  const experiences = await Experience.findAll({
+    where: {
+      id: { [Op.notIn]: experienceIds },
+      schedulingType: "optional",
+      ...(searchQuery && { name: { [Op.like]: `%${searchQuery}%` } }),
+    },
+  });
+
+  return experiences;
 };
 
 exports.findOneExperience = async (experienceId) => {
