@@ -249,6 +249,7 @@ exports.getAttendingStudents = async (req, res) => {
   } catch (err) {
     res.status(500).send({
       message: "Error retrieving attending students.",
+      error: err.message,
     });
   }
 };
@@ -356,6 +357,20 @@ exports.checkInStudent = async (req, res) => {
       message: err.message || "Error checking in student to event",
     });
     console.log("Could not check in student:", err);
+  }
+};
+
+exports.importAttendance = async (req, res) => {
+  try {
+    const attendanceData = req.body; // The data is sent directly, not wrapped in attendanceData
+    const result = await Event.importAttendance(attendanceData);
+    res.send({ success: true, ...result });
+  } catch (err) {
+    console.error("Error importing attendance:", err);
+    res.status(500).send({
+      success: false,
+      message: err.message || "Failed to import attendance.",
+    });
   }
 };
 

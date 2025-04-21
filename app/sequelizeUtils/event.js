@@ -599,4 +599,87 @@ exports.checkInStudent = async (eventId, studentId, token) => {
   return checkIn;
 };
 
+exports.importAttendance = async (attendanceData) => {
+  const results = {
+    success: [],
+    failed: [],
+  };
+
+  // Track processed emails to avoid duplicates
+  const processedEmails = new Set();
+
+  for (const record of attendanceData) {
+    try {
+      // Skip if we've already processed this email
+      if (processedEmails.has(record.email)) {
+        continue;
+      }
+      processedEmails.add(record.email);
+
+      // Find user by email
+      const user = await db.user.findOne({
+        where: { email: record.email },
+        include: [
+          {
+            model: db.student,
+            as: "student",
+          },
+        ],
+      });
+
+      if (!user) {
+        results.failed.push({
+          email: record.email,
+          reason: "User not found",
+        });
+        continue;
+      }
+
+      if (!user.student) {
+        results.failed.push({
+          email: record.email,
+          reason: "User is not a student",
+        });
+        continue;
+      }
+
+      // Check if student is registered for the event
+      const eventStudent = await EventStudents.findOne({
+        where: {
+          eventId: record.eventId,
+          studentId: user.student.id,
+        },
+      });
+
+      if (!eventStudent) {
+        // Register student for the event
+        await EventStudents.create({
+          eventId: record.eventId,
+          studentId: user.student.id,
+          attended: true,
+          recordedTime: new Date(record.checkedIn),
+        });
+      } else {
+        // Update existing registration
+        await eventStudent.update({
+          attended: true,
+          recordedTime: new Date(record.checkedIn),
+        });
+      }
+
+      results.success.push({
+        email: record.email,
+        studentId: user.student.id,
+      });
+    } catch (error) {
+      results.failed.push({
+        email: record.email,
+        reason: error.message,
+      });
+    }
+  }
+
+  return results;
+};
+
 export default exports;
