@@ -85,14 +85,12 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     ],
   };
 
-  console.log(offset, limit);
-
   const response = await FlightPlanItem.findAll(queryOptions);
 
   const count = await FlightPlanItem.count({
     where: whereCondition,
   });
-  console.log(count);
+
   const totalPages = Math.ceil(count / limit);
 
   return { count: totalPages, flightPlanItems: response };
