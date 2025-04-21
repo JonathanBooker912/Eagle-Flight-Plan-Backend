@@ -193,54 +193,13 @@ const processNonSpecificExperiences = (
 
   const uncompletedOneTimeExperiences = oneTimeExperiences.filter(
     (experience) => !completedExperienceIds.includes(experience.id),
-  nonSpecificExperiences,
-) => {
-  const oneTimeExperiences = nonSpecificExperiences.filter(
-    (experience) => experience.schedulingType === "one-time",
   );
-
-  const everySemesterExperiences = nonSpecificExperiences.filter(
-    (experience) => experience.schedulingType === "every semester",
-  );
-
-  const uncompletedOneTimeExperiences = oneTimeExperiences.filter(
-    (experience) => !completedExperienceIds.includes(experience.id),
-  );
-
-  return [...uncompletedOneTimeExperiences, ...everySemesterExperiences];
 
   return [...uncompletedOneTimeExperiences, ...everySemesterExperiences];
 };
 
 const processSpecificExperiences = (
   completedExperienceIds,
-  specificExperiences,
-  student,
-) => {
-  const relevantSpecificExperiences = specificExperiences.filter(
-    (experience) =>
-      experience.strengths.some((strength) =>
-        student.strengths.includes(strength),
-      ) || experience.majors.some((major) => student.majors.includes(major)),
-  );
-
-  const oneTimeSpecificExperiences = relevantSpecificExperiences.filter(
-    (experience) => experience.schedulingType === "one-time",
-  );
-
-  const uncompletedOneTimeSpecificExperiences =
-    oneTimeSpecificExperiences.filter(
-      (experience) => !completedExperienceIds.includes(experience.id),
-    );
-
-  const everySemesterSpecificExperiences = relevantSpecificExperiences.filter(
-    (experience) => experience.schedulingType === "every semester",
-  );
-
-  return [
-    ...uncompletedOneTimeSpecificExperiences,
-    ...everySemesterSpecificExperiences,
-  ];
   specificExperiences,
   student,
 ) => {
