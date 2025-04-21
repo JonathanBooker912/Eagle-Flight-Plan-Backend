@@ -50,8 +50,8 @@ exports.findAll = async (req, res) => {
     });
 };
 
-exports.findAllOptionalForFlightPlanId = async (req, res) => {
-  await Experience.findAllOptionalForFlightPlanId(
+exports.findAllOptionalForStudentId = async (req, res) => {
+  await Experience.findAllOptionalForStudentId(
     req.params.studentId,
     req.query.searchQuery,
   )

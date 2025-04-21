@@ -46,36 +46,42 @@ exports.findAllExperiences = async (
   return { experiences, count: totalPages };
 };
 
-exports.findAllOptionalForFlightPlanId = async (
-  studentId,
-  searchQuery = "",
-) => {
-  const flightPlanItems = await FlightPlanItem.findAll({
+exports.findAllOptionalForStudentId = async (studentId, searchQuery = "") => {
+  const flightPlans = await FlightPlan.findAll({
+    where: {
+      studentId: studentId,
+    },
     include: [
       {
-        model: FlightPlan,
-        as: "flightPlan",
-        required: true,
+        model: FlightPlanItem,
+        as: "flightPlanItems",
+        required: false,
         where: {
-          studentId: studentId,
+          flightPlanItemType: "Experience",
         },
       },
     ],
   });
 
-  const experienceIds = flightPlanItems
-    .map((item) => item.experienceId)
-    .filter((id) => id !== null);
+  const flightPlanItems = flightPlans.flatMap(
+    (flightPlan) => flightPlan.flightPlanItems,
+  );
+
+  const experienceIds = flightPlanItems.map((item) => item.experienceId);
 
   const experiences = await Experience.findAll({
     where: {
-      id: { [Op.notIn]: experienceIds },
-      schedulingType: "optional",
       ...(searchQuery && { name: { [Op.like]: `%${searchQuery}%` } }),
     },
   });
 
-  return experiences;
+  const filteredExperiences = experiences.filter(
+    (experience) =>
+      experience.schedulingType === "optional" &&
+      !experienceIds.includes(experience.id),
+  );
+
+  return filteredExperiences;
 };
 
 exports.findOneExperience = async (experienceId) => {

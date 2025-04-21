@@ -36,9 +36,9 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
 
-  const whereCondition = {};
-
-  whereCondition.flightPlanId = flightPlanId;
+  const whereCondition = {
+    flightPlanId: flightPlanId,
+  };
 
   if (searchQuery) {
     whereCondition.name = {
@@ -54,7 +54,10 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     whereCondition.flightPlanItemType = { [Op.eq]: filters.flightPlanItemType };
   }
 
-  let order = [["status", "DESC"]];
+  let order = [
+    ["status", "DESC"],
+    ["name", "DESC"],
+  ];
 
   if (filters.sortAttribute && filters.sortDirection) {
     const direction =
@@ -82,13 +85,15 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     ],
   };
 
+  console.log(offset, limit);
+
   const response = await FlightPlanItem.findAll(queryOptions);
 
   const count = await FlightPlanItem.count({
     where: whereCondition,
   });
-
-  const totalPages = Math.ceil(count / pageSize);
+  console.log(count);
+  const totalPages = Math.ceil(count / limit);
 
   return { count: totalPages, flightPlanItems: response };
 };

@@ -13,7 +13,7 @@ router.get("/", [authenticate], experience.findAll);
 router.get(
   "/optional/:studentId",
   [authenticate, isAdmin],
-  experience.findAllOptionalForFlightPlanId,
+  experience.findAllOptionalForStudentId,
 );
 
 // Retrieve a single Experience with id
