@@ -606,6 +606,7 @@ exports.importAttendance = async (attendanceData) => {
   };
 
   // Track processed emails to avoid duplicates
+  // eslint-disable-next-line no-undef
   const processedEmails = new Set();
 
   for (const record of attendanceData) {
