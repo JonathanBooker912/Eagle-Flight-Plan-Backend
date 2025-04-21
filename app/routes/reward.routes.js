@@ -6,6 +6,9 @@ const router = Router();
 // Create a new Reward
 router.post("/", [authenticate, isAdmin], reward.create);
 
+// Redeem a Reward
+router.post("/redeem/:id", [authenticate], reward.redeemReward);
+
 // Retrieve all Reward
 router.get("/", [authenticate], reward.findAll);
 
