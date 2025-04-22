@@ -57,13 +57,13 @@ export const isAdmin = async (req, res, next) => {
           .then((data) => {
             roles = data.roles;
             for (let i = 0; i < roles.length; i++) {
-              if (roles[i].name.toLowerCase() == "admin") {
+              if (roles[i].name.toLowerCase() == "admin" || roles[i].id == 4) {
                 next();
                 return;
               }
             }
             return res.status(403).send({
-              message: "Forbidden! Requires Admin role.",
+              message: "Forbidden! Requires Admin or Director role.",
             });
           })
           .catch((error) => {
@@ -83,9 +83,61 @@ export const isAdmin = async (req, res, next) => {
     });
 };
 
+export const isDirector = async (req, res, next) => {
+  let authHeader = req.get("authorization");
+  let token = "";
+  let roles = [];
+
+  if (authHeader != null) {
+    if (authHeader.startsWith("Bearer ")) {
+      token = authHeader.slice(7);
+    } else
+      return res.status(401).send({
+        message: "Unauthorized! No authentication header.",
+      });
+  }
+
+  await Session.findAll({ where: { token: token } })
+    .then(async (data) => {
+      let session = data[0];
+      if (session.userId != null) {
+        await User.findOne({
+          where: { id: session.userId },
+          include: { model: Role },
+        })
+          .then((data) => {
+            roles = data.roles;
+            for (let i = 0; i < roles.length; i++) {
+              if (roles[i].id == 4) {
+                next();
+                return;
+              }
+            }
+            return res.status(403).send({
+              message: "Forbidden! Requires Director role.",
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+            return res.status(500).send({
+              message:
+                "There was an error finding roles to authenticate a director.",
+            });
+          });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      return res.status(500).send({
+        message: "There was an error find sessions to authenticate a director.",
+      });
+    });
+};
+
 const auth = {
   authenticate: authenticate,
   isAdmin: isAdmin,
+  isDirector: isDirector,
 };
 
 export default auth;
