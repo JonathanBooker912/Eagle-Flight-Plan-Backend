@@ -1,16 +1,18 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
+
 const Semester = db.semester;
 
-const exports = {};
-
-exports.getCurrentSemester = async () => {
-  return await Semester.findOne({
+const findAllSemesters = async () => {
+  return await Semester.findAll({
     where: {
-      startDate: { [Op.lte]: new Date() }, // startDate <= current date
-      endDate: { [Op.gte]: new Date() }, // endDate >= current date
+      endDate: {
+        [Op.gt]: Date.now(),
+      },
     },
   });
 };
 
-export default exports;
+export default {
+  findAllSemesters,
+};

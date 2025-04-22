@@ -18,7 +18,7 @@ import StudentRoutes from "./student.routes.js";
 import SubmissionRoutes from "./submission.routes.js";
 import FileRoutes from "./file.routes.js";
 import MajorRoutes from "./major.routes.js";
-
+import SemesterRoutes from "./semester.routes.js";
 const router = Router();
 
 router.use("/", AuthRoutes);
@@ -40,7 +40,7 @@ router.use("/students", StudentRoutes);
 router.use("/submission", SubmissionRoutes);
 router.use("/file", FileRoutes);
 router.use("/majors", MajorRoutes);
-
+router.use("/semesters", SemesterRoutes);
 // eslint-disable-next-line
 router.get("/", (req, res) => {
   res.json({ message: "Welcome to Team 1's Eagle Flight Plan API." });
