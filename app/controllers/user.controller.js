@@ -107,4 +107,20 @@ exports.delete = async (req, res) => {
     );
 };
 
+exports.promoteToAdmin = async (req, res) => {
+  await UserUtils.promoteToAdmin(req.params.id)
+    .then((num) => {
+      if (num == 1) {
+        res.send({ message: "User promoted to admin successfully!" });
+      } else {
+        res.send({ message: `User with id=${req.params.id} not found.` });
+      }
+    })
+    .catch(() =>
+      res
+        .status(500)
+        .send({ message: `Error promoting User with id=${req.params.id}` }),
+    );
+};
+
 export default exports;
