@@ -117,11 +117,11 @@ exports.findByStudentId = async (studentId) => {
 exports.promoteToAdmin = async (id) => {
   const user = await User.findByPk(id);
   if (!user) return 0;
-  
+
   // Find the admin role
-  const adminRole = await Role.findOne({ where: { name: 'Admin' } });
+  const adminRole = await Role.findOne({ where: { name: "Admin" } });
   if (!adminRole) return 0;
-  
+
   // Set the user's role to admin
   await user.setRoles([adminRole]);
   return 1;
