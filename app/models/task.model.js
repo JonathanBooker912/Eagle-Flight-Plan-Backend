@@ -18,9 +18,6 @@ const Task = SequelizeInstance.define("task", {
       "Volunteer",
     ),
   },
-  taskType: {
-    type: Sequelize.ENUM("Automatic", "Manual"),
-  },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
   },
