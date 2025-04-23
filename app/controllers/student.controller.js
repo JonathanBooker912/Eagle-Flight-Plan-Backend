@@ -3,7 +3,7 @@ import Student from "../sequelizeUtils/student.js";
 const exports = {};
 
 exports.findStudentForUserId = async (req, res) => {
-  await Student.findStudentForUserId(req.params.id)
+  await Student.findStudentForUserId(req.params.userId)
     .then((data) => {
       res.send(data);
     })
@@ -19,19 +19,21 @@ exports.create = async (req, res) => {
   // Validate required fields in the request body
   if (
     req.body.graduationDate == null ||
-    req.body.pointsAwarded == null ||
-    req.body.pointsUsed == null
+    req.body.semestersFromGrad == null ||
+    req.body.userId == null
   ) {
     return res.status(400).send({
       message:
-        "Graduation date, points awarded, and points used cannot be empty!",
+        "Graduation date, Semesters from grad, and userId cannot be empty!",
     });
   }
 
   const studentData = {
     graduationDate: req.body.graduationDate,
-    pointsAwarded: req.body.pointsAwarded,
-    pointsUsed: req.body.pointsUsed,
+    semestersFromGrad: req.body.semestersFromGrad,
+    userId: req.body.userId,
+    pointsAwarded: req.body.pointsAwarded || 0,
+    pointsUsed: req.body.pointsUsed || 0,
   };
 
   await Student.create(studentData)
@@ -156,6 +158,61 @@ exports.getStudent = async (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving student.",
+      });
+    });
+};
+
+exports.addMajor = async (req, res) => {
+  await Student.addMajor(req.params.id, req.body.majorId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while adding major to student.",
+      });
+    });
+};
+
+exports.removeMajor = async (req, res) => {
+  await Student.removeMajor(req.params.id, req.body.majorId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while removing major from student.",
+      });
+    });
+};
+
+exports.addStrength = async (req, res) => {
+  await Student.addStrength(req.params.id, req.body.strengthId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while adding strength to student.",
+      });
+    });
+};
+
+exports.removeStrength = async (req, res) => {
+  await Student.removeStrength(req.params.id, req.body.strengthId)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while removing strength from student.",
       });
     });
 };
