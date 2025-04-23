@@ -64,13 +64,18 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findByEmail = async (req, res) => {
-  await UserUtils.findByEmail(req.params.email)
-    .then((data) => res.send(data || { email: "not found" }))
-    .catch(() =>
-      res.status(500).send({
-        message: `Error retrieving User with email=${req.params.email}`,
-      }),
-    );
+  try {
+    const user = await UserUtils.findByEmail(req.params.email);
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+    res.send(user);
+  } catch (error) {
+    console.error("Error finding user by email:", error);
+    res.status(500).send({
+      message: `Error retrieving User with email=${req.params.email}`,
+    });
+  }
 };
 
 exports.update = async (req, res) => {

@@ -20,11 +20,12 @@ exports.create = async (req, res) => {
   if (
     req.body.graduationDate == null ||
     req.body.pointsAwarded == null ||
-    req.body.pointsUsed == null
+    req.body.pointsUsed == null ||
+    req.body.userId == null
   ) {
     return res.status(400).send({
       message:
-        "Graduation date, points awarded, and points used cannot be empty!",
+        "Graduation date, points awarded, points used, and userId cannot be empty!",
     });
   }
 
@@ -32,6 +33,7 @@ exports.create = async (req, res) => {
     graduationDate: req.body.graduationDate,
     pointsAwarded: req.body.pointsAwarded,
     pointsUsed: req.body.pointsUsed,
+    userId: req.body.userId
   };
 
   await Student.create(studentData)

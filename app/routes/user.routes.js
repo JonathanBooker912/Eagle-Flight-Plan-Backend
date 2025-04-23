@@ -17,6 +17,9 @@ router.get("/admin/all", [authenticate], user.findAllAdmins);
 // Retrieve a single User with id
 router.get("/:id", [authenticate], user.findOne);
 
+// Retrieve a single User with email
+router.get("/email/:email", [authenticate], user.findByEmail);
+
 // Update a User with id
 router.put("/:id", [authenticate], user.update);
 
