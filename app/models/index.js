@@ -115,9 +115,17 @@ Reward.belongsToMany(Student, {
 Task.belongsToMany(Major, { through: "taskMajor" });
 Major.belongsToMany(Task, { through: "taskMajor" });
 
+// TaskStrength
+Task.belongsToMany(Strength, { through: "taskStrength" });
+Strength.belongsToMany(Task, { through: "taskStrength" });
+
 // EXPERIENCEMAJORS
 Experience.belongsToMany(Major, { through: "experienceMajor" });
 Major.belongsToMany(Experience, { through: "experienceMajor" });
+
+// ExperienceStrength
+Experience.belongsToMany(Strength, { through: "experienceStrength" });
+Strength.belongsToMany(Experience, { through: "experienceStrength" });
 
 // EXPOPTIONS
 Experience.belongsToMany(Event, { through: "expOption", as: "events" });

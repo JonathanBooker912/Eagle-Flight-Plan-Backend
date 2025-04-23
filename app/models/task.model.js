@@ -18,14 +18,16 @@ const Task = SequelizeInstance.define("task", {
       "Volunteer",
     ),
   },
-  taskType: {
-    type: Sequelize.ENUM("Automatic", "Manual"),
-  },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
   },
   schedulingType: {
-    type: Sequelize.ENUM("one-time", "every semester", "optional"),
+    type: Sequelize.ENUM(
+      "one-time",
+      "every-semester",
+      "optional",
+      "every-other-semester",
+    ),
   },
   name: {
     type: Sequelize.STRING,

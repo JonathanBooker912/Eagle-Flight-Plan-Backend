@@ -133,10 +133,6 @@ exports.getSchedulingTypes = (req, res) => {
   res.send(Task.getSchedulingTypes());
 };
 
-exports.getTaskTypes = (req, res) => {
-  res.send(Task.getTaskTypes());
-};
-
 exports.getCompletionTypes = (req, res) => {
   res.send(Task.getCompletionTypes());
 };
