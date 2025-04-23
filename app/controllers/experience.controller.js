@@ -116,8 +116,8 @@ exports.getSchedulingTypes = (req, res) => {
   res.send(Experience.getSchedulingTypes());
 };
 
-exports.getCompletionTypes = (req, res) => {
-  res.send(Experience.getCompletionTypes());
+exports.getSubmissionTypes = (req, res) => {
+  res.send(Experience.getSubmissionTypes());
 };
 
 export default exports;

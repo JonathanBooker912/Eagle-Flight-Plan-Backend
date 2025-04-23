@@ -42,9 +42,6 @@ const Task = SequelizeInstance.define("task", {
     type: Sequelize.ENUM("text", "files", "both"),
     defaultValue: "text",
   },
-  completionType: {
-    type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
-  },
   points: {
     type: Sequelize.INTEGER,
   },

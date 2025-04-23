@@ -29,8 +29,8 @@ exports.findAllTasks = async (
     whereCondition.schedulingType = { [Op.eq]: `${filters.schedulingType}` };
   }
 
-  if (filters.completionType) {
-    whereCondition.completionType = { [Op.eq]: `${filters.completionType}` };
+  if (filters.submissionType) {
+    whereCondition.submissionType = { [Op.eq]: `${filters.submissionType}` };
   }
 
   const direction =
@@ -150,9 +150,6 @@ exports.getSubmissionTypes = () => {
   return Task.getAttributes().submissionType.values;
 };
 
-exports.getCompletionTypes = () => {
-  return Task.getAttributes().completionType.values;
-};
 
 export default exports;
 

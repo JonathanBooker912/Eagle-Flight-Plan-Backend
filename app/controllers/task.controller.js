@@ -41,7 +41,6 @@ exports.findAll = async (req, res) => {
     category,
     taskType,
     schedulingType,
-    completionType,
     semestersFromGraduation,
     strengths,
     sortAttribute,
@@ -52,7 +51,6 @@ exports.findAll = async (req, res) => {
     category,
     taskType,
     schedulingType,
-    completionType,
     semestersFromGraduation,
     strengths,
     sortAttribute,
@@ -135,10 +133,6 @@ exports.getSchedulingTypes = (req, res) => {
 
 exports.getSubmissionTypes = (req, res) => {
   res.send(Task.getSubmissionTypes());
-};
-
-exports.getCompletionTypes = (req, res) => {
-  res.send(Task.getCompletionTypes());
 };
 
 export default exports;
