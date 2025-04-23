@@ -18,8 +18,9 @@ const Experience = SequelizeInstance.define("experience", {
       "Volunteer",
     ),
   },
-  completionType: {
-    type: Sequelize.ENUM("Submission", "Attendance"),
+  submissionType: {
+    type: Sequelize.ENUM("text", "files", "both", "Attendance"),
+    default: "Attendance"
   },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
