@@ -132,10 +132,6 @@ exports.getAttendanceTypes = (req, res) => {
   res.send(Event.getAttendanceTypes());
 };
 
-// exports.getEventTypes = (req, res) => {
-//   res.send(Event.getEventTypes());
-// };
-
 exports.getCompletionTypes = (req, res) => {
   res.send(Event.getCompletionTypes());
 };
@@ -265,6 +261,17 @@ exports.getEventFulfillableExperiences = async (req, res) => {
         err.message || "Error retrieving fulfillable experiences for event.",
     });
     console.log("Could not get fulfillable experiences:", err);
+  }
+};
+
+exports.getEventsForExperience = async (req, res) => {
+  try {
+    const { experienceId } = req.params;
+    const events = await Event.getEventsForExperience(experienceId);
+    res.send(events);
+  } catch (err) {
+    console.error("Error fetching events for experience:", err);
+    res.status(500).send({ message: "Failed to get events for experience." });
   }
 };
 

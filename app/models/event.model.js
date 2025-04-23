@@ -33,9 +33,6 @@ const Event = SequelizeInstance.define("event", {
   registration: {
     type: Sequelize.ENUM("In App", "Handshake"),
   },
-  completionType: {
-    type: Sequelize.ENUM("automatic", "self-reported", "confirmed"),
-  },
 });
 
 export default Event;

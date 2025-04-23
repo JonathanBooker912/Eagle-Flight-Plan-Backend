@@ -77,6 +77,12 @@ router.get(
   event.getEventFulfillableExperiences,
 );
 
+router.get(
+  "/experience/:experienceId/fulfilling-events",
+  [authenticate],
+  event.getEventsForExperience,
+);
+
 // Generate a check-in token for an event
 router.post(
   "/:eventId/check-in-token",

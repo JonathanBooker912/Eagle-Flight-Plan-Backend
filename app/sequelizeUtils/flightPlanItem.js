@@ -137,6 +137,10 @@ exports.getPendingApprovals = async (
         as: "task",
       },
       {
+        model: Experience,
+        as: "experience",
+      },
+      {
         model: Submission,
         as: "submission",
       },
@@ -218,6 +222,32 @@ exports.rejectFlightPlanItem = async (flightPlanItemId) => {
 
 exports.deleteFlightPlanItem = async (flightPlanItemId) => {
   return await FlightPlanItem.destroy({ where: { id: flightPlanItemId } });
+};
+
+exports.getFlightPlanItemsWithEventsForStudent = async (
+  studentId,
+  flightPlanId,
+) => {
+  let resolvedFlightPlanId = flightPlanId;
+
+  if (!resolvedFlightPlanId) {
+    const studentFlightPlan = await db.flightPlan.findOne({
+      where: { studentId },
+    });
+
+    if (!studentFlightPlan) {
+      throw new Error("No flight plan found for this student.");
+    }
+
+    resolvedFlightPlanId = studentFlightPlan.id;
+  }
+
+  return await FlightPlanItem.findAll({
+    where: {
+      flightPlanId: resolvedFlightPlanId,
+      eventId: { [Op.ne]: null }, // Only include items with an eventId
+    },
+  });
 };
 
 export default exports;

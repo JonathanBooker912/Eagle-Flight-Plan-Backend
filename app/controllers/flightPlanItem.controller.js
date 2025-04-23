@@ -288,4 +288,17 @@ exports.delete = async (req, res) => {
     });
 };
 
+exports.getFlightPlanItemsWithEventsForStudent = async (req, res) => {
+  try {
+    const { studentId, flightPlanId } = req.params;
+    const items = await FlightPlanItem.getFlightPlanItemsWithEventsForStudent(
+      studentId,
+      flightPlanId,
+    );
+    res.send(items);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
 export default exports;
