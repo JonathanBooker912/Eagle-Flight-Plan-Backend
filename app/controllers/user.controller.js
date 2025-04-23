@@ -107,4 +107,60 @@ exports.delete = async (req, res) => {
     );
 };
 
+exports.promoteToAdmin = async (req, res) => {
+  try {
+    // Get the user
+    const user = await UserUtils.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: `User with id=${req.params.id} not found.`,
+      });
+    }
+
+    // Add admin role
+    const updatedUser = await UserUtils.addRole(user.id, "Admin");
+
+    res.status(200).json({
+      success: true,
+      message: "User promoted to admin successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error promoting user to admin",
+      error: error.message,
+    });
+  }
+};
+
+exports.demoteFromAdmin = async (req, res) => {
+  try {
+    // Get the user
+    const user = await UserUtils.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: `User with id=${req.params.id} not found.`,
+      });
+    }
+
+    // Remove admin role
+    const updatedUser = await UserUtils.removeRole(user.id, "Admin");
+
+    res.status(200).json({
+      success: true,
+      message: "User demoted from admin successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error demoting user from admin",
+      error: error.message,
+    });
+  }
+};
+
 export default exports;

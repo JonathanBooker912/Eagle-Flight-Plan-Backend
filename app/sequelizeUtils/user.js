@@ -114,4 +114,62 @@ exports.findByStudentId = async (studentId) => {
   return await User.findOne({ where: { studentId } });
 };
 
+exports.addRole = async (userId, roleName) => {
+  try {
+    // Find the user
+    const user = await User.findByPk(userId, {
+      include: [Role],
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Find the role
+    const role = await Role.findOne({ where: { name: roleName } });
+    if (!role) {
+      throw new Error(`Role ${roleName} not found`);
+    }
+
+    // Add the role to the user
+    await user.addRole(role);
+
+    // Return the updated user with roles
+    return await User.findByPk(userId, {
+      include: [Role],
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.removeRole = async (userId, roleName) => {
+  try {
+    // Find the user
+    const user = await User.findByPk(userId, {
+      include: [Role],
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Find the role
+    const role = await Role.findOne({ where: { name: roleName } });
+    if (!role) {
+      throw new Error(`Role ${roleName} not found`);
+    }
+
+    // Remove the role from the user
+    await user.removeRole(role);
+
+    // Return the updated user with roles
+    return await User.findByPk(userId, {
+      include: [Role],
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default exports;
