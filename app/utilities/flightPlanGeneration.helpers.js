@@ -113,11 +113,11 @@ const processNonSpecificTasks = (
   );
 
   const everySemesterTasks = nonSpecificTasks.filter(
-    (task) => task.schedulingType === "every semester",
+    (task) => task.schedulingType === "every-semester",
   );
 
   const everyOtherSemesterTasks = nonSpecificTasks.filter(
-    (task) => task.schedulingType === "every other semester",
+    (task) => task.schedulingType === "every-other-semester",
   );
 
   const uncompletedEveryOtherSemesterTasks = processEveryOtherSemesterTasks(
@@ -156,11 +156,11 @@ const processSpecificTasks = (
   );
 
   const everySemesterSpecificTasks = relevantSpecificTasks.filter(
-    (task) => task.schedulingType === "every semester",
+    (task) => task.schedulingType === "every-semester",
   );
 
   const everyOtherSemesterSpecificTasks = relevantSpecificTasks.filter(
-    (task) => task.schedulingType === "every other semester",
+    (task) => task.schedulingType === "every-other-semester",
   );
 
   const uncompletedEveryOtherSemesterSpecificTasks =
