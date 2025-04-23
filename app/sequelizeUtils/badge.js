@@ -161,6 +161,20 @@ exports.deleteBadge = async (badgeId) => {
   return await Badge.destroy({ where: { id: badgeId } });
 };
 
+exports.getUnviewedBadges = async (studentId) => {
+  return await Badge.findAll({
+    include: {
+      model: BadgeAwarded,
+      as: "badgeAwarded",
+      where: {
+        studentId: studentId,
+        viewed: false,
+      },
+      required: true,
+    },
+  });
+};
+
 export default exports;
 
 const getFilesForBadges = (badges) =>

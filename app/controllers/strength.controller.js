@@ -1,5 +1,6 @@
-import Student from "../sequelizeUtils/student.js";
-import Strength from "../sequelizeUtils/strength.js";
+import db from "../models/index.js";
+const Student = db.student;
+const Strength = db.strength;
 
 const exports = {};
 
@@ -18,6 +19,10 @@ exports.getStrengthsForStudent = async (req, res) => {
       },
     });
 
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
     console.log(student.strengths);
 
     return res.status(200).json(student.strengths);
@@ -30,8 +35,15 @@ exports.getStrengthsForStudent = async (req, res) => {
 };
 
 exports.getAllStrengths = async (req, res) => {
-  const strengths = await Strength.findAllStrengths();
-  return res.status(200).json(strengths);
+  try {
+    const strengths = await Strength.findAll();
+    return res.status(200).json(strengths);
+  } catch (err) {
+    console.error("Error fetching all strengths:", err);
+    res
+      .status(500)
+      .json({ message: "Error fetching strengths", error: err.message });
+  }
 };
 
 export default exports;

@@ -5,7 +5,6 @@ const Event = db.event;
 const EventCheckInToken = db.eventCheckinTokens;
 const Strength = db.strength;
 const EventStudents = db.eventStudents;
-
 const exports = {};
 
 exports.findAllEvents = async (
@@ -57,8 +56,6 @@ exports.findAllEvents = async (
     order,
   };
 
-  console.log(filters.strengths);
-
   if (filters.strengths && filters.strengths.length > 0) {
     queryOptions.include.push({
       model: Strength,
@@ -79,7 +76,9 @@ exports.findAllEvents = async (
 };
 
 exports.findOneEvent = async (eventId) => {
-  return await Event.findByPk(eventId);
+  return await Event.findByPk(eventId, {
+    include: [{ model: db.experience, as: "experiences" }],
+  });
 };
 
 exports.findEventByToken = async (eventToken) => {
@@ -101,14 +100,39 @@ exports.findEventByToken = async (eventToken) => {
 };
 
 exports.createEvent = async (eventData) => {
-  return await Event.create(eventData);
+  const event = await Event.create(eventData);
+  await createOrUpdateEventExperiences(event.id, eventData.experiences);
+  return event;
 };
 
 exports.updateEvent = async (eventData, eventId) => {
+  await createOrUpdateEventExperiences(eventId, eventData.experiences);
   return await Event.update(eventData, { where: { id: eventId } });
 };
 
+const createOrUpdateEventExperiences = async (eventId, experiences) => {
+  // Get the event instance
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    throw new Error("Event not found");
+  }
+
+  // Remove all existing experience associations
+  await event.setExperiences([]);
+
+  if (experiences && experiences.length > 0) {
+    // Create new experience associations
+    const experienceIds = experiences.map((exp) => exp.id);
+    await event.addExperiences(experienceIds);
+  }
+};
+
 exports.deleteEvent = async (eventId) => {
+  const event = await Event.findByPk(eventId);
+  if (!event) {
+    return "Successfully deleted event";
+  }
+  await event.setExperiences([]);
   return await Event.destroy({ where: { id: eventId } });
 };
 
@@ -573,6 +597,90 @@ exports.checkInStudent = async (eventId, studentId, token) => {
   });
 
   return checkIn;
+};
+
+exports.importAttendance = async (attendanceData) => {
+  const results = {
+    success: [],
+    failed: [],
+  };
+
+  // Track processed emails to avoid duplicates
+  // eslint-disable-next-line no-undef
+  const processedEmails = new Set();
+
+  for (const record of attendanceData) {
+    try {
+      // Skip if we've already processed this email
+      if (processedEmails.has(record.email)) {
+        continue;
+      }
+      processedEmails.add(record.email);
+
+      // Find user by email
+      const user = await db.user.findOne({
+        where: { email: record.email },
+        include: [
+          {
+            model: db.student,
+            as: "student",
+          },
+        ],
+      });
+
+      if (!user) {
+        results.failed.push({
+          email: record.email,
+          reason: "User not found",
+        });
+        continue;
+      }
+
+      if (!user.student) {
+        results.failed.push({
+          email: record.email,
+          reason: "User is not a student",
+        });
+        continue;
+      }
+
+      // Check if student is registered for the event
+      const eventStudent = await EventStudents.findOne({
+        where: {
+          eventId: record.eventId,
+          studentId: user.student.id,
+        },
+      });
+
+      if (!eventStudent) {
+        // Register student for the event
+        await EventStudents.create({
+          eventId: record.eventId,
+          studentId: user.student.id,
+          attended: true,
+          recordedTime: new Date(record.checkedIn),
+        });
+      } else {
+        // Update existing registration
+        await eventStudent.update({
+          attended: true,
+          recordedTime: new Date(record.checkedIn),
+        });
+      }
+
+      results.success.push({
+        email: record.email,
+        studentId: user.student.id,
+      });
+    } catch (error) {
+      results.failed.push({
+        email: record.email,
+        reason: error.message,
+      });
+    }
+  }
+
+  return results;
 };
 
 export default exports;

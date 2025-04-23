@@ -35,6 +35,6 @@ router.put(
 );
 
 // Delete a Notification with id
-router.delete("/:id", [authenticate, isAdmin], notification.delete);
+router.delete("/:id", [authenticate], notification.delete);
 
 export default router;

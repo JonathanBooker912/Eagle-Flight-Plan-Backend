@@ -7,22 +7,14 @@ const {
   experience: Experience,
   event: Event,
   semester: Semester,
+  student: Student,
 } = db;
 
 // Sequelize Utilities
-import Student from "../sequelizeUtils/student.js";
 import SemesterUtils from "../sequelizeUtils/semester.js";
 
 // Helpers
-import {
-  getAllCompletedFlightPlanItemsForStudent,
-  getTasksForNewFlightPlan,
-  getExperiencesForNewFlightPlan,
-} from "../utilities/flightPlanGeneration.helpers.js";
-
-// Controllers or Services
-import { getAllTasksGreaterThanSemestersFromGrad } from "./task.js";
-import { getAllExperiences } from "./experience.js";
+import { getFlightPlanItemsForNewFlightPlan } from "../utilities/flightPlanGeneration.helpers.js";
 
 // Module Exports Placeholder
 const exports = {};
@@ -43,16 +35,21 @@ exports.generateFlightPlan = async (studentId) => {
     throw Error("Unable to generate flight plan for student with invalid id");
   }
 
-  const student = await Student.getStudentWithFlightPlanInfo(studentId);
   const currentSemester = await SemesterUtils.getCurrentSemester();
 
   if (!currentSemester) {
     throw Error("Unable to get current semester");
   }
-  if (!student) {
-    throw Error(`Unable to find student with id: ${studentId}`);
-  }
-  if (student.flightPlanItems[0]?.semestersFromGrad < 0) {
+
+  const student = await Student.findByPk(studentId, {
+    include: [
+      {
+        model: FlightPlan,
+      },
+    ],
+  });
+
+  if (student.flightPlans[0]?.semestersFromGrad < 0) {
     throw Error("Student semesters from graduation can't be negative");
   }
   if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
@@ -65,11 +62,10 @@ exports.generateFlightPlan = async (studentId) => {
     semesterId: currentSemester.id,
     semestersFromGrad: student.semestersFromGrad,
   };
-
   const flightPlan = await FlightPlan.create(flightPlanData);
 
   const flightPlanItems = await getFlightPlanItemsForNewFlightPlan(
-    student,
+    studentId,
     flightPlan,
   );
 
@@ -77,7 +73,7 @@ exports.generateFlightPlan = async (studentId) => {
     await FlightPlanItem.create(flightPlanItem);
   });
 
-  return await exports.findFlightPlan(flightPlan.id);
+  return flightPlanItems;
 };
 
 exports.findFlightPlanForStudent = async (studentId) => {
@@ -166,68 +162,3 @@ exports.deleteFlightPlan = async (flightPlanId) => {
 };
 
 export default exports;
-
-// Non default exports
-export const getFlightPlanItemsForNewFlightPlan = async (
-  student,
-  newFlightPlan,
-) => {
-  const completedItems = getAllCompletedFlightPlanItemsForStudent(student);
-
-  /* eslint-disable no-undef */
-  const [taskItems, experienceItems] = await Promise.all([
-    getTaskItems(completedItems, newFlightPlan),
-    getExperienceItems(completedItems, newFlightPlan),
-  ]);
-
-  const formatItem = (type, item) => ({
-    flightPlanItemType: type,
-    status: "Incomplete",
-    [`${type.toLowerCase()}Id`]: item.id,
-    pointsEarned: item.points,
-    flightPlanId: newFlightPlan.id,
-    name: item.name,
-  });
-
-  return [
-    ...taskItems.map((task) => formatItem("Task", task)),
-    ...experienceItems.map((exp) => formatItem("Experience", exp)),
-  ];
-};
-
-export const getTaskItems = async (completedItems, newFlightPlan) => {
-  const completedTaskIds = completedItems
-    .filter(({ flightPlanItemType }) => flightPlanItemType === "Task")
-    .map(({ taskId }) => taskId);
-
-  const allTasks = await getAllTasksGreaterThanSemestersFromGrad(
-    newFlightPlan.semestersFromGrad,
-  );
-  return getTasksForNewFlightPlan(completedTaskIds, allTasks);
-};
-
-export const getExperienceItems = async (completedItems, newFlightPlan) => {
-  const completedExperienceIds = completedItems
-    .filter(({ flightPlanItemType }) => flightPlanItemType === "Experience")
-    .map(({ experienceId }) => experienceId);
-
-  let allExperiences = await getAllExperiences();
-
-  const allOneTimeExperiences = allExperiences.filter(
-    ({ schedulingType, semestersFromGrad }) =>
-      schedulingType === "one-time" &&
-      semestersFromGrad >= newFlightPlan.semestersFromGrad,
-  );
-
-  const allEverySemesterExperiences = allExperiences.filter(
-    ({ schedulingType }) => schedulingType === "every semester",
-  );
-
-  const experienceItems = getExperiencesForNewFlightPlan(
-    completedExperienceIds,
-    allOneTimeExperiences,
-    allEverySemesterExperiences,
-  );
-
-  return experienceItems;
-};
