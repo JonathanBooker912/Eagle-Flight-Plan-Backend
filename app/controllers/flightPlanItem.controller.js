@@ -1,4 +1,6 @@
 import FlightPlanItem from "../sequelizeUtils/flightPlanItem.js";
+import MobileNotification from "../utilities/mobileNotifications.helpers.js";
+
 const validateFlightPlanItem = (flightPlanItem) => {
   const hasTask =
     flightPlanItem.taskId !== undefined && flightPlanItem.taskId !== null;
@@ -223,6 +225,12 @@ exports.update = async (req, res) => {
 exports.approveFlightPlanItem = async (req, res) => {
   try {
     const response = await FlightPlanItem.approveFlightPlanItem(req.params.id);
+
+    await MobileNotification.sendMobileNotification('egbNnTzBSHiW3AOGwoCAMT:APA91bFyBYDbS3OJrQqE3gZ_tJjmzC_WYBk3sA1Yj7EOv3ps-uNTKbZjNK54WRyj0x6bbGRyUzN1iCC-As-G0NtM_DB7eZyGOAtWM33g_xgcQlgJb695g2s',
+      'Task Approved',
+      'Your Flight Plan item has been approved'
+    );
+
     res.send(response);
   } catch (err) {
     res.status(500).send({
