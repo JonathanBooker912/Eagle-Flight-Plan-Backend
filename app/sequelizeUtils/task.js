@@ -1,7 +1,8 @@
 import db from "../models/index.js";
 import { Op } from "sequelize";
 const Task = db.task;
-
+const FlightPlanItem = db.flightPlanItem;
+const FlightPlan = db.flightPlan;
 const exports = {};
 
 exports.findAllTasks = async (
@@ -92,6 +93,33 @@ exports.findAllTasks = async (
   return { tasks, count: totalPages };
 };
 
+exports.findAllOptionalForStudentId = async (studentId, searchQuery) => {
+  const flightPlanItems = await FlightPlanItem.findAll({
+    include: [
+      {
+        model: FlightPlan,
+        as: "flightPlan",
+        required: true,
+        where: {
+          studentId: studentId,
+        },
+      },
+    ],
+  });
+
+  const taskIds = flightPlanItems.map((item) => item.taskId);
+
+  const tasks = await Task.findAll({
+    where: {
+      id: { [Op.notIn]: taskIds },
+      schedulingType: "optional",
+      ...(searchQuery && { name: { [Op.like]: `%${searchQuery}%` } }),
+    },
+  });
+
+  return tasks;
+};
+
 exports.findOneTask = async (taskId) => {
   return await Task.findByPk(taskId);
 };
@@ -116,10 +144,6 @@ exports.getCategories = () => {
 
 exports.getSchedulingTypes = () => {
   return Task.getAttributes().schedulingType.values;
-};
-
-exports.getTaskTypes = () => {
-  return Task.getAttributes().taskType.values;
 };
 
 exports.getCompletionTypes = () => {

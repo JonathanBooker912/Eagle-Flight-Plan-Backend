@@ -104,20 +104,32 @@ BadgeAwarded.belongsTo(Student, { foreignKey: "studentId", as: "student" });
 Student.belongsToMany(Major, { through: "studentMajor" });
 Major.belongsToMany(Student, { through: "studentMajor" });
 
-Student.belongsToMany(Reward, { through: db.studentReward });
-Reward.belongsToMany(Student, { through: db.studentReward });
+Student.belongsToMany(Reward, {
+  through: { model: StudentReward, unique: false },
+});
+Reward.belongsToMany(Student, {
+  through: { model: StudentReward, unique: false },
+});
 
 // TASKMAJOR
 Task.belongsToMany(Major, { through: "taskMajor" });
 Major.belongsToMany(Task, { through: "taskMajor" });
 
+// TaskStrength
+Task.belongsToMany(Strength, { through: "taskStrength" });
+Strength.belongsToMany(Task, { through: "taskStrength" });
+
 // EXPERIENCEMAJORS
 Experience.belongsToMany(Major, { through: "experienceMajor" });
 Major.belongsToMany(Experience, { through: "experienceMajor" });
 
+// ExperienceStrength
+Experience.belongsToMany(Strength, { through: "experienceStrength" });
+Strength.belongsToMany(Experience, { through: "experienceStrength" });
+
 // EXPOPTIONS
-Experience.belongsToMany(Event, { through: "expOption" });
-Event.belongsToMany(Experience, { through: "expOption" });
+Experience.belongsToMany(Event, { through: "expOption", as: "events" });
+Event.belongsToMany(Experience, { through: "expOption", as: "experiences" });
 
 // EVENTSTRENGTH
 Event.belongsToMany(Strength, { through: "eventStrength" });

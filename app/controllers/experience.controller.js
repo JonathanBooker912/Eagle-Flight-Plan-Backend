@@ -50,6 +50,22 @@ exports.findAll = async (req, res) => {
     });
 };
 
+exports.findAllOptionalForFlightPlanId = async (req, res) => {
+  await Experience.findAllOptionalForFlightPlanId(
+    req.params.studentId,
+    req.query.searchQuery,
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving experiences.",
+      });
+    });
+};
+
 exports.update = async (req, res) => {
   await Experience.updateExperience(req.body, req.params.id)
     .then((num) => {

@@ -13,6 +13,12 @@ router.get("/:id", [authenticate], task.findOne);
 // Retrieve all Role
 router.get("/", [authenticate], task.findAll);
 
+router.get(
+  "/optional/:studentId",
+  [authenticate, isAdmin],
+  task.findAllOptionalForStudentId,
+);
+
 // Update a Role with id
 router.put("/:id", [authenticate, isAdmin], task.update);
 
@@ -22,8 +28,6 @@ router.delete("/:id", [authenticate, isAdmin], task.delete);
 router.get("/types/categories", [authenticate], task.getCategories);
 
 router.get("/types/schedulingTypes", [authenticate], task.getSchedulingTypes);
-
-router.get("/types/taskTypes", [authenticate], task.getTaskTypes);
 
 router.get("/types/completionTypes", [authenticate], task.getCompletionTypes);
 

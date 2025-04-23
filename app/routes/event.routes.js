@@ -98,4 +98,18 @@ router.post(
   event.checkInStudent,
 );
 
+// Import attendance from CSV
+router.post(
+  "/:eventId/import-attendance",
+  [authenticate, isAdmin],
+  event.importAttendance,
+);
+
+// Import attendance data
+router.post(
+  "/import-attendance",
+  [authenticate, isAdmin],
+  event.importAttendance,
+);
+
 export default router;
