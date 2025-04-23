@@ -28,7 +28,6 @@ exports.create = async (submissionData) => {
 exports.bulkCreate = async (submissionData) => {
   const t = await sequelize.transaction();
   try {
-    console.log(submissionData);
     const submissions = await Submission.bulkCreate(submissionData, {
       transaction: t,
     });
