@@ -25,6 +25,25 @@ exports.create = async (submissionData) => {
   }
 };
 
+exports.bulkCreate = async (submissionData) => {
+  const t = await sequelize.transaction();
+  try {
+    const submissions = await Submission.bulkCreate(submissionData, {
+      transaction: t,
+    });
+
+    await FlightPlanItem.update(
+      { status: "Pending" },
+      { where: { id: submissionData[0].flightPlanItemId }, transaction: t },
+    );
+    await t.commit();
+    return submissions;
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
+};
+
 exports.findAllForFlightPlanItem = async (flightPlanItemId) => {
   let submissions = await Submission.findAll({
     where: { flightPlanItemId },
