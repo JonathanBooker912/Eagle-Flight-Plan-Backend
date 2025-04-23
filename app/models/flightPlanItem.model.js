@@ -12,10 +12,6 @@ const FlightPlanItem = SequelizeInstance.define(
     flightPlanItemType: {
       type: Sequelize.ENUM("Task", "Experience"),
     },
-    submissionType: {
-      type: Sequelize.ENUM("text", "files", "both"),
-      defaultValue: "text",
-    },
     status: {
       type: Sequelize.ENUM(
         "Complete",
