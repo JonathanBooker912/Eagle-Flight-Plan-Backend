@@ -52,9 +52,9 @@ exports.generateFlightPlan = async (studentId) => {
   if (student.flightPlans[0]?.semestersFromGrad < 0) {
     throw Error("Student semesters from graduation can't be negative");
   }
-  // if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
-  //   throw Error("Student's flight plan has already been generated");
-  // }
+  if (student.flightPlans[0]?.semestersFromGrad === student.semestersFromGrad) {
+    throw Error("Student's flight plan has already been generated");
+  }
 
   // // This is running under the assumption that the students semestersFromGrad has already been decremented and it is the current and updated value.
   const flightPlanData = {
@@ -62,22 +62,22 @@ exports.generateFlightPlan = async (studentId) => {
     semesterId: currentSemester.id,
     semestersFromGrad: student.semestersFromGrad,
   };
-  // const flightPlan = await FlightPlan.create(flightPlanData);
-  const flightPlan = await FlightPlan.findOne({
-    where: {
-      studentId: 3,
-      semestersFromGrad: 1,
-    },
-  });
+  const flightPlan = await FlightPlan.create(flightPlanData);
+  // const flightPlan = await FlightPlan.findOne({
+  //   where: {
+  //     studentId: 3,
+  //     semestersFromGrad: 1,
+  //   },
+  // });
 
   const flightPlanItems = await getFlightPlanItemsForNewFlightPlan(
     studentId,
     flightPlan,
   );
 
-  // flightPlanItems.forEach(async (flightPlanItem) => {
-  //   await FlightPlanItem.create(flightPlanItem);
-  // });
+  flightPlanItems.forEach(async (flightPlanItem) => {
+    await FlightPlanItem.create(flightPlanItem);
+  });
 
   return flightPlanItems;
 };
