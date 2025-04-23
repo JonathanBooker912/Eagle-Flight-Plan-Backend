@@ -226,10 +226,21 @@ exports.approveFlightPlanItem = async (req, res) => {
   try {
     const response = await FlightPlanItem.approveFlightPlanItem(req.params.id);
 
-    await MobileNotification.sendMobileNotification('egbNnTzBSHiW3AOGwoCAMT:APA91bFyBYDbS3OJrQqE3gZ_tJjmzC_WYBk3sA1Yj7EOv3ps-uNTKbZjNK54WRyj0x6bbGRyUzN1iCC-As-G0NtM_DB7eZyGOAtWM33g_xgcQlgJb695g2s',
-      'Task Approved',
-      'Your Flight Plan item has been approved'
-    );
+    const flightPlanItem = await FlightPlanItem.findOneFlightPlanItem(req.params.id);
+
+    if (flightPlanItem) {
+      const deviceTokens = [
+        'egbNnTzBSHiW3AOGwoCAMT:APA91bFyBYDbS3OJrQqE3gZ_tJjmzC_WYBk3sA1Yj7EOv3ps-uNTKbZjNK54WRyj0x6bbGRyUzN1iCC-As-G0NtM_DB7eZyGOAtWM33g_xgcQlgJb695g2s', // Griffin
+        'eor_5zpyTq6gu8JoYH0FyI:APA91bFkt0HCxN7hItI0eLBEjJW1PKjxttxhuCG7lyhvfgGgqoXbKN-GrjQbJRPerWNRi8z0U-0nEMFdhJonTpbF7QRG6yifSdTCu9SaWuRiktVWrE0szvA' // Booker
+      ];
+
+      for (const token of deviceTokens) {
+        await MobileNotification.sendMobileNotification(token,
+          'Task Approved',
+          `Your Flight Plan item (${flightPlanItem.name}) has been approved`
+        );
+      }
+    }
 
     res.send(response);
   } catch (err) {
