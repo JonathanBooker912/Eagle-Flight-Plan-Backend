@@ -150,7 +150,6 @@ exports.getSubmissionTypes = () => {
   return Task.getAttributes().submissionType.values;
 };
 
-
 export default exports;
 
 // Non default exports
