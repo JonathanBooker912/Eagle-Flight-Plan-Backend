@@ -706,82 +706,101 @@ exports.importAttendance = async (attendanceData) => {
     failed: [],
   };
 
-  // Track processed emails to avoid duplicates
-  // eslint-disable-next-line no-undef
   const processedEmails = new Set();
 
   for (const record of attendanceData) {
     try {
-      // Skip if we've already processed this email
-      if (processedEmails.has(record.email)) {
-        continue;
-      }
+      if (processedEmails.has(record.email)) continue;
       processedEmails.add(record.email);
 
       // Find user by email
       const user = await db.user.findOne({
         where: { email: record.email },
-        include: [
-          {
-            model: db.student,
-            as: "student",
-          },
-        ],
+        include: [{ model: db.student, as: "student" }],
       });
 
-      if (!user) {
+      if (!user || !user.student) {
         results.failed.push({
           email: record.email,
-          reason: "User not found",
+          reason: "User not found or is not a student",
         });
         continue;
       }
 
-      if (!user.student) {
-        results.failed.push({
-          email: record.email,
-          reason: "User is not a student",
-        });
+      const studentId = user.student.id;
+
+      // Get the event and its experiences
+      const event = await db.event.findByPk(record.eventId, {
+        include: [{
+          model: db.experience,
+          as: "experiences",
+          through: { attributes: [] },
+        }],
+      });
+
+      if (!event) {
+        results.failed.push({ email: record.email, reason: "Event not found" });
         continue;
       }
 
-      // Check if student is registered for the event
-      const eventStudent = await EventStudents.findOne({
+      const eventExperienceIds = event.experiences.map(exp => exp.id);
+
+      // Ensure student is registered
+      let eventStudent = await EventStudents.findOne({
         where: {
           eventId: record.eventId,
-          studentId: user.student.id,
+          studentId,
         },
       });
 
       if (!eventStudent) {
-        // Register student for the event
-        await EventStudents.create({
+        eventStudent = await EventStudents.create({
           eventId: record.eventId,
-          studentId: user.student.id,
+          studentId,
           attended: true,
           recordedTime: new Date(record.checkedIn),
         });
       } else {
-        // Update existing registration
         await eventStudent.update({
           attended: true,
           recordedTime: new Date(record.checkedIn),
         });
       }
 
-      results.success.push({
-        email: record.email,
-        studentId: user.student.id,
+      // Fetch flight plan items for student
+      const flightPlans = await db.flightPlan.findAll({ where: { studentId } });
+      const flightPlanIds = flightPlans.map(fp => fp.id);
+
+      const flightPlanItems = await db.flightPlanItem.findAll({
+        where: {
+          flightPlanId: { [Op.in]: flightPlanIds },
+          experienceId: { [Op.in]: eventExperienceIds },
+          eventId: record.eventId,
+        },
       });
+
+      for (const item of flightPlanItems) {
+        const experience = event.experiences.find(exp => exp.id === item.experienceId);
+        if (!experience) continue;
+
+        if (item.status !== "Complete") {
+          await item.update({
+            status: "Complete",
+            pointsEarned: experience.points,
+          });
+          await studentServices.updatePoints(studentId, experience.points);
+          await kickOffBadgeAwarding(item.id);
+        }
+      }
+
+      results.success.push({ email: record.email, studentId });
     } catch (error) {
-      results.failed.push({
-        email: record.email,
-        reason: error.message,
-      });
+      results.failed.push({ email: record.email, reason: error.message });
     }
   }
 
   return results;
 };
+
 
 export default exports;
