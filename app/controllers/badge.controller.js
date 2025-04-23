@@ -32,8 +32,8 @@ exports.findOne = async (req, res) => {
   }
 };
 
-exports.getBadgesForStudent = async (req, res) => {
-  await Badge.getBadgesForStudent(
+exports.findAllBadgesForStudent = async (req, res) => {
+  await Badge.findAllBadgesForStudent(
     req.params.id,
     req.body.page,
     req.body.pageSize,
