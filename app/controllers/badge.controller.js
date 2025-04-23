@@ -1,7 +1,4 @@
-import db from "../models/index.js";
-const Badge = db.badge;
-const BadgeAwarded = db.badgeAwarded;
-import { Op } from "sequelize";
+import Badge from "../sequelizeUtils/badge.js";
 
 const exports = {};
 
@@ -19,7 +16,7 @@ exports.create = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const badge = await Badge.findByPk(req.params.id);
+    const badge = await Badge.findOne(req.params.id);
     if (badge) {
       res.json(badge);
     } else {
@@ -36,100 +33,39 @@ exports.findOne = async (req, res) => {
 };
 
 exports.getBadgesForStudent = async (req, res) => {
-  const studentId = req.params.id;
-  const page = Math.max(1, parseInt(req.query.page) || 1);
-  const pageSize = 6; // Fixed page size of 6
-  const offset = (page - 1) * pageSize;
-
-  try {
-    const { count, rows: badges } = await Badge.findAndCountAll({
-      include: [
-        {
-          model: BadgeAwarded,
-          as: "badgeAwarded",
-          where: { studentId },
-          required: true,
-        },
-      ],
-      offset,
-      limit: pageSize,
-      order: [["createdAt", "DESC"]],
-    });
-
-    const totalPages = Math.ceil(count / pageSize);
-
-    // If requested page is beyond total pages, adjust the query
-    if (page > totalPages && totalPages > 0) {
-      const adjustedOffset = (totalPages - 1) * pageSize;
-      const { rows: adjustedBadges } = await Badge.findAndCountAll({
-        include: [
-          {
-            model: BadgeAwarded,
-            as: "badgeAwarded",
-            where: { studentId },
-            required: true,
-          },
-        ],
-        offset: adjustedOffset,
-        limit: pageSize,
-        order: [["createdAt", "DESC"]],
+  await Badge.getBadgesForStudent(
+    req.params.id,
+    req.body.page,
+    req.body.pageSize,
+  )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.error("Error fetching badges for student:", err);
+      res.status(500).json({
+        message: "Error retrieving badges for student",
+        error: err.message,
       });
-
-      return res.status(200).json({
-        badges: adjustedBadges,
-        total: count,
-      });
-    }
-
-    res.status(200).json({
-      badges,
-      total: count,
     });
-  } catch (err) {
-    console.error("Error fetching badges for student:", err);
-    res.status(500).json({
-      message: "Error retrieving badges for student",
-      error: err.message,
-    });
-  }
 };
 
 exports.findAll = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const pageSize = parseInt(req.query.pageSize) || 10;
-  const searchQuery = req.query.search || "";
-  const offset = (page - 1) * pageSize;
-
-  try {
-    const whereCondition = searchQuery
-      ? {
-          name: {
-            [Op.like]: `%${searchQuery}%`,
-          },
-        }
-      : {};
-
-    const { count, rows: badges } = await Badge.findAndCountAll({
-      where: whereCondition,
-      offset,
-      limit: pageSize,
-      order: [["createdAt", "DESC"]],
+  await Badge.findAllBadges(
+    req.body.page,
+    req.body.pageSize,
+    req.body.searchQuery,
+  )
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.error("Error fetching badges:", err);
+      res.status(500).json({
+        message: "Error retrieving badges",
+        error: err.message,
+      });
     });
-
-    const totalPages = Math.ceil(count / pageSize);
-
-    res.status(200).json({
-      badges,
-      count: totalPages,
-      currentPage: page,
-    });
-  } catch (err) {
-    console.error("Error fetching badges:", err);
-    res.status(500).json({
-      message: "Error retrieving badges",
-      error: err.message,
-    });
-  }
 };
 
 exports.getRuleTypes = async (req, res) => {
@@ -137,23 +73,21 @@ exports.getRuleTypes = async (req, res) => {
 };
 
 exports.getUnviewedBadges = async (req, res) => {
-  const studentId = req.params.id;
-
-  try {
-    const result = await Badge.getUnviewedBadges(studentId);
-    res.status(200).send(result);
-  } catch (err) {
-    res.status(500).send({
-      message:
-        "Error retrieving unviewed badges for student with id = " + studentId,
+  await Badge.getUnviewedBadges(req.params.id)
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      console.error("Error fetching unviewed badges:", err);
+      res.status(500).json({
+        message: "Error retrieving unviewed badges",
+        error: err.message,
+      });
     });
-    console.log("Error: ", err);
-  }
 };
 
 exports.viewBadge = async (req, res) => {
-  const badgeId = req.params.id;
-  await Badge.viewBadge(badgeId).then((data) => {
+  await Badge.viewBadge(req.params.id).then((data) => {
     res.send(data);
   });
 };

@@ -3,7 +3,9 @@ import { Op } from "sequelize";
 
 const Semester = db.semester;
 
-const findAllSemesters = async () => {
+const exports = {};
+
+exports.findAllSemesters = async () => {
   return await Semester.findAll({
     where: {
       endDate: {
@@ -13,6 +15,17 @@ const findAllSemesters = async () => {
   });
 };
 
-export default {
-  findAllSemesters,
+exports.getCurrentSemester = async () => {
+  return await Semester.findOne({
+    where: {
+      startDate: {
+        [Op.lte]: Date.now(),
+      },
+      endDate: {
+        [Op.gte]: Date.now(),
+      },
+    },
+  });
 };
+
+export default exports;
