@@ -1,7 +1,4 @@
-import db from "../models/index.js";
 import Badge from "../sequelizeUtils/badge.js";
-const BadgeAwarded = db.badgeAwarded;
-import { Op } from "sequelize";
 
 const exports = {};
 
