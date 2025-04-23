@@ -24,7 +24,6 @@ exports.findAllFlightPlanItems = async (page = 1, pageSize = 10) => {
   });
 };
 
-
 exports.findAllFlightPlanItemsByFlightPlanId = async (
   flightPlanId,
   page = 1,
@@ -189,7 +188,6 @@ exports.createSubmission = async (flightPlanItemId, { submissionItems }) => {
   });
 };
 
-
 exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {
   return await FlightPlanItem.update(flightPlanItemData, {
     where: { id: flightPlanItemId },
@@ -226,7 +224,10 @@ exports.deleteFlightPlanItem = async (flightPlanItemId) => {
   return await FlightPlanItem.destroy({ where: { id: flightPlanItemId } });
 };
 
-exports.getFlightPlanItemsWithEventsForStudent = async (studentId, flightPlanId) => {
+exports.getFlightPlanItemsWithEventsForStudent = async (
+  studentId,
+  flightPlanId,
+) => {
   let resolvedFlightPlanId = flightPlanId;
 
   if (!resolvedFlightPlanId) {
@@ -248,7 +249,5 @@ exports.getFlightPlanItemsWithEventsForStudent = async (studentId, flightPlanId)
     },
   });
 };
-
-
 
 export default exports;

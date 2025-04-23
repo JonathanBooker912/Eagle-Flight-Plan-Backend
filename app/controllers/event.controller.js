@@ -275,7 +275,6 @@ exports.getEventsForExperience = async (req, res) => {
   }
 };
 
-
 exports.generateCheckInToken = async (req, res) => {
   try {
     const { eventId } = req.params;

@@ -5,11 +5,10 @@ const Event = db.event;
 const EventCheckInToken = db.eventCheckinTokens;
 const Strength = db.strength;
 const EventStudents = db.eventStudents;
-import studentServices from "../sequelizeUtils/student.js"
+import studentServices from "../sequelizeUtils/student.js";
 import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
 
 const exports = {};
-
 
 exports.findAllEvents = async (
   page = 1,
@@ -363,7 +362,7 @@ exports.getEventsForExperience = async (experienceId) => {
     include: [
       {
         model: db.experience,
-        through: { attributes: [] }, 
+        through: { attributes: [] },
         as: "experiences",
         where: { id: experienceId },
         required: true,
@@ -372,7 +371,6 @@ exports.getEventsForExperience = async (experienceId) => {
     order: [["date", "ASC"]], // optional: sort upcoming first
   });
 };
-
 
 exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
   // Generate a token using timestamp and eventId
@@ -441,7 +439,6 @@ exports.registerStudents = async (eventId, studentIds) => {
   return { message: "Students registered successfully." };
 };
 
-
 exports.unregisterStudents = async (eventId, studentIds) => {
   try {
     // Step 1: Remove registrations for the specified students and event
@@ -457,10 +454,10 @@ exports.unregisterStudents = async (eventId, studentIds) => {
       where: {
         studentId: { [Op.in]: studentIds },
       },
-      attributes: ['id'],
+      attributes: ["id"],
     });
 
-    const flightPlanIds = flightPlans.map(fp => fp.id);
+    const flightPlanIds = flightPlans.map((fp) => fp.id);
 
     if (flightPlanIds.length === 0) {
       return { message: "Students unregistered successfully." };
@@ -469,7 +466,7 @@ exports.unregisterStudents = async (eventId, studentIds) => {
     // Step 3: Update flight plan items associated with the event
     await db.flightPlanItem.update(
       {
-        status: 'Incomplete',
+        status: "Incomplete",
         eventId: null,
       },
       {
@@ -477,17 +474,18 @@ exports.unregisterStudents = async (eventId, studentIds) => {
           flightPlanId: { [Op.in]: flightPlanIds },
           eventId: eventId,
         },
-      }
+      },
     );
 
-    return { message: "Students unregistered and related flight plan items updated successfully." };
+    return {
+      message:
+        "Students unregistered and related flight plan items updated successfully.",
+    };
   } catch (error) {
     console.error("Error unregistering students:", error);
     throw new Error("Error unregistering students.");
   }
 };
-
-
 
 exports.getRegisteredEventsForStudent = async (studentId) => {
   return await db.eventStudents
@@ -527,7 +525,9 @@ exports.markAttendance = async (eventId, studentIds) => {
       throw new Error(`Event with id ${eventId} not found`);
     }
 
-    const eventExperienceIds = eventWithExperiences.experiences.map(exp => exp.id);
+    const eventExperienceIds = eventWithExperiences.experiences.map(
+      (exp) => exp.id,
+    );
 
     for (const studentId of studentIds) {
       const eventStudent = await EventStudents.findOne({
@@ -542,7 +542,7 @@ exports.markAttendance = async (eventId, studentIds) => {
       await eventStudent.save();
 
       const flightPlans = await db.flightPlan.findAll({ where: { studentId } });
-      const flightPlanIds = flightPlans.map(fp => fp.id);
+      const flightPlanIds = flightPlans.map((fp) => fp.id);
 
       if (flightPlanIds.length === 0) continue;
 
@@ -551,13 +551,14 @@ exports.markAttendance = async (eventId, studentIds) => {
         where: {
           flightPlanId: { [Op.in]: flightPlanIds },
           experienceId: { [Op.in]: eventExperienceIds },
-          eventId: eventId, 
+          eventId: eventId,
         },
       });
 
-
       for (const item of flightPlanItems) {
-        const experience = eventWithExperiences.experiences.find(exp => exp.id === item.experienceId);
+        const experience = eventWithExperiences.experiences.find(
+          (exp) => exp.id === item.experienceId,
+        );
         if (!experience) continue;
 
         if (eventStudent.attended) {
@@ -591,7 +592,6 @@ exports.markAttendance = async (eventId, studentIds) => {
 // Method to fetch students registered for an event
 exports.getRegisteredStudents = async (eventId) => {
   try {
-
     const students = await EventStudents.findAll({
       where: { eventId },
       include: [
@@ -731,11 +731,13 @@ exports.importAttendance = async (attendanceData) => {
 
       // Get the event and its experiences
       const event = await db.event.findByPk(record.eventId, {
-        include: [{
-          model: db.experience,
-          as: "experiences",
-          through: { attributes: [] },
-        }],
+        include: [
+          {
+            model: db.experience,
+            as: "experiences",
+            through: { attributes: [] },
+          },
+        ],
       });
 
       if (!event) {
@@ -743,7 +745,7 @@ exports.importAttendance = async (attendanceData) => {
         continue;
       }
 
-      const eventExperienceIds = event.experiences.map(exp => exp.id);
+      const eventExperienceIds = event.experiences.map((exp) => exp.id);
 
       // Ensure student is registered
       let eventStudent = await EventStudents.findOne({
@@ -769,7 +771,7 @@ exports.importAttendance = async (attendanceData) => {
 
       // Fetch flight plan items for student
       const flightPlans = await db.flightPlan.findAll({ where: { studentId } });
-      const flightPlanIds = flightPlans.map(fp => fp.id);
+      const flightPlanIds = flightPlans.map((fp) => fp.id);
 
       const flightPlanItems = await db.flightPlanItem.findAll({
         where: {
@@ -780,7 +782,9 @@ exports.importAttendance = async (attendanceData) => {
       });
 
       for (const item of flightPlanItems) {
-        const experience = event.experiences.find(exp => exp.id === item.experienceId);
+        const experience = event.experiences.find(
+          (exp) => exp.id === item.experienceId,
+        );
         if (!experience) continue;
 
         if (item.status !== "Complete") {
@@ -801,6 +805,5 @@ exports.importAttendance = async (attendanceData) => {
 
   return results;
 };
-
 
 export default exports;

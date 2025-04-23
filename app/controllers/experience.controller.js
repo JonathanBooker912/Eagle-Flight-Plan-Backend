@@ -112,7 +112,6 @@ exports.getCategories = (req, res) => {
   res.send(Experience.getCategories());
 };
 
-
 exports.getSchedulingTypes = (req, res) => {
   res.send(Experience.getSchedulingTypes());
 };
