@@ -706,7 +706,7 @@ exports.importAttendance = async (attendanceData) => {
     failed: [],
   };
 
-  const processedEmails = new Set();
+  const processedEmails = new Set(); // eslint-disable-line no-undef
 
   for (const record of attendanceData) {
     try {
