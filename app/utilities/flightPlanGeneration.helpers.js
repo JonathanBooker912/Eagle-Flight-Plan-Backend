@@ -20,8 +20,6 @@ export const getFlightPlanItemsForNewFlightPlan = async (
     getExperienceItems(completedItems, newFlightPlan, student),
   ]);
 
-  console.log("experienceItems", experienceItems);
-
   const formatItem = (type, item) => ({
     flightPlanItemType: type,
     status: "Incomplete",
@@ -280,13 +278,9 @@ const processNonSpecificExperiences = (
     ({ experienceId }) => experienceId,
   );
 
-  console.log("completedExperienceIds", completedExperienceIds);
-
   const uncompletedOneTimeExperiences = oneTimeExperiences.filter(
     (experience) => !completedExperienceIds.includes(experience.id),
   );
-
-  console.log("uncompletedOneTimeExperiences", uncompletedOneTimeExperiences);
 
   const everySemesterExperiences = nonSpecificExperiences.filter(
     (experience) => experience.schedulingType === "every-semester",
