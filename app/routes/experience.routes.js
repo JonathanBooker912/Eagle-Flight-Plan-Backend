@@ -27,14 +27,6 @@ router.delete("/:id", [authenticate, isAdmin], experience.delete);
 
 router.get("/types/categories", [authenticate], experience.getCategories);
 
-// router.get("/types/fulfillingEvents", [authenticate], experience.getFulfillingEvents);
-
-router.get(
-  "/types/experienceTypes",
-  [authenticate],
-  experience.getExperienceTypes,
-);
-
 router.get(
   "/types/schedulingTypes",
   [authenticate],

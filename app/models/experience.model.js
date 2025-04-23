@@ -18,14 +18,16 @@ const Experience = SequelizeInstance.define("experience", {
       "Volunteer",
     ),
   },
-  experienceType: {
-    type: Sequelize.ENUM("Automatic", "Manual"),
-  },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
   },
   schedulingType: {
-    type: Sequelize.ENUM("one-time", "every semester", "optional"),
+    type: Sequelize.ENUM(
+      "one-time",
+      "every-semester",
+      "every-other-semester",
+      "optional",
+    ),
   },
   semestersFromGrad: {
     type: Sequelize.INTEGER,

@@ -60,9 +60,9 @@ const getAllCompletedFlightPlanItemsForStudent = (student) => {
 };
 
 const getTaskItems = async (completedItems, newFlightPlan, student) => {
-  const completedTaskIds = completedItems
+  const completedTasks = completedItems
     .filter(({ flightPlanItemType }) => flightPlanItemType === "Task")
-    .map(({ taskId }) => taskId);
+    .map(({ taskId, task }) => ({ taskId, task }));
 
   const allTasks = await getAllTasksGreaterThanSemestersFromGrad(
     newFlightPlan.semestersFromGrad,
@@ -73,7 +73,7 @@ const getTaskItems = async (completedItems, newFlightPlan, student) => {
   );
 
   const finalNonSpecificTasks = processNonSpecificTasks(
-    completedTaskIds,
+    completedTasks,
     nonSpecificTasks,
   );
 
@@ -82,7 +82,7 @@ const getTaskItems = async (completedItems, newFlightPlan, student) => {
   );
 
   const finalSpecificTasks = processSpecificTasks(
-    completedTaskIds,
+    completedTasks,
     specificTasks,
     student,
   );
@@ -97,23 +97,48 @@ const getAllTasksGreaterThanSemestersFromGrad = async (semestersFromGrad) => {
   return allTasks.filter((task) => task.semestersFromGrad >= semestersFromGrad);
 };
 
-const processNonSpecificTasks = (completedTaskIds, nonSpecificTasks) => {
+const processNonSpecificTasks = (
+  completedTasks,
+  nonSpecificTasks,
+  semestersFromGrad,
+) => {
   const oneTimeTasks = nonSpecificTasks.filter(
     (task) => task.schedulingType === "one-time",
+  );
+
+  const completedTaskIds = completedTasks.map(({ taskId }) => taskId);
+
+  const uncompletedOneTimeTasks = oneTimeTasks.filter(
+    (task) => !completedTaskIds.includes(task.id),
   );
 
   const everySemesterTasks = nonSpecificTasks.filter(
     (task) => task.schedulingType === "every semester",
   );
 
-  const uncompletedOneTimeTasks = oneTimeTasks.filter(
-    (task) => !completedTaskIds.includes(task.id),
+  const everyOtherSemesterTasks = nonSpecificTasks.filter(
+    (task) => task.schedulingType === "every other semester",
   );
 
-  return [...uncompletedOneTimeTasks, ...everySemesterTasks];
+  const uncompletedEveryOtherSemesterTasks = processEveryOtherSemesterTasks(
+    completedTasks,
+    everyOtherSemesterTasks,
+    semestersFromGrad,
+  );
+
+  return [
+    ...uncompletedOneTimeTasks,
+    ...everySemesterTasks,
+    ...uncompletedEveryOtherSemesterTasks,
+  ];
 };
 
-const processSpecificTasks = (completedTaskIds, specificTasks, student) => {
+const processSpecificTasks = (
+  completedTasks,
+  specificTasks,
+  student,
+  semestersFromGrad,
+) => {
   const relevantSpecificTasks = specificTasks.filter(
     (task) =>
       task.strengths.some((strength) => student.strengths.includes(strength)) ||
@@ -124,6 +149,8 @@ const processSpecificTasks = (completedTaskIds, specificTasks, student) => {
     (task) => task.schedulingType === "one-time",
   );
 
+  const completedTaskIds = completedTasks.map(({ taskId }) => taskId);
+
   const uncompletedOneTimeSpecificTasks = oneTimeSpecificTasks.filter(
     (task) => !completedTaskIds.includes(task.id),
   );
@@ -132,13 +159,69 @@ const processSpecificTasks = (completedTaskIds, specificTasks, student) => {
     (task) => task.schedulingType === "every semester",
   );
 
-  return [...uncompletedOneTimeSpecificTasks, ...everySemesterSpecificTasks];
+  const everyOtherSemesterSpecificTasks = relevantSpecificTasks.filter(
+    (task) => task.schedulingType === "every other semester",
+  );
+
+  const uncompletedEveryOtherSemesterSpecificTasks =
+    processEveryOtherSemesterTasks(
+      completedTasks,
+      everyOtherSemesterSpecificTasks,
+      semestersFromGrad,
+    );
+
+  return [
+    ...uncompletedOneTimeSpecificTasks,
+    ...everySemesterSpecificTasks,
+    ...uncompletedEveryOtherSemesterSpecificTasks,
+  ];
 };
 
-const getExperienceItems = async (completedItems, newFlightPlan, student) => {
-  const completedExperienceIds = completedItems
+const processEveryOtherSemesterTasks = (
+  completedTasks,
+  tasks,
+  semestersFromGrad,
+) => {
+  const isOddSemester = semestersFromGrad % 2 === 1;
+
+  const relevantEveryOtherSemesterTasks = tasks.filter((task) => {
+    // First check if this task is due in the current semester based on parity
+    const taskIsDueThisSemester = isOddSemester
+      ? task.semestersFromGrad % 2 === 1
+      : task.semestersFromGrad % 2 === 0;
+
+    if (!taskIsDueThisSemester) {
+      return false;
+    }
+
+    // If task is due this semester, check if it was completed in the previous semester
+    if (task.semestersFromGrad !== semestersFromGrad) {
+      const wasCompletedLastSemester = completedTasks.some(
+        ({ task: completedTask }) =>
+          completedTask.id === task.id &&
+          completedTask.semestersFromGrad === semestersFromGrad + 1,
+      );
+
+      if (wasCompletedLastSemester) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  return relevantEveryOtherSemesterTasks;
+};
+
+const getExperienceItems = async (
+  completedItems,
+  newFlightPlan,
+  student,
+  semestersFromGrad,
+) => {
+  const completedExperiences = completedItems
     .filter(({ flightPlanItemType }) => flightPlanItemType === "Experience")
-    .map(({ experienceId }) => experienceId);
+    .map(({ experience, experienceId }) => ({ experience, experienceId }));
 
   let allExperiences = await getAllExperiencesGreaterThanSemestersFromGrad(
     newFlightPlan.semestersFromGrad,
@@ -150,8 +233,9 @@ const getExperienceItems = async (completedItems, newFlightPlan, student) => {
   );
 
   const finalNonSpecificExperiences = processNonSpecificExperiences(
-    completedExperienceIds,
+    completedExperiences,
     nonSpecificExperiences,
+    semestersFromGrad,
   );
 
   const specificExperiences = allExperiences.filter(
@@ -160,9 +244,10 @@ const getExperienceItems = async (completedItems, newFlightPlan, student) => {
   );
 
   const finalSpecificExperiences = processSpecificExperiences(
-    completedExperienceIds,
+    completedExperiences,
     specificExperiences,
     student,
+    semestersFromGrad,
   );
 
   return [...finalNonSpecificExperiences, ...finalSpecificExperiences];
@@ -180,28 +265,49 @@ const getAllExperiencesGreaterThanSemestersFromGrad = async (
 };
 
 const processNonSpecificExperiences = (
-  completedExperienceIds,
+  completedExperiences,
   nonSpecificExperiences,
+  semestersFromGrad,
 ) => {
   const oneTimeExperiences = nonSpecificExperiences.filter(
     (experience) => experience.schedulingType === "one-time",
   );
 
-  const everySemesterExperiences = nonSpecificExperiences.filter(
-    (experience) => experience.schedulingType === "every semester",
+  const completedExperienceIds = completedExperiences.map(
+    ({ experienceId }) => experienceId,
   );
 
   const uncompletedOneTimeExperiences = oneTimeExperiences.filter(
     (experience) => !completedExperienceIds.includes(experience.id),
   );
 
-  return [...uncompletedOneTimeExperiences, ...everySemesterExperiences];
+  const everySemesterExperiences = nonSpecificExperiences.filter(
+    (experience) => experience.schedulingType === "every semester",
+  );
+
+  const everyOtherSemesterExperiences = nonSpecificExperiences.filter(
+    (experience) => experience.schedulingType === "every other semester",
+  );
+
+  const uncompletedEveryOtherSemesterExperiences =
+    processEveryOtherSemesterExperiences(
+      completedExperiences,
+      everyOtherSemesterExperiences,
+      semestersFromGrad,
+    );
+
+  return [
+    ...uncompletedOneTimeExperiences,
+    ...everySemesterExperiences,
+    ...uncompletedEveryOtherSemesterExperiences,
+  ];
 };
 
 const processSpecificExperiences = (
-  completedExperienceIds,
+  completedExperiences,
   specificExperiences,
   student,
+  semestersFromGrad,
 ) => {
   const relevantSpecificExperiences = specificExperiences.filter(
     (experience) =>
@@ -214,6 +320,10 @@ const processSpecificExperiences = (
     (experience) => experience.schedulingType === "one-time",
   );
 
+  const completedExperienceIds = completedExperiences.map(
+    ({ experienceId }) => experienceId,
+  );
+
   const uncompletedOneTimeSpecificExperiences =
     oneTimeSpecificExperiences.filter(
       (experience) => !completedExperienceIds.includes(experience.id),
@@ -223,8 +333,59 @@ const processSpecificExperiences = (
     (experience) => experience.schedulingType === "every semester",
   );
 
+  const everyOtherSemesterSpecificExperiences =
+    relevantSpecificExperiences.filter(
+      (experience) => experience.schedulingType === "every other semester",
+    );
+
+  const uncompletedEveryOtherSemesterSpecificExperiences =
+    processEveryOtherSemesterExperiences(
+      completedExperiences,
+      everyOtherSemesterSpecificExperiences,
+      semestersFromGrad,
+    );
+
   return [
     ...uncompletedOneTimeSpecificExperiences,
     ...everySemesterSpecificExperiences,
+    ...uncompletedEveryOtherSemesterSpecificExperiences,
   ];
+};
+
+const processEveryOtherSemesterExperiences = (
+  completedExperiences,
+  experiences,
+  semestersFromGrad,
+) => {
+  const isOddSemester = semestersFromGrad % 2 === 1;
+
+  const relevantEveryOtherSemesterExperiences = experiences.filter(
+    (experience) => {
+      if (isOddSemester) {
+        return experience.semestersFromGrad % 2 === 1;
+      } else {
+        return experience.semestersFromGrad % 2 === 0;
+      }
+    },
+  );
+
+  const uncompletedEveryOtherSemesterExperiences =
+    relevantEveryOtherSemesterExperiences.filter((experience) => {
+      const wasCompletedLastSemester = completedExperiences.some(
+        (completedExperience) => {
+          return (
+            completedExperience.id === experience.id &&
+            completedExperience.semestersFromGrad === semestersFromGrad + 1
+          );
+        },
+      );
+
+      if (wasCompletedLastSemester) {
+        return false;
+      }
+
+      return true;
+    });
+
+  return uncompletedEveryOtherSemesterExperiences;
 };

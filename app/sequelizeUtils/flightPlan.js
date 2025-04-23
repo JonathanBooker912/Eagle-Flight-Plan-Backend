@@ -80,7 +80,6 @@ exports.generateFlightPlan = async (studentId) => {
   // });
 
   return flightPlanItems;
-  return flightPlanItems;
 };
 
 exports.findFlightPlanForStudent = async (studentId) => {

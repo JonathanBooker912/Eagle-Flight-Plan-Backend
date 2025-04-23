@@ -99,15 +99,6 @@ exports.deleteExperience = async (experienceId) => {
 exports.getCategories = () => {
   return Experience.getAttributes().category.values;
 };
-
-// exports.getFulfillingEvents = () => {
-//   return Experience.getAttributes().fulfillingEvent.values;
-// };
-
-exports.getExperienceTypes = () => {
-  return Experience.getAttributes().experienceType.values;
-};
-
 exports.getSchedulingTypes = () => {
   return Experience.getAttributes().schedulingType.values;
 };
