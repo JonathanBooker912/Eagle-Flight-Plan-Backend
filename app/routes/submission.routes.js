@@ -5,6 +5,7 @@ import { Router } from "express";
 const router = Router();
 
 router.post("/", [authenticate], submission.create);
+router.post("/bulk", [authenticate], submission.bulkCreate);
 
 router.get(
   "/flightPlanItem/:flightPlanItemId",

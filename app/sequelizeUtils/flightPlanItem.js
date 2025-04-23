@@ -9,6 +9,7 @@ const Event = db.event;
 const Submission = db.submission;
 import FileHelpers from "../utilities/fileStorage.helper.js";
 import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
+import sequelize from "../sequelizeUtils/sequelizeInstance.js";
 // Module Exports Placeholder
 const exports = {};
 
@@ -199,10 +200,20 @@ exports.approveFlightPlanItem = async (flightPlanItemId) => {
 };
 
 exports.rejectFlightPlanItem = async (flightPlanItemId) => {
-  return await FlightPlanItem.update(
-    { status: "Rejected" },
-    { where: { id: flightPlanItemId } },
-  );
+  const t = await sequelize.transaction();
+  try {
+    await Submission.destroy({ where: { flightPlanItemId }, transaction: t });
+
+    await FlightPlanItem.update(
+      { status: "Rejected" },
+      { where: { id: flightPlanItemId }, transaction: t },
+    );
+    await t.commit();
+    return { message: "Flight plan item rejected successfully" };
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 exports.deleteFlightPlanItem = async (flightPlanItemId) => {
