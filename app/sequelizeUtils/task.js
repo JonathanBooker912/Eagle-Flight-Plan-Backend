@@ -146,6 +146,10 @@ exports.getSchedulingTypes = () => {
   return Task.getAttributes().schedulingType.values;
 };
 
+exports.getSubmissionTypes = () => {
+  return Task.getAttributes().submissionType.values;
+};
+
 exports.getCompletionTypes = () => {
   return Task.getAttributes().completionType.values;
 };
