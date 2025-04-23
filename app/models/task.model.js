@@ -25,7 +25,12 @@ const Task = SequelizeInstance.define("task", {
     type: Sequelize.BOOLEAN,
   },
   schedulingType: {
-    type: Sequelize.ENUM("one-time", "every semester", "optional"),
+    type: Sequelize.ENUM(
+      "one-time",
+      "every-semester",
+      "optional",
+      "every-other-semester",
+    ),
   },
   name: {
     type: Sequelize.STRING,
