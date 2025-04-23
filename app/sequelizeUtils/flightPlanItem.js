@@ -138,6 +138,10 @@ exports.getPendingApprovals = async (
         as: "task",
       },
       {
+        model: Experience,
+        as: "experience",
+      },
+      {
         model: Submission,
         as: "submission",
       },

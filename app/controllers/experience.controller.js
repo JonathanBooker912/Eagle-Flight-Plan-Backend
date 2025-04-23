@@ -112,16 +112,13 @@ exports.getCategories = (req, res) => {
   res.send(Experience.getCategories());
 };
 
-// exports.getFulfillingEvents = (req, res) => {
-//   res.send(Experience.getFulfillingEvents());
-// };
 
 exports.getSchedulingTypes = (req, res) => {
   res.send(Experience.getSchedulingTypes());
 };
 
-exports.getExperienceTypes = (req, res) => {
-  res.send(Experience.getExperienceTypes());
+exports.getCompletionTypes = (req, res) => {
+  res.send(Experience.getCompletionTypes());
 };
 
 export default exports;

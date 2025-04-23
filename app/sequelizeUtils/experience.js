@@ -100,12 +100,8 @@ exports.getCategories = () => {
   return Experience.getAttributes().category.values;
 };
 
-// exports.getFulfillingEvents = () => {
-//   return Experience.getAttributes().fulfillingEvent.values;
-// };
-
-exports.getExperienceTypes = () => {
-  return Experience.getAttributes().experienceType.values;
+exports.getCompletionTypes = () => {
+  return Experience.getAttributes().completionType.values;
 };
 
 exports.getSchedulingTypes = () => {
@@ -113,8 +109,6 @@ exports.getSchedulingTypes = () => {
 };
 
 export default exports;
-
-// Non default exports
 
 export const getAllExperiences = async () => {
   return await Experience.findAll();

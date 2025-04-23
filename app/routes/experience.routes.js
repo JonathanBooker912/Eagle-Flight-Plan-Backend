@@ -30,9 +30,9 @@ router.get("/types/categories", [authenticate], experience.getCategories);
 // router.get("/types/fulfillingEvents", [authenticate], experience.getFulfillingEvents);
 
 router.get(
-  "/types/experienceTypes",
+  "/types/completionTypes",
   [authenticate],
-  experience.getExperienceTypes,
+  experience.getCompletionTypes,
 );
 
 router.get(

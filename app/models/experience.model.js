@@ -18,8 +18,8 @@ const Experience = SequelizeInstance.define("experience", {
       "Volunteer",
     ),
   },
-  experienceType: {
-    type: Sequelize.ENUM("Automatic", "Manual"),
+  completionType: {
+    type: Sequelize.ENUM("Submission", "Attendance"),
   },
   reflectionRequired: {
     type: Sequelize.BOOLEAN,
