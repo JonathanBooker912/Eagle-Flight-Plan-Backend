@@ -1,4 +1,6 @@
 import FlightPlanItem from "../sequelizeUtils/flightPlanItem.js";
+import MobileNotification from "../utilities/mobileNotifications.helpers.js";
+
 const validateFlightPlanItem = (flightPlanItem) => {
   const hasTask =
     flightPlanItem.taskId !== undefined && flightPlanItem.taskId !== null;
@@ -223,6 +225,23 @@ exports.update = async (req, res) => {
 exports.approveFlightPlanItem = async (req, res) => {
   try {
     const response = await FlightPlanItem.approveFlightPlanItem(req.params.id);
+
+    const flightPlanItem = await FlightPlanItem.findOneFlightPlanItem(req.params.id);
+
+    if (flightPlanItem) {
+      const deviceTokens = [
+        'egbNnTzBSHiW3AOGwoCAMT:APA91bFyBYDbS3OJrQqE3gZ_tJjmzC_WYBk3sA1Yj7EOv3ps-uNTKbZjNK54WRyj0x6bbGRyUzN1iCC-As-G0NtM_DB7eZyGOAtWM33g_xgcQlgJb695g2s', // Griffin
+        'eor_5zpyTq6gu8JoYH0FyI:APA91bFkt0HCxN7hItI0eLBEjJW1PKjxttxhuCG7lyhvfgGgqoXbKN-GrjQbJRPerWNRi8z0U-0nEMFdhJonTpbF7QRG6yifSdTCu9SaWuRiktVWrE0szvA' // Booker
+      ];
+
+      for (const token of deviceTokens) {
+        await MobileNotification.sendMobileNotification(token,
+          'Task Approved',
+          `Your Flight Plan item (${flightPlanItem.name}) has been approved`
+        );
+      }
+    }
+
     res.send(response);
   } catch (err) {
     res.status(500).send({
@@ -267,6 +286,19 @@ exports.delete = async (req, res) => {
       });
       console.log("Could not delete flightPlanItem: " + err);
     });
+};
+
+exports.getFlightPlanItemsWithEventsForStudent = async (req, res) => {
+  try {
+    const { studentId, flightPlanId } = req.params;
+    const items = await FlightPlanItem.getFlightPlanItemsWithEventsForStudent(
+      studentId,
+      flightPlanId,
+    );
+    res.send(items);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 };
 
 export default exports;

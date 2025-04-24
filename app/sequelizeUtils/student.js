@@ -8,11 +8,17 @@ const Event = db.event;
 const Semester = db.semester;
 const Op = db.Sequelize.Op;
 const User = db.user;
+const Major = db.major;
 
 const exports = {};
 
 exports.findStudentForUserId = async (userId) => {
-  return await Student.findOne({ where: { userId } });
+  return await Student.findOne({ 
+    where: { userId },
+    include: [
+      { model: Major, as: 'majors' }
+    ]
+  });
 };
 
 exports.getStudentWithFlightPlanInfo = async (studentId) => {
@@ -51,7 +57,19 @@ exports.getStudentWithFlightPlanInfo = async (studentId) => {
 };
 
 exports.create = async (studentData) => {
-  studentData.fullName = studentData.fName + " " + studentData.lName;
+  // Check if a student already exists for this userId
+  const existingStudent = await Student.findOne({
+    where: { userId: studentData.userId },
+  });
+  if (existingStudent) {
+    // Update the existing student with new information
+    await Student.update(studentData, {
+      where: { id: existingStudent.id },
+    });
+    // Return the updated student
+    return await Student.findByPk(existingStudent.id);
+  }
+
   return await Student.create(studentData);
 };
 
@@ -150,6 +168,38 @@ exports.getPoints = async (studentId) => {
 exports.getStudent = async (studentId) => {
   const student = await Student.findByPk(studentId);
   return student;
+};
+
+exports.addMajor = async (studentId, majorId) => {
+  const student = await Student.findByPk(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
+  return await student.addMajor(majorId);
+};
+
+exports.removeMajor = async (studentId, majorId) => {
+  const student = await Student.findByPk(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
+  return await student.removeMajor(majorId);
+};
+
+exports.addStrength = async (studentId, strengthId) => {
+  const student = await Student.findByPk(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
+  return await student.addStrength(strengthId);
+};
+
+exports.removeStrength = async (studentId, strengthId) => {
+  const student = await Student.findByPk(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
+  return await student.removeStrength(strengthId);
 };
 
 export default exports;

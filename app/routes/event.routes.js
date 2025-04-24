@@ -77,6 +77,12 @@ router.get(
   event.getEventFulfillableExperiences,
 );
 
+router.get(
+  "/experience/:experienceId/fulfilling-events",
+  [authenticate],
+  event.getEventsForExperience,
+);
+
 // Generate a check-in token for an event
 router.post(
   "/:eventId/check-in-token",
@@ -96,6 +102,20 @@ router.post(
   "/:eventId/check-in/:studentId",
   [authenticate],
   event.checkInStudent,
+);
+
+// Import attendance from CSV
+router.post(
+  "/:eventId/import-attendance",
+  [authenticate, isAdmin],
+  event.importAttendance,
+);
+
+// Import attendance data
+router.post(
+  "/import-attendance",
+  [authenticate, isAdmin],
+  event.importAttendance,
 );
 
 export default router;

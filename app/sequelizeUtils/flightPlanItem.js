@@ -9,6 +9,7 @@ const Event = db.event;
 const Submission = db.submission;
 import FileHelpers from "../utilities/fileStorage.helper.js";
 import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
+import sequelize from "../sequelizeUtils/sequelizeInstance.js";
 // Module Exports Placeholder
 const exports = {};
 
@@ -136,6 +137,10 @@ exports.getPendingApprovals = async (
         as: "task",
       },
       {
+        model: Experience,
+        as: "experience",
+      },
+      {
         model: Submission,
         as: "submission",
       },
@@ -199,14 +204,50 @@ exports.approveFlightPlanItem = async (flightPlanItemId) => {
 };
 
 exports.rejectFlightPlanItem = async (flightPlanItemId) => {
-  return await FlightPlanItem.update(
-    { status: "Rejected" },
-    { where: { id: flightPlanItemId } },
-  );
+  const t = await sequelize.transaction();
+  try {
+    await Submission.destroy({ where: { flightPlanItemId }, transaction: t });
+
+    await FlightPlanItem.update(
+      { status: "Rejected" },
+      { where: { id: flightPlanItemId }, transaction: t },
+    );
+    await t.commit();
+    return { message: "Flight plan item rejected successfully" };
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 exports.deleteFlightPlanItem = async (flightPlanItemId) => {
   return await FlightPlanItem.destroy({ where: { id: flightPlanItemId } });
+};
+
+exports.getFlightPlanItemsWithEventsForStudent = async (
+  studentId,
+  flightPlanId,
+) => {
+  let resolvedFlightPlanId = flightPlanId;
+
+  if (!resolvedFlightPlanId) {
+    const studentFlightPlan = await db.flightPlan.findOne({
+      where: { studentId },
+    });
+
+    if (!studentFlightPlan) {
+      throw new Error("No flight plan found for this student.");
+    }
+
+    resolvedFlightPlanId = studentFlightPlan.id;
+  }
+
+  return await FlightPlanItem.findAll({
+    where: {
+      flightPlanId: resolvedFlightPlanId,
+      eventId: { [Op.ne]: null }, // Only include items with an eventId
+    },
+  });
 };
 
 export default exports;

@@ -4,9 +4,9 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/user/:id", [authenticate], student.findStudentForUserId);
+router.get("/user/:userId", [authenticate], student.findStudentForUserId);
 // Create a new Student
-router.post("/", [authenticate, isAdmin], student.create);
+router.post("/", [authenticate], student.create);
 
 // Retrieve all People
 router.get("/", [isAdmin], student.findAll);
@@ -31,4 +31,11 @@ router.put("/:id/points", [authenticate, isAdmin], student.updatePoints);
 router.get("/:id/points", [authenticate], student.getPoints);
 
 router.get("/:id", [authenticate, isAdmin], student.getStudent);
+
+router.put("/:id/majors", [authenticate], student.addMajor);
+router.delete("/:id/majors", [authenticate], student.removeMajor);
+
+router.put("/:id/strengths", [authenticate], student.addStrength);
+router.delete("/:id/strengths", [authenticate], student.removeStrength);
+
 export default router;

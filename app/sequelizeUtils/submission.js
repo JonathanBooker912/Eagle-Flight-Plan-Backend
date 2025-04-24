@@ -1,12 +1,47 @@
 import db from "../models/index.js";
 import FileHelpers from "../utilities/fileStorage.helper.js";
+import sequelize from "../sequelizeUtils/sequelizeInstance.js";
 const Submission = db.submission;
+const FlightPlanItem = db.flightPlanItem;
 
 const exports = {};
 
 exports.create = async (submissionData) => {
-  console.log(submissionData);
-  return await Submission.create(submissionData);
+  const t = await sequelize.transaction();
+
+  try {
+    const submission = await Submission.create(submissionData, {
+      transaction: t,
+    });
+    await FlightPlanItem.update(
+      { status: "Pending" },
+      { where: { id: submissionData.flightPlanItemId }, transaction: t },
+    );
+    await t.commit();
+    return submission;
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
+};
+
+exports.bulkCreate = async (submissionData) => {
+  const t = await sequelize.transaction();
+  try {
+    const submissions = await Submission.bulkCreate(submissionData, {
+      transaction: t,
+    });
+
+    await FlightPlanItem.update(
+      { status: "Pending" },
+      { where: { id: submissionData[0].flightPlanItemId }, transaction: t },
+    );
+    await t.commit();
+    return submissions;
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 exports.findAllForFlightPlanItem = async (flightPlanItemId) => {
