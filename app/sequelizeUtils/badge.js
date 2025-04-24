@@ -2,7 +2,6 @@ import db from "../models/index.js";
 const Badge = db.badge;
 const BadgeAwarded = db.badgeAwarded;
 const BadExpTask = db.badExpTask;
-const Student = db.student;
 const Task = db.task;
 const Experience = db.experience;
 import sequelize from "../sequelizeUtils/sequelizeInstance.js";
@@ -54,9 +53,10 @@ exports.findAllBadgesForStudent = async (
 
   const response = await Badge.findAndCountAll({
     include: {
-      model: Student,
+      model: BadgeAwarded,
+      as: "badgeAwarded",
       where: {
-        id: studentId,
+        studentId: studentId,
       },
       required: true,
     },

@@ -82,10 +82,6 @@ db.student.belongsTo(db.user, { as: "user", foreignKey: "userId" });
 User.belongsToMany(Role, { through: "userRole" });
 Role.belongsToMany(User, { through: "userRole" });
 
-// STUDENTBADGE
-Student.belongsToMany(Badge, { through: "studentBadge" });
-Badge.belongsToMany(Student, { through: "studentBadge" });
-
 // BADEXPTASK
 Badge.belongsToMany(Task, { through: db.badExpTask });
 Task.belongsToMany(Badge, { through: db.badExpTask });

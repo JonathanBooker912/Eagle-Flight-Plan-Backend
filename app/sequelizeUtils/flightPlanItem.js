@@ -258,8 +258,8 @@ exports.approveFlightPlanItem = async (flightPlanItemId) => {
       { transaction: t },
     );
 
-    await kickOffBadgeAwarding(flightPlanItemId);
     await t.commit();
+    await kickOffBadgeAwarding(flightPlanItemId);
     return { message: "Flight plan item approved successfully" };
   } catch (err) {
     await t.rollback();
