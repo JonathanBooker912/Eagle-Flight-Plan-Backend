@@ -29,12 +29,9 @@ router.put("/:id/view", [authenticate], badge.viewBadge);
 router.put("/:id", [authenticate, isAdmin], badge.update);
 
 // Route to get badges for a student
-router.get("/student/:id", [authenticate], badge.getBadgesForStudent);
+router.get("/student/:id", [authenticate], badge.findAllBadgesForStudent);
 
 // Delete a Role with id
-router.delete("/:id", [authenticate, isAdmin], badge.delete);
-
-// Delete a Badge with id
 router.delete("/:id", [authenticate, isAdmin], badge.delete);
 
 export default router;

@@ -20,3 +20,4 @@ admin.initializeApp({
 
 // Export Firebase Admin services
 export const auth = admin.auth();
+export default admin;
