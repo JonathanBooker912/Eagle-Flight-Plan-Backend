@@ -1,9 +1,8 @@
 import admin from "../authorization/firebase/firebase.js";
 
-
 const exports = {};
 
-// TODO 
+// TODO
 // xUpdate the DB to manage tokens
 // Add the DeviceToken upon Login
 // Remove the token upon logout
@@ -12,8 +11,8 @@ const exports = {};
 // models/index.js is where the relationships are defined for Sequelize
 
 exports.sendMobileNotification = async (deviceToken, title, body) => {
-  if (deviceToken == null || deviceToken === '') {
-    throw new Error('Device token is invalid');
+  if (deviceToken == null || deviceToken === "") {
+    throw new Error("Device token is invalid");
   }
 
   const messaging = admin.messaging();
@@ -21,9 +20,9 @@ exports.sendMobileNotification = async (deviceToken, title, body) => {
     token: deviceToken,
     notification: {
       title: title,
-      body: body
-    }
+      body: body,
+    },
   });
-}
+};
 
 export default exports;

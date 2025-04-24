@@ -226,9 +226,9 @@ exports.approveFlightPlanItem = async (req, res) => {
   try {
     const response = await FlightPlanItem.approveFlightPlanItem(req.params.id);
 
-    const flightPlanItem = await FlightPlanItem.findOneFlightPlanItem(
-      req.params.id,
-    );
+    // const flightPlanItem = await FlightPlanItem.findOneFlightPlanItem(
+    //   req.params.id,
+    // );
 
     // if (flightPlanItem) {
     //   const deviceTokens = [

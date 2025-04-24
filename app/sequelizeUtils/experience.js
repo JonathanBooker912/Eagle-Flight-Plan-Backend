@@ -106,8 +106,8 @@ exports.getCategories = () => {
   return Experience.getAttributes().category.values;
 };
 
-exports.getSubmissionTypes = () => {
-  return Experience.getAttributes().submissionType.values;
+exports.getExperienceTypes = () => {
+  return Experience.getAttributes().experienceType.values;
 };
 
 exports.getSchedulingTypes = () => {
