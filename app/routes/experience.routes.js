@@ -41,4 +41,10 @@ router.get(
   experience.getSchedulingTypes,
 );
 
+router.get(
+  "/types/submissionTypes",
+  [authenticate],
+  experience.getSubmissionTypes,
+);
+
 export default router;

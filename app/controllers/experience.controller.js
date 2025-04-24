@@ -120,4 +120,8 @@ exports.getSubmissionTypes = (req, res) => {
   res.send(Experience.getSubmissionTypes());
 };
 
+exports.getSubmissionTypes = (req, res) => {
+  res.send(Experience.getSubmissionTypes());
+};
+
 export default exports;

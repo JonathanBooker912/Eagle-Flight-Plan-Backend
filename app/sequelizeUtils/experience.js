@@ -114,6 +114,10 @@ exports.getSchedulingTypes = () => {
   return Experience.getAttributes().schedulingType.values;
 };
 
+exports.getSubmissionTypes = () => {
+  return Experience.getAttributes().submissionType.values;
+};
+
 export default exports;
 
 export const getAllExperiences = async () => {

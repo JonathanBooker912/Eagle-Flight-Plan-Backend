@@ -161,7 +161,6 @@ const createBadgeNotification = async (badge, user) => {
   await Notification.create({
     header: "Badge Awarded",
     description: `You have been awarded the badge ${badge.name}`,
-    sentBy: 1,
     userId: user.id,
     read: false,
   });

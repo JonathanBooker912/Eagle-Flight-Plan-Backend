@@ -48,6 +48,10 @@ const Experience = SequelizeInstance.define("experience", {
   points: {
     type: Sequelize.INTEGER,
   },
+  submissionType: {
+    type: Sequelize.ENUM("attendance", "text", "files", "both"),
+    default: "attendance",
+  },
 });
 
 export default Experience;

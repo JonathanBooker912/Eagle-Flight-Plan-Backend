@@ -3,15 +3,17 @@ import Badge from "../sequelizeUtils/badge.js";
 const exports = {};
 
 exports.create = async (req, res) => {
-  try {
-    const badge = await Badge.create(req.body);
-    res.status(201).json(badge);
-  } catch (err) {
-    console.error("Error creating badge:", err);
-    res.status(500).json({
-      message: err.message || "Some error occurred while creating the badge.",
+  await Badge.create(req.body)
+    .then((data) => {
+      console.log(data);
+      res.send(data);
+    })
+    .catch((err) => {
+      console.error("Error creating badge:", err);
+      res.status(500).send({
+        message: err.message || "Some error occurred while creating the badge.",
+      });
     });
-  }
 };
 
 exports.findOne = async (req, res) => {
@@ -94,18 +96,8 @@ exports.viewBadge = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const [updated] = await Badge.update(req.body, {
-      where: { id: req.params.id },
-    });
-
-    if (updated) {
-      const updatedBadge = await Badge.findByPk(req.params.id);
-      res.json(updatedBadge);
-    } else {
-      res.status(404).json({
-        message: `Cannot find badge with id = ${req.params.id}.`,
-      });
-    }
+    const updated = await Badge.update(req.body, req.params.id);
+    res.json(updated);
   } catch (err) {
     console.error("Error updating badge:", err);
     res.status(500).json({
