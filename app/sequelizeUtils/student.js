@@ -8,11 +8,17 @@ const Event = db.event;
 const Semester = db.semester;
 const Op = db.Sequelize.Op;
 const User = db.user;
+const Major = db.major;
 
 const exports = {};
 
 exports.findStudentForUserId = async (userId) => {
-  return await Student.findOne({ where: { userId } });
+  return await Student.findOne({ 
+    where: { userId },
+    include: [
+      { model: Major, through: 'studentMajor' }
+    ]
+  });
 };
 
 exports.getStudentWithFlightPlanInfo = async (studentId) => {
