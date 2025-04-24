@@ -15,7 +15,7 @@ router.get("/", [authenticate], task.findAll);
 
 router.get(
   "/optional/:studentId",
-  [authenticate, isAdmin],
+  [authenticate],
   task.findAllOptionalForStudentId,
 );
 

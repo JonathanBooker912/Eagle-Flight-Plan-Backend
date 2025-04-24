@@ -56,9 +56,10 @@ const kickOffBadgeAwarding = async (flightPlanItemId) => {
 const findAllBadgesForStudent = async (studentId) => {
   return await Badge.findAll({
     include: {
-      model: Student,
+      model: BadgeAwarded,
+      as: "badgeAwarded",
       where: {
-        id: studentId,
+        studentId: studentId,
       },
       required: true,
     },

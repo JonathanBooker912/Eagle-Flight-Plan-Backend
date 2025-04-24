@@ -12,7 +12,7 @@ router.get("/", [authenticate], experience.findAll);
 
 router.get(
   "/optional/:studentId",
-  [authenticate, isAdmin],
+  [authenticate],
   experience.findAllOptionalForStudentId,
 );
 
