@@ -8,9 +8,6 @@ const EventStudents = db.eventStudents;
 import studentServices from "../sequelizeUtils/student.js";
 import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
 
-import studentServices from "../sequelizeUtils/student.js";
-import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
-
 const exports = {};
 
 exports.findAllEvents = async (
@@ -360,21 +357,6 @@ exports.getEventFulfillableExperiences = async (eventId, studentId) => {
   };
 };
 
-exports.getEventsForExperience = async (experienceId) => {
-  return await db.event.findAll({
-    include: [
-      {
-        model: db.experience,
-        through: { attributes: [] },
-        as: "experiences",
-        where: { id: experienceId },
-        required: true,
-      },
-    ],
-    order: [["date", "ASC"]], // optional: sort upcoming first
-  });
-};
-
 exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
   // Generate a token using timestamp and eventId
   const timestamp = Date.now();
@@ -429,65 +411,24 @@ exports.getEventCheckInToken = async (eventId) => {
 
 // Method to register students for an event
 exports.registerStudents = async (eventId, studentIds) => {
-  // Register the students for the event
   const registrations = studentIds.map((studentId) => ({
     eventId,
     studentId,
     attended: false,
     recordedTime: null,
   }));
-
-  await EventStudents.bulkCreate(registrations);
-
-  return { message: "Students registered successfully." };
+  return await EventStudents.bulkCreate(registrations);
 };
 
 exports.unregisterStudents = async (eventId, studentIds) => {
-  try {
-    // Step 1: Remove registrations for the specified students and event
-    await EventStudents.destroy({
-      where: {
-        eventId,
-        studentId: { [Op.in]: studentIds },
+  return await EventStudents.destroy({
+    where: {
+      eventId,
+      studentId: {
+        [Op.in]: studentIds,
       },
-    });
-
-    // Step 2: Retrieve all flight plans for the specified students
-    const flightPlans = await db.flightPlan.findAll({
-      where: {
-        studentId: { [Op.in]: studentIds },
-      },
-      attributes: ["id"],
-    });
-
-    const flightPlanIds = flightPlans.map((fp) => fp.id);
-
-    if (flightPlanIds.length === 0) {
-      return { message: "Students unregistered successfully." };
-    }
-
-    // Step 3: Update flight plan items associated with the event
-    await db.flightPlanItem.update(
-      {
-        status: "Incomplete",
-        eventId: null,
-      },
-      {
-        where: {
-          flightPlanId: { [Op.in]: flightPlanIds },
-          eventId: eventId,
-        },
-      },
-    );
-
-    return {
-      message:
-        "Students unregistered and related flight plan items updated successfully.",
-    };
-  } catch (error) {
-    console.error("Error unregistering students:", error);
-    throw new Error("Error unregistering students.");
-  }
+    },
+  });
 };
 
 exports.getRegisteredEventsForStudent = async (studentId) => {
@@ -511,27 +452,9 @@ exports.getAttendingEventsForStudent = async (studentId) => {
     .then((records) => records.map((r) => r.event));
 };
 
+// In your backend, modify the markAttendance function to toggle the attendance status
 exports.markAttendance = async (eventId, studentIds) => {
   try {
-    // Fetch the event along with its associated experiences
-    const eventWithExperiences = await db.event.findByPk(eventId, {
-      include: [
-        {
-          model: db.experience,
-          as: "experiences",
-          through: { attributes: [] },
-        },
-      ],
-    });
-
-    if (!eventWithExperiences) {
-      throw new Error(`Event with id ${eventId} not found`);
-    }
-
-    const eventExperienceIds = eventWithExperiences.experiences.map(
-      (exp) => exp.id,
-    );
-
     // Fetch the event along with its associated experiences
     const eventWithExperiences = await db.event.findByPk(eventId, {
       include: [
@@ -582,52 +505,7 @@ exports.markAttendance = async (eventId, studentIds) => {
           (exp) => exp.id === item.experienceId,
         );
         if (!experience) continue;
-      if (!eventStudent) continue;
 
-      // Toggle attendance
-      eventStudent.attended = !eventStudent.attended;
-      eventStudent.recordedTime = eventStudent.attended ? Date.now() : null;
-      await eventStudent.save();
-
-      const flightPlans = await db.flightPlan.findAll({ where: { studentId } });
-      const flightPlanIds = flightPlans.map((fp) => fp.id);
-
-      if (flightPlanIds.length === 0) continue;
-
-      // Fetch flight plan items that are associated with the event's experiences
-      const flightPlanItems = await db.flightPlanItem.findAll({
-        where: {
-          flightPlanId: { [Op.in]: flightPlanIds },
-          experienceId: { [Op.in]: eventExperienceIds },
-          eventId: eventId,
-        },
-      });
-
-      for (const item of flightPlanItems) {
-        const experience = eventWithExperiences.experiences.find(
-          (exp) => exp.id === item.experienceId,
-        );
-        if (!experience) continue;
-
-        if (eventStudent.attended) {
-          if (item.status !== "Complete") {
-            await item.update({
-              status: "Complete",
-              pointsEarned: experience.points,
-            });
-            await studentServices.updatePoints(studentId, experience.points);
-            await kickOffBadgeAwarding(item.id);
-          }
-        } else {
-          if (item.status === "Complete") {
-            await item.update({
-              status: "Registered",
-              pointsEarned: 0,
-            });
-            await studentServices.updatePoints(studentId, -experience.points);
-          }
-        }
-      }
         if (eventStudent.attended) {
           if (item.status !== "Complete") {
             await item.update({
@@ -649,7 +527,6 @@ exports.markAttendance = async (eventId, studentIds) => {
       }
     }
 
-    return { message: "Attendance, status, and points updated." };
     return { message: "Attendance, status, and points updated." };
   } catch (error) {
     console.error("Error marking attendance:", error);
@@ -685,7 +562,6 @@ exports.getRegisteredStudents = async (eventId) => {
         email: eventStudent["student.user.email"],
       },
     }));
-
     return studentsWithAttendanceStatus;
   } catch (error) {
     console.error("Error fetching registered students:", error);
@@ -775,11 +651,9 @@ exports.importAttendance = async (attendanceData) => {
   };
 
   const processedEmails = new Set(); // eslint-disable-line no-undef
-  const processedEmails = new Set(); // eslint-disable-line no-undef
 
   for (const record of attendanceData) {
     try {
-      if (processedEmails.has(record.email)) continue;
       if (processedEmails.has(record.email)) continue;
       processedEmails.add(record.email);
 
@@ -787,14 +661,11 @@ exports.importAttendance = async (attendanceData) => {
       const user = await db.user.findOne({
         where: { email: record.email },
         include: [{ model: db.student, as: "student" }],
-        include: [{ model: db.student, as: "student" }],
       });
 
       if (!user || !user.student) {
-      if (!user || !user.student) {
         results.failed.push({
           email: record.email,
-          reason: "User not found or is not a student",
           reason: "User not found or is not a student",
         });
         continue;
@@ -815,21 +686,6 @@ exports.importAttendance = async (attendanceData) => {
 
       if (!event) {
         results.failed.push({ email: record.email, reason: "Event not found" });
-      const studentId = user.student.id;
-
-      // Get the event and its experiences
-      const event = await db.event.findByPk(record.eventId, {
-        include: [
-          {
-            model: db.experience,
-            as: "experiences",
-            through: { attributes: [] },
-          },
-        ],
-      });
-
-      if (!event) {
-        results.failed.push({ email: record.email, reason: "Event not found" });
         continue;
       }
 
@@ -837,22 +693,15 @@ exports.importAttendance = async (attendanceData) => {
 
       // Ensure student is registered
       let eventStudent = await EventStudents.findOne({
-      const eventExperienceIds = event.experiences.map((exp) => exp.id);
-
-      // Ensure student is registered
-      let eventStudent = await EventStudents.findOne({
         where: {
           eventId: record.eventId,
-          studentId,
           studentId,
         },
       });
 
       if (!eventStudent) {
         eventStudent = await EventStudents.create({
-        eventStudent = await EventStudents.create({
           eventId: record.eventId,
-          studentId,
           studentId,
           attended: true,
           recordedTime: new Date(record.checkedIn),
@@ -887,7 +736,6 @@ exports.importAttendance = async (attendanceData) => {
             status: "Complete",
             pointsEarned: experience.points,
           });
-          console.log(experience.points);
           await studentServices.updatePoints(studentId, experience.points);
           await kickOffBadgeAwarding(item.id);
         }
@@ -895,7 +743,6 @@ exports.importAttendance = async (attendanceData) => {
 
       results.success.push({ email: record.email, studentId });
     } catch (error) {
-      results.failed.push({ email: record.email, reason: error.message });
       results.failed.push({ email: record.email, reason: error.message });
     }
   }
