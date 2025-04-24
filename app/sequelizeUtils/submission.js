@@ -3,6 +3,10 @@ import FileHelpers from "../utilities/fileStorage.helper.js";
 import sequelize from "../sequelizeUtils/sequelizeInstance.js";
 const Submission = db.submission;
 const FlightPlanItem = db.flightPlanItem;
+const FlightPlan = db.flightPlan;
+const Student = db.student;
+const User = db.user;
+const Notification = db.notification;
 
 const exports = {};
 
@@ -15,7 +19,39 @@ exports.create = async (submissionData) => {
     });
     await FlightPlanItem.update(
       { status: "Pending" },
-      { where: { id: submissionData.flightPlanItemId }, transaction: t },
+      { where: { id: submission.flightPlanItemId }, transaction: t },
+    );
+
+    const flightPlanItem = await FlightPlanItem.findOne({
+      where: { id: submission.flightPlanItemId },
+      transaction: t,
+    });
+
+    const student = await Student.findOne({
+      include: [
+        {
+          model: FlightPlan,
+          required: true,
+          where: {
+            id: flightPlanItem.flightPlanId,
+          },
+        },
+        {
+          model: User,
+          as: "user",
+        },
+      ],
+      transaction: t,
+    });
+
+    await Notification.create(
+      {
+        userId: student.user.id,
+        header: "New submission for flight plan item",
+        description:
+          "You have been requested to review a new submission for a flight plan item",
+      },
+      { transaction: t },
     );
     await t.commit();
     return submission;
@@ -35,6 +71,38 @@ exports.bulkCreate = async (submissionData) => {
     await FlightPlanItem.update(
       { status: "Pending" },
       { where: { id: submissionData[0].flightPlanItemId }, transaction: t },
+    );
+
+    const flightPlanItem = await FlightPlanItem.findOne({
+      where: { id: submissionData[0].flightPlanItemId },
+      transaction: t,
+    });
+
+    const student = await Student.findOne({
+      include: [
+        {
+          model: FlightPlan,
+          required: true,
+          where: {
+            id: flightPlanItem.flightPlanId,
+          },
+        },
+        {
+          model: User,
+          as: "user",
+        },
+      ],
+      transaction: t,
+    });
+
+    await Notification.create(
+      {
+        userId: student.user.id,
+        header: "New submission for flight plan item",
+        description:
+          "You have been requested to review a new submission for a flight plan item",
+      },
+      { transaction: t },
     );
     await t.commit();
     return submissions;

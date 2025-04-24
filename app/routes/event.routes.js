@@ -30,12 +30,6 @@ router.get(
 
 router.get("/types/attendanceTypes", [authenticate], event.getAttendanceTypes);
 
-// router.get(
-//     "/types/eventTypes",
-//     [authenticate],
-//     event.getEventTypes,
-// );
-
 router.get("/types/completionTypes", [authenticate], event.getCompletionTypes);
 
 // Register students for an event

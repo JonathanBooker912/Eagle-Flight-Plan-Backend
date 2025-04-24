@@ -13,7 +13,7 @@ router.get("/", [authenticate], experience.findAll);
 router.get(
   "/optional/:studentId",
   [authenticate, isAdmin],
-  experience.findAllOptionalForFlightPlanId,
+  experience.findAllOptionalForStudentId,
 );
 
 // Retrieve a single Experience with id
@@ -39,6 +39,12 @@ router.get(
   "/types/schedulingTypes",
   [authenticate],
   experience.getSchedulingTypes,
+);
+
+router.get(
+  "/types/submissionTypes",
+  [authenticate],
+  experience.getSubmissionTypes,
 );
 
 export default router;

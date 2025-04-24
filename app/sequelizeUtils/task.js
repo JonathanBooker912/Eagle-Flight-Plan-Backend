@@ -94,30 +94,39 @@ exports.findAllTasks = async (
 };
 
 exports.findAllOptionalForStudentId = async (studentId, searchQuery) => {
-  const flightPlanItems = await FlightPlanItem.findAll({
+  const flightPlans = await FlightPlan.findAll({
+    where: {
+      studentId: studentId,
+    },
     include: [
       {
-        model: FlightPlan,
-        as: "flightPlan",
-        required: true,
+        model: FlightPlanItem,
+        as: "flightPlanItems",
+        required: false,
         where: {
-          studentId: studentId,
+          flightPlanItemType: "Task",
         },
       },
     ],
   });
 
+  const flightPlanItems = flightPlans.flatMap(
+    (flightPlan) => flightPlan.flightPlanItems,
+  );
+
   const taskIds = flightPlanItems.map((item) => item.taskId);
 
   const tasks = await Task.findAll({
     where: {
-      id: { [Op.notIn]: taskIds },
-      schedulingType: "optional",
       ...(searchQuery && { name: { [Op.like]: `%${searchQuery}%` } }),
     },
   });
 
-  return tasks;
+  const filteredTasks = tasks.filter(
+    (task) => task.schedulingType === "optional" && !taskIds.includes(task.id),
+  );
+
+  return filteredTasks;
 };
 
 exports.findOneTask = async (taskId) => {

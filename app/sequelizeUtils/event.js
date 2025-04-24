@@ -357,21 +357,6 @@ exports.getEventFulfillableExperiences = async (eventId, studentId) => {
   };
 };
 
-exports.getEventsForExperience = async (experienceId) => {
-  return await db.event.findAll({
-    include: [
-      {
-        model: db.experience,
-        through: { attributes: [] },
-        as: "experiences",
-        where: { id: experienceId },
-        required: true,
-      },
-    ],
-    order: [["date", "ASC"]], // optional: sort upcoming first
-  });
-};
-
 exports.generateEventCheckInToken = async (eventId, expirationTimestamp) => {
   // Generate a token using timestamp and eventId
   const timestamp = Date.now();
@@ -426,65 +411,24 @@ exports.getEventCheckInToken = async (eventId) => {
 
 // Method to register students for an event
 exports.registerStudents = async (eventId, studentIds) => {
-  // Register the students for the event
   const registrations = studentIds.map((studentId) => ({
     eventId,
     studentId,
     attended: false,
     recordedTime: null,
   }));
-
-  await EventStudents.bulkCreate(registrations);
-
-  return { message: "Students registered successfully." };
+  return await EventStudents.bulkCreate(registrations);
 };
 
 exports.unregisterStudents = async (eventId, studentIds) => {
-  try {
-    // Step 1: Remove registrations for the specified students and event
-    await EventStudents.destroy({
-      where: {
-        eventId,
-        studentId: { [Op.in]: studentIds },
+  return await EventStudents.destroy({
+    where: {
+      eventId,
+      studentId: {
+        [Op.in]: studentIds,
       },
-    });
-
-    // Step 2: Retrieve all flight plans for the specified students
-    const flightPlans = await db.flightPlan.findAll({
-      where: {
-        studentId: { [Op.in]: studentIds },
-      },
-      attributes: ["id"],
-    });
-
-    const flightPlanIds = flightPlans.map((fp) => fp.id);
-
-    if (flightPlanIds.length === 0) {
-      return { message: "Students unregistered successfully." };
-    }
-
-    // Step 3: Update flight plan items associated with the event
-    await db.flightPlanItem.update(
-      {
-        status: "Incomplete",
-        eventId: null,
-      },
-      {
-        where: {
-          flightPlanId: { [Op.in]: flightPlanIds },
-          eventId: eventId,
-        },
-      },
-    );
-
-    return {
-      message:
-        "Students unregistered and related flight plan items updated successfully.",
-    };
-  } catch (error) {
-    console.error("Error unregistering students:", error);
-    throw new Error("Error unregistering students.");
-  }
+    },
+  });
 };
 
 exports.getRegisteredEventsForStudent = async (studentId) => {
@@ -508,6 +452,7 @@ exports.getAttendingEventsForStudent = async (studentId) => {
     .then((records) => records.map((r) => r.event));
 };
 
+// In your backend, modify the markAttendance function to toggle the attendance status
 exports.markAttendance = async (eventId, studentIds) => {
   try {
     // Fetch the event along with its associated experiences
@@ -617,7 +562,6 @@ exports.getRegisteredStudents = async (eventId) => {
         email: eventStudent["student.user.email"],
       },
     }));
-
     return studentsWithAttendanceStatus;
   } catch (error) {
     console.error("Error fetching registered students:", error);
@@ -804,6 +748,21 @@ exports.importAttendance = async (attendanceData) => {
   }
 
   return results;
+};
+
+exports.getEventsForExperience = async (experienceId) => {
+  return await db.event.findAll({
+    include: [
+      {
+        model: db.experience,
+        through: { attributes: [] },
+        as: "experiences",
+        where: { id: experienceId },
+        required: true,
+      },
+    ],
+    order: [["date", "ASC"]], // optional: sort upcoming first
+  });
 };
 
 export default exports;

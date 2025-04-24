@@ -2,9 +2,9 @@ import db from "../models/index.js";
 const Badge = db.badge;
 const BadgeAwarded = db.badgeAwarded;
 const BadExpTask = db.badExpTask;
-const Student = db.student;
 const Task = db.task;
 const Experience = db.experience;
+import sequelize from "../sequelizeUtils/sequelizeInstance.js";
 import { Op } from "sequelize";
 import FileHelpers from "../utilities/fileStorage.helper.js";
 
@@ -53,9 +53,10 @@ exports.findAllBadgesForStudent = async (
 
   const response = await Badge.findAndCountAll({
     include: {
-      model: Student,
+      model: BadgeAwarded,
+      as: "badgeAwarded",
       where: {
-        id: studentId,
+        studentId: studentId,
       },
       required: true,
     },
@@ -69,7 +70,7 @@ exports.findAllBadgesForStudent = async (
   return { badges, total: response.count, count: totalPages };
 };
 
-exports.findOneBadge = async (badgeId) => {
+exports.findOne = async (badgeId) => {
   const response = await Badge.findOne({
     where: { id: badgeId },
     include: [
@@ -112,29 +113,47 @@ exports.viewBadge = async (badgeId) => {
   return BadgeAwarded.update({ viewed: true }, { where: { badgeId: badgeId } });
 };
 
-exports.createBadge = async (badgeData) => {
-  const badge = await Badge.create(badgeData);
-  if (badgeData.ruleType === "Task and Experience Defined") {
-    badgeData.tasks.forEach(async (data) => {
-      await BadExpTask.create({
-        badgeId: badge.id,
-        taskId: data.task.id,
-        quantity: data.quantity,
-      });
-    });
-    badgeData.experiences.forEach(async (data) => {
-      await BadExpTask.create({
-        badgeId: badge.id,
-        experienceId: data.experience.id,
-        quantity: data.quantity,
-      });
-    });
+exports.create = async (badgeData) => {
+  const t = await sequelize.transaction();
+  try {
+    const badge = await Badge.create(badgeData, { transaction: t });
+    if (badgeData.ruleType === "Task and Experience Defined") {
+      /* eslint-disable no-undef */
+      await Promise.all(
+        badgeData.tasks.map(async (data) => {
+          await BadExpTask.create(
+            {
+              badgeId: badge.id,
+              taskId: data.task.id,
+              quantity: data.quantity,
+            },
+            { transaction: t },
+          );
+        }),
+      );
+      /* eslint-disable no-undef */
+      await Promise.all(
+        badgeData.experiences.map(async (data) => {
+          await BadExpTask.create(
+            {
+              badgeId: badge.id,
+              experienceId: data.experience.id,
+              quantity: data.quantity,
+            },
+            { transaction: t },
+          );
+        }),
+      );
+      await t.commit();
+      return badge;
+    }
+  } catch (error) {
+    await t.rollback();
+    throw error;
   }
-
-  return badge;
 };
 
-exports.updateBadge = async (badgeData, badgeId) => {
+exports.update = async (badgeData, badgeId) => {
   await BadExpTask.destroy({ where: { badgeId: badgeId } });
   if (badgeData.ruleType === "Task and Experience Defined") {
     badgeData.tasks.forEach(async (data) => {

@@ -7,6 +7,10 @@ const Task = db.task;
 const Experience = db.experience;
 const Event = db.event;
 const Submission = db.submission;
+const Student = db.student;
+const FlightPlan = db.flightPlan;
+const User = db.user;
+const Notification = db.notification;
 import FileHelpers from "../utilities/fileStorage.helper.js";
 import kickOffBadgeAwarding from "../utilities/badgeAward.helpers.js";
 import sequelize from "../sequelizeUtils/sequelizeInstance.js";
@@ -36,9 +40,9 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
   const offset = (page - 1) * pageSize;
   const limit = pageSize;
 
-  const whereCondition = {};
-
-  whereCondition.flightPlanId = flightPlanId;
+  const whereCondition = {
+    flightPlanId: flightPlanId,
+  };
 
   if (searchQuery) {
     whereCondition.name = {
@@ -54,7 +58,10 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     whereCondition.flightPlanItemType = { [Op.eq]: filters.flightPlanItemType };
   }
 
-  let order = [["status", "DESC"]];
+  let order = [
+    ["status", "DESC"],
+    ["name", "DESC"],
+  ];
 
   if (filters.sortAttribute && filters.sortDirection) {
     const direction =
@@ -88,7 +95,7 @@ exports.findAllFlightPlanItemsByFlightPlanId = async (
     where: whereCondition,
   });
 
-  const totalPages = Math.ceil(count / pageSize);
+  const totalPages = Math.ceil(count / limit);
 
   return { count: totalPages, flightPlanItems: response };
 };
@@ -195,12 +202,69 @@ exports.updateFlightPlanItem = async (flightPlanItemData, flightPlanItemId) => {
 };
 
 exports.approveFlightPlanItem = async (flightPlanItemId) => {
-  const response = await FlightPlanItem.update(
-    { status: "Complete" },
-    { where: { id: flightPlanItemId } },
-  );
-  await kickOffBadgeAwarding(flightPlanItemId);
-  return response;
+  const t = await sequelize.transaction();
+  try {
+    await FlightPlanItem.update(
+      { status: "Complete" },
+      { where: { id: flightPlanItemId }, transaction: t },
+    );
+
+    const flightPlanItem = await FlightPlanItem.findOne({
+      where: { id: flightPlanItemId },
+      include: [
+        {
+          model: Task,
+          as: "task",
+        },
+        {
+          model: Experience,
+          as: "experience",
+        },
+      ],
+      transaction: t,
+    });
+
+    const flightPlan = await FlightPlan.findByPk(flightPlanItem.flightPlanId, {
+      transaction: t,
+    });
+
+    const student = await Student.findOne({
+      where: { id: flightPlan.studentId },
+      include: [
+        {
+          model: User,
+          as: "user",
+        },
+      ],
+      transaction: t,
+    });
+
+    const pointsAwarded =
+      flightPlanItem.flightPlanItemType == "Task"
+        ? flightPlanItem.task.points
+        : flightPlanItem.experience.points;
+
+    await Student.update(
+      { pointsAwarded: student.pointsAwarded + pointsAwarded },
+      { where: { id: flightPlan.studentId }, transaction: t },
+    );
+
+    await Notification.create(
+      {
+        userId: student.user.id,
+        header: `You have received ${pointsAwarded} points for completing ${flightPlanItem.name}`,
+        description: `You have received ${pointsAwarded} points for completing ${flightPlanItem.name}`,
+      },
+      { transaction: t },
+    );
+
+    await t.commit();
+    await kickOffBadgeAwarding(flightPlanItemId);
+    return { message: "Flight plan item approved successfully" };
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 exports.rejectFlightPlanItem = async (flightPlanItemId) => {

@@ -5,7 +5,7 @@ import { Router } from "express";
 const router = Router();
 
 // Create a new FlightPlanItem
-router.post("/", [authenticate, isAdmin], flightPlanItem.create);
+router.post("/", [authenticate], flightPlanItem.create);
 
 router.post(
   "/submit/:flightPlanItemId",
@@ -53,9 +53,8 @@ router.put(
 );
 
 // Delete a FlightPlanItem with id
-router.delete("/:id", [authenticate, isAdmin], flightPlanItem.delete);
+router.delete("/:id", [authenticate], flightPlanItem.delete);
 
-// Get FlightPlanItems with Events for a specific student
 router.get(
   "/student/:studentId/flightplan/:flightPlanId/with-events",
   [authenticate],
