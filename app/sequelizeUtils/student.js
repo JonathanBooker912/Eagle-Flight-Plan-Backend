@@ -16,7 +16,7 @@ exports.findStudentForUserId = async (userId) => {
   return await Student.findOne({ 
     where: { userId },
     include: [
-      { model: Major, through: 'studentMajor' }
+      { model: Major, as: 'majors' }
     ]
   });
 };
