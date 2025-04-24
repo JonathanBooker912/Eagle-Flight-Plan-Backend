@@ -23,4 +23,18 @@ router.put("/:id", [authenticate], user.update);
 // Delete a User with id
 router.delete("/:id", [authenticate, isAdmin], user.delete);
 
+// Promote a user to admin
+router.put(
+  "/:id/promote-to-admin",
+  [authenticate, isAdmin],
+  user.promoteToAdmin,
+);
+
+// Demote a user from admin
+router.put(
+  "/:id/demote-from-admin",
+  [authenticate, isAdmin],
+  user.demoteFromAdmin,
+);
+
 export default router;
